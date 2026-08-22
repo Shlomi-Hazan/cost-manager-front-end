@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vanilla db.js Compatibility Test</title>
+    <style>
+      body {
+        color: #172033;
+        font-family: Arial, sans-serif;
+        line-height: 1.5;
+        margin: 2rem;
+      }
+
+      main {
+        max-width: 42rem;
+      }
+
+      .pass {
+        color: #0f766e;
+        font-weight: 700;
+      }
+
+      .fail {
+        color: #b91c1c;
+        font-weight: 700;
+      }
+
+      pre {
+        background: #f5f7fb;
+        border: 1px solid #d6dae3;
+        padding: 1rem;
+        white-space: pre-wrap;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Vanilla db.js Compatibility Test</h1>
+      <p id="status">Running...</p>
+      <pre id="details"></pre>
+    </main>
+
+    <script src="db.js"></script>
+    <script>
+      (function runCompatibilityTest() {
+        var databaseName = "cost-manager-grader-test";
+        var databaseVersion = 1;
+        var storageKey =
+          "cost-manager:" +
+          encodeURIComponent(databaseName) +
+          ":v" +
+          databaseVersion +
+          ":costs";
+        var statusElement = document.getElementById("status");
+        var detailsElement = document.getElementById("details");
+
+        function pass(message) {
+          statusElement.className = "pass";
+          statusElement.textContent = "PASS";
+          detailsElement.textContent = message;
+          console.log("PASS", message);
+        }
+
+        function fail(error) {
+          statusElement.className = "fail";
+          statusElement.textContent = "FAIL";
+          detailsElement.textContent = error && error.message ? error.message : String(error);
+          console.error(error);
+        }
+
+        try {
+          localStorage.removeItem(storageKey);
+
+          if (!globalThis.db || typeof globalThis.db.openCostsDB !== "function") {
+            throw new Error("global db.openCostsDB was not found.");
+          }
+
+          var ob = db.openCostsDB(databaseName, databaseVersion);
+          var result1 = ob.addCost({
+            sum: 200,
+            currency: "USD",
+            category: "FOOD",
+            description: "pizza"
+          });
+          var result2 = ob.addCost({
+            sum: 400,
+            currency: "USD",
+            category: "CAR",
+            description: "fuel"
+          });
+          var data = ob.getReport("USD");
+
+          if (!result1 || !result2 || !data) {
+            throw new Error("Expected addCost and getReport to return objects.");
+          }
+
+          if (data.total.currency !== "USD" || data.total.sum !== 600) {
+            throw new Error(
+              "Expected total.sum === 600 and total.currency === USD, got " +
+                JSON.stringify(data.total)
+            );
+          }
+
+          pass("Total: " + data.total.sum + " " + data.total.currency);
+        } catch (error) {
+          fail(error);
+        } finally {
+          localStorage.removeItem(storageKey);
+        }
+      })();
+    </script>
+  </body>
+</html>
