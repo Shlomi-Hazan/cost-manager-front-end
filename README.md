@@ -128,5 +128,5 @@ Public.
 
 ### Milestone 1 — Application Skeleton
 
-The React/Vite application skeleton is being prepared with placeholder views,
-navigation, tooling, and validation scripts.
+The React/Vite application skeleton provides placeholder views, navigation,
+tooling, and validation scripts.
