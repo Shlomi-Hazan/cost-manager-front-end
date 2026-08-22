@@ -1,0 +1,305 @@
+PROJECT: Cost Manager Front-End
+COURSE: Front-End Development Final Project
+
+PURPOSE
+-------
+Build a correct, maintainable, testable, and well-documented Cost Manager
+application that satisfies the official course specification exactly.
+
+The project should be developed as a real software project from the beginning:
+requirements first, controlled Git/GitHub workflow, small reviewable changes,
+automated and manual testing, deployment, and a final requirement-by-requirement
+audit before submission.
+
+SOURCE OF TRUTH
+---------------
+The priority order for project decisions is:
+
+1. The latest official course project specification.
+2. Official clarifications published by the lecturer/course forum.
+3. docs/REQUIREMENTS.md.
+4. docs/ARCHITECTURE.md and other approved project documentation.
+5. Existing verified tests and public API contracts.
+6. Implementation details.
+
+If project documentation conflicts with an official course requirement,
+the official requirement wins and the documentation must be corrected.
+
+CORE PROJECT GOAL
+-----------------
+Deliver a web-based Cost Manager that:
+
+- Uses an English user interface.
+- Uses USD as the main/base currency.
+- Stores application cost data in localStorage.
+- Allows users to add cost items.
+- Stores each cost's sum, currency, category, description, and addition date.
+- Preserves each cost item's original currency.
+- Supports exactly these required currency identifiers:
+  USD, ILS, GBP, EURO.
+- Generates detailed monthly reports.
+- Generates a monthly category Pie Chart.
+- Generates a yearly twelve-month Bar Chart.
+- Allows report/chart currency selection.
+- Retrieves exchange rates through the Fetch API.
+- Has a working default exchange-rates URL.
+- Allows the user to configure an exchange-rates URL in Settings.
+- Includes both a module-compatible db.js and a standalone Vanilla db.js.
+- Preserves the required Vanilla db.js public API.
+- Works correctly in the latest Google Chrome.
+- Is deployed to an Internet-accessible web server.
+- Is prepared and submitted exactly according to the official submission rules.
+
+REQUIRED DB.JS CONTRACT
+-----------------------
+The Vanilla library must support the following usage pattern:
+
+const ob = db.openCostsDB("costsdb", 1);
+ob.addCost(cost);
+ob.getReport(currency, year, month);
+
+The following structure is therefore considered a protected public contract:
+
+db
+ └── openCostsDB(databaseName, databaseVersion)
+      └── database object
+           ├── addCost(cost)
+           └── getReport(currency, year, month)
+
+Do not change this contract merely because another design appears cleaner.
+
+PROJECT PRIORITIES
+------------------
+When trade-offs are necessary, use this priority order:
+
+1. Official requirement compliance.
+2. Grader/API compatibility.
+3. Correctness.
+4. Data integrity.
+5. Testability.
+6. Simplicity and maintainability.
+7. Clear user experience.
+8. Visual polish.
+9. Optional enhancements.
+
+A visually impressive feature must never endanger a mandatory course requirement.
+
+SCOPE CONTROL
+-------------
+Do not add unnecessary features simply because they are technically possible.
+
+Every feature should have at least one of these justifications:
+
+- It is required by the course specification.
+- It directly supports a required feature.
+- It materially improves reliability, testing, maintainability, or usability
+  without risking compatibility.
+
+Optional features must remain isolated and removable.
+
+TECHNOLOGY DIRECTION
+--------------------
+The planned application stack is:
+
+- JavaScript / JSX
+- React
+- Vite
+- MUI
+- One charting library
+- localStorage
+- Fetch API
+- Vitest or an equivalent lightweight test setup
+- ESLint
+- Git / GitHub
+
+These are project architecture decisions unless explicitly stated otherwise in
+the official specification.
+
+Do not introduce TypeScript unless the project owner explicitly approves it.
+
+AI-ASSISTED DEVELOPMENT
+-----------------------
+Codex is the primary coding agent.
+Claude Code may be used for review, debugging, architecture checks, and selected
+implementation tasks.
+
+AI agents are development tools, not the source of truth.
+
+Before modifying code, an AI coding agent should read the relevant project
+documentation, especially:
+
+- intent.txt
+- AGENTS.md or CLAUDE.md, as applicable
+- docs/REQUIREMENTS.md
+- docs/ARCHITECTURE.md
+- docs/TEST_PLAN.md
+
+AI agents must:
+
+- Work only within the requested task or GitHub Issue.
+- Inspect existing code before changing it.
+- Preserve mandatory public APIs.
+- Avoid unrelated refactors.
+- Avoid changing official requirements.
+- Avoid inventing missing course requirements.
+- Add or update tests when behavior changes.
+- Run the relevant validation commands before declaring work complete.
+- Clearly report what changed and what was verified.
+
+AI agents must not:
+
+- Rewrite large unrelated parts of the project without approval.
+- Change required currency identifiers.
+- Replace localStorage with another persistence technology.
+- Convert the required synchronous-looking grading API into an incompatible API.
+- Remove tests merely to make a build pass.
+- hard-code behavior only for the lecturer's sample test.
+- Commit secrets, tokens, passwords, or private keys.
+- Push directly to main unless explicitly instructed.
+- Merge their own work without the requested review workflow.
+- Treat assumptions as official requirements.
+
+AMBIGUITIES
+-----------
+If the official specification is ambiguous:
+
+1. Do not silently guess.
+2. Record the ambiguity in docs/REQUIREMENTS.md or docs/DECISIONS.md.
+3. Prefer the interpretation most compatible with the official examples and API.
+4. Seek clarification from the course forum/lecturer when necessary.
+5. Update the documentation after an official clarification.
+6. Only then lock the implementation behavior.
+
+GIT AND GITHUB INTENT
+---------------------
+GitHub should document the development process from the beginning, not merely
+store the final source code.
+
+Preferred workflow:
+
+Requirement
+    ->
+GitHub Issue
+    ->
+Feature/Task Branch
+    ->
+Implementation
+    ->
+Tests + Lint + Build
+    ->
+Pull Request
+    ->
+Review
+    ->
+Merge to main
+
+Keep commits focused and understandable.
+Avoid large "everything changed" commits.
+
+The main branch should represent reviewed, working project state.
+
+TESTING INTENT
+--------------
+Testing should protect both course requirements and the required db.js contract.
+
+The project should eventually include:
+
+- Unit tests for core data and currency logic.
+- Tests for report calculations.
+- Tests for chart aggregation logic.
+- The lecturer-provided Vanilla db.js HTML compatibility test.
+- Additional contract tests beyond the exact sample values.
+- Manual Chrome testing.
+- Production smoke testing after deployment.
+
+Passing the lecturer's sample test alone is not sufficient if the implementation
+does not follow the documented contract.
+
+DOCUMENTATION INTENT
+--------------------
+Documentation should be useful, current, and non-duplicative.
+
+Each document has a specific role:
+
+- intent.txt
+  Defines project purpose, priorities, and non-negotiable principles.
+
+- docs/REQUIREMENTS.md
+  Defines what the official specification requires and tracks ambiguities.
+
+- docs/ARCHITECTURE.md
+  Defines how the project is structured and why.
+
+- AGENTS.md
+  Gives repository-level operating instructions to Codex.
+
+- CLAUDE.md
+  Gives repository-level operating instructions to Claude Code.
+
+- docs/TEST_PLAN.md
+  Defines how requirements and critical behaviors are verified.
+
+- docs/SUBMISSION_CHECKLIST.md
+  Defines the exact final submission process.
+
+- README.md
+  Explains the project to humans: setup, usage, structure, scripts, and links.
+
+Do not copy the entire same instruction set into every file.
+Prefer references to the appropriate source document.
+
+DEFINITION OF A COMPLETED DEVELOPMENT TASK
+------------------------------------------
+A development task is not complete merely because code was written.
+
+Where applicable, completion requires:
+
+- Requested scope implemented.
+- Related official requirements preserved.
+- Relevant tests added or updated.
+- Relevant tests passing.
+- Lint passing.
+- Production build passing.
+- No unrelated changes.
+- Public API compatibility preserved.
+- Documentation updated when behavior or architecture changes.
+- Git status understood and clean at the appropriate point.
+- Pull Request ready for review.
+
+DEFINITION OF PROJECT SUCCESS
+-----------------------------
+The project is successful only when:
+
+- Every mandatory official requirement is implemented.
+- Every mandatory requirement is traceable to implementation and verification.
+- The required Vanilla db.js passes the official compatibility test.
+- The application works in latest Google Chrome.
+- The deployed application works from its production URL.
+- Exchange-rate fetching works with the default configuration.
+- Settings can use the required custom rate-source behavior.
+- Reports and both charts produce correct results.
+- Git/GitHub history clearly documents the development process.
+- Teamwork evidence required by the course is preserved.
+- The final ZIP, PDF, Vanilla db.js, and demo-video requirements are satisfied.
+- A final requirement-by-requirement audit has been completed.
+- The submission package has been manually opened and verified before submission.
+
+FINAL PRINCIPLE
+---------------
+Do not optimize for "finished quickly."
+
+Optimize for:
+
+correct requirements
+    ->
+small controlled changes
+    ->
+verification
+    ->
+review
+    ->
+traceable Git history
+    ->
+successful final audit
+    ->
+safe submission
