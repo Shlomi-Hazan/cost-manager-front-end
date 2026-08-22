@@ -20,8 +20,8 @@ function getStorageKey(databaseName, databaseVersion) {
 }
 
 function validateDatabaseIdentity(databaseName, databaseVersion) {
-  if (typeof databaseName !== "string" || databaseName.trim() === "") {
-    throw new TypeError("databaseName must be a non-empty string.");
+  if (typeof databaseName !== "string") {
+    throw new TypeError("databaseName must be a string.");
   }
 
   if (typeof databaseVersion !== "number" || !Number.isFinite(databaseVersion)) {
@@ -96,6 +96,8 @@ function toReportCost(cost) {
     currency: cost.currency,
     category: cost.category,
     description: cost.description,
+    // Store day/month/year internally, but expose only day for the current
+    // report shape to match the official example while OQ-002 remains open.
     date: {
       day: cost.date.day
     }
@@ -106,6 +108,8 @@ function calculateSameCurrencyTotal(costs, targetCurrency) {
   const requiresConversion = costs.some((cost) => cost.currency !== targetCurrency);
 
   if (requiresConversion) {
+    // Keep getReport() synchronous and fail clearly until exchange-rate support
+    // exists, instead of returning a knowingly incorrect cross-currency total.
     throw new Error(
       "Cross-currency report totals require exchange-rate support from a later milestone."
     );

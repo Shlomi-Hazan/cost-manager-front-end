@@ -32,6 +32,15 @@ describe("module db contract", () => {
     });
   });
 
+  it("accepts an empty database name because the official contract requires a string", () => {
+    const ob = db.openCostsDB("", 1);
+
+    expect(ob).toEqual({
+      addCost: expect.any(Function),
+      getReport: expect.any(Function)
+    });
+  });
+
   it("adds a cost, returns required fields, records the date, and does not mutate input", () => {
     const ob = db.openCostsDB("costsdb", 1);
     const inputCost = {
