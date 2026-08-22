@@ -3,6 +3,7 @@
 
   var SUPPORTED_CURRENCIES = ["USD", "ILS", "GBP", "EURO"];
   var STORAGE_PREFIX = "cost-manager";
+  var EXCHANGE_RATES_CACHE_KEY = "cost-manager:exchange-rates-cache";
 
   function isSupportedCurrency(currency) {
     return SUPPORTED_CURRENCIES.indexOf(currency) !== -1;
@@ -101,6 +102,74 @@
     localStorage.setItem(storageKey, JSON.stringify(costs));
   }
 
+  function validateExchangeRates(rates) {
+    if (rates === null || typeof rates !== "object" || Array.isArray(rates)) {
+      throw new TypeError("Exchange rates must be an object.");
+    }
+
+    SUPPORTED_CURRENCIES.forEach(function validateRate(currency) {
+      if (!Object.hasOwn(rates, currency)) {
+        throw new TypeError("Exchange rates must include " + currency + ".");
+      }
+
+      if (typeof rates[currency] !== "number" || !Number.isFinite(rates[currency])) {
+        throw new TypeError(
+          "Exchange rate for " + currency + " must be a finite number."
+        );
+      }
+
+      if (rates[currency] <= 0) {
+        throw new TypeError(
+          "Exchange rate for " + currency + " must be greater than zero."
+        );
+      }
+    });
+
+    if (rates.USD !== 1) {
+      throw new TypeError("Exchange rate for USD must be exactly 1.");
+    }
+
+    return SUPPORTED_CURRENCIES.reduce(function copyRate(validatedRates, currency) {
+      validatedRates[currency] = rates[currency];
+
+      return validatedRates;
+    }, {});
+  }
+
+  function getCachedExchangeRates() {
+    var storedValue = localStorage.getItem(EXCHANGE_RATES_CACHE_KEY);
+
+    if (storedValue === null) {
+      return null;
+    }
+
+    try {
+      return validateExchangeRates(JSON.parse(storedValue));
+    } catch {
+      return null;
+    }
+  }
+
+  function convertCurrency(amount, sourceCurrency, targetCurrency, rates) {
+    var validatedRates;
+
+    if (typeof amount !== "number" || !Number.isFinite(amount)) {
+      throw new TypeError("amount must be a finite number.");
+    }
+
+    if (!isSupportedCurrency(sourceCurrency)) {
+      throw new TypeError("sourceCurrency must be one of USD, ILS, GBP, EURO.");
+    }
+
+    if (!isSupportedCurrency(targetCurrency)) {
+      throw new TypeError("targetCurrency must be one of USD, ILS, GBP, EURO.");
+    }
+
+    validatedRates = validateExchangeRates(rates);
+
+    return (amount / validatedRates[sourceCurrency]) * validatedRates[targetCurrency];
+  }
+
   function toReportCost(cost) {
     return {
       sum: cost.sum,
@@ -119,17 +188,26 @@
     var requiresConversion = costs.some(function hasDifferentCurrency(cost) {
       return cost.currency !== targetCurrency;
     });
+    var cachedRates;
 
-    if (requiresConversion) {
-      // Keep getReport() synchronous and fail clearly until exchange-rate support
-      // exists, instead of returning a knowingly incorrect cross-currency total.
+    if (!requiresConversion) {
+      return costs.reduce(function addCostToTotal(total, cost) {
+        return total + cost.sum;
+      }, 0);
+    }
+
+    cachedRates = getCachedExchangeRates();
+
+    if (cachedRates === null) {
+      // getReport() remains synchronous; exchange rates must be fetched and cached
+      // before cross-currency totals can be calculated.
       throw new Error(
-        "Cross-currency report totals require exchange-rate support from a later milestone."
+        "Cross-currency report totals require cached exchange rates."
       );
     }
 
     return costs.reduce(function addCostToTotal(total, cost) {
-      return total + cost.sum;
+      return total + convertCurrency(cost.sum, cost.currency, targetCurrency, cachedRates);
     }, 0);
   }
 

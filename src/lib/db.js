@@ -1,4 +1,6 @@
 import { SUPPORTED_CURRENCIES } from "../constants/currencies.js";
+import { getCachedExchangeRates } from "./exchangeRatesCache.js";
+import { convertCurrency } from "../utils/currency.js";
 
 const STORAGE_PREFIX = "cost-manager";
 
@@ -108,15 +110,23 @@ function toReportCost(cost) {
 function calculateSameCurrencyTotal(costs, targetCurrency) {
   const requiresConversion = costs.some((cost) => cost.currency !== targetCurrency);
 
-  if (requiresConversion) {
-    // Keep getReport() synchronous and fail clearly until exchange-rate support
-    // exists, instead of returning a knowingly incorrect cross-currency total.
+  if (!requiresConversion) {
+    return costs.reduce((total, cost) => total + cost.sum, 0);
+  }
+
+  const cachedRates = getCachedExchangeRates();
+
+  if (cachedRates === null) {
+    // getReport() remains synchronous; exchange rates must be fetched and cached
+    // before cross-currency totals can be calculated.
     throw new Error(
-      "Cross-currency report totals require exchange-rate support from a later milestone."
+      "Cross-currency report totals require cached exchange rates."
     );
   }
 
-  return costs.reduce((total, cost) => total + cost.sum, 0);
+  return costs.reduce((total, cost) => {
+    return total + convertCurrency(cost.sum, cost.currency, targetCurrency, cachedRates);
+  }, 0);
 }
 
 function openCostsDB(databaseName, databaseVersion) {

@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { setCachedExchangeRates } from "../../src/lib/exchangeRatesCache.js";
 import { db } from "../../src/lib/db.js";
 
 function setLocalDate(year, month, day) {
@@ -294,5 +295,68 @@ describe("module db contract", () => {
       currency: "USD",
       sum: 600
     });
+  });
+
+  it("converts cross-currency report totals from cached rates while preserving original cost values", () => {
+    setCachedExchangeRates({
+      USD: 1,
+      GBP: 0.5,
+      EURO: 0.8,
+      ILS: 4
+    });
+    const ob = db.openCostsDB("costsdb", 1);
+
+    ob.addCost({
+      sum: 100,
+      currency: "USD",
+      category: "FOOD",
+      description: "Groceries"
+    });
+    ob.addCost({
+      sum: 50,
+      currency: "GBP",
+      category: "TRAVEL",
+      description: "Train"
+    });
+
+    const report = ob.getReport("USD", 2026, 8);
+    const storedCosts = readStoredCosts();
+
+    expect(report).not.toBeInstanceOf(Promise);
+    expect(report.total).toEqual({
+      currency: "USD",
+      sum: 200
+    });
+    expect(report.costs[1]).toMatchObject({
+      sum: 50,
+      currency: "GBP",
+      category: "TRAVEL",
+      description: "Train"
+    });
+    expect(storedCosts[1]).toMatchObject({
+      sum: 50,
+      currency: "GBP"
+    });
+  });
+
+  it("fails explicitly for cross-currency totals when no valid rate cache exists", () => {
+    const ob = db.openCostsDB("costsdb", 1);
+
+    ob.addCost({
+      sum: 100,
+      currency: "USD",
+      category: "FOOD",
+      description: "Groceries"
+    });
+    ob.addCost({
+      sum: 50,
+      currency: "GBP",
+      category: "TRAVEL",
+      description: "Train"
+    });
+
+    expect(() => ob.getReport("USD", 2026, 8)).toThrow(
+      "Cross-currency report totals require cached exchange rates."
+    );
   });
 });
