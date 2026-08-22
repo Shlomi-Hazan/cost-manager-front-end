@@ -4,7 +4,7 @@ Final project for the **Front-End Development** course.
 
 This repository is intentionally being built from the project requirements outward: requirements, architecture, AI-agent instructions, testing strategy, Git/GitHub workflow, implementation, deployment, audit, and submission.
 
-> **Current status:** Milestone 0 — Project Foundation.
+> **Current status:** Milestone 1 — Application Skeleton.
 
 ## Project Goal
 
@@ -126,8 +126,7 @@ Public.
 
 ## Current Milestone
 
-### Milestone 0 — Project Foundation
+### Milestone 1 — Application Skeleton
 
-Foundation documentation has been prepared before application feature development begins.
-
-The next implementation milestone is the React/Vite application skeleton.
+The React/Vite application skeleton provides placeholder views, navigation,
+tooling, and validation scripts.
