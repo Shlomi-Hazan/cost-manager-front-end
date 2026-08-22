@@ -1,4 +1,5 @@
-const SUPPORTED_CURRENCIES = ["USD", "ILS", "GBP", "EURO"];
+import { SUPPORTED_CURRENCIES } from "../constants/currencies.js";
+
 const STORAGE_PREFIX = "cost-manager";
 
 function isSupportedCurrency(currency) {
