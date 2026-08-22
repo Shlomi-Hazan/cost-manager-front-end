@@ -4,7 +4,7 @@ Final project for the **Front-End Development** course.
 
 This repository is intentionally being built from the project requirements outward: requirements, architecture, AI-agent instructions, testing strategy, Git/GitHub workflow, implementation, deployment, audit, and submission.
 
-> **Current status:** Milestone 2 — Core db.js Library.
+> **Current status:** Milestone 3 — Vanilla db.js.
 
 ## Project Goal
 
@@ -126,8 +126,8 @@ Public.
 
 ## Current Milestone
 
-### Milestone 2 — Core db.js Library
+### Milestone 3 — Vanilla db.js
 
-The module-compatible db.js core provides localStorage-backed cost persistence,
-automatic cost dates, and synchronous monthly report generation for the
-implemented contract.
+The standalone Vanilla db.js mirrors the required module contract, exposes a
+global db object, persists costs with localStorage, and passes standalone
+grader-style compatibility checks.
