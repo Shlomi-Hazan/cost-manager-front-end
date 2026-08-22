@@ -4,7 +4,7 @@ Final project for the **Front-End Development** course.
 
 This repository is intentionally being built from the project requirements outward: requirements, architecture, AI-agent instructions, testing strategy, Git/GitHub workflow, implementation, deployment, audit, and submission.
 
-> **Current status:** Milestone 3 — Vanilla db.js.
+> **Current status:** Milestone 4 — Add Cost.
 
 ## Project Goal
 
@@ -126,8 +126,8 @@ Public.
 
 ## Current Milestone
 
-### Milestone 3 — Vanilla db.js
+### Milestone 4 — Add Cost
 
-The standalone Vanilla db.js mirrors the required module contract, exposes a
-global db object, persists costs with localStorage, and passes standalone
-grader-style compatibility checks.
+The Add Cost view provides validated English-language cost entry, persists
+costs through the module db.js/localStorage layer, records dates automatically,
+and preserves the selected original currency.
