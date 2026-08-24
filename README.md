@@ -4,7 +4,7 @@ Final project for the **Front-End Development** course.
 
 This repository is intentionally being built from the project requirements outward: requirements, architecture, AI-agent instructions, testing strategy, Git/GitHub workflow, implementation, deployment, audit, and submission.
 
-> **Current status:** Milestone 8 — Yearly 12-Month Bar Chart.
+> **Current status:** Milestone 9 — Exchange-Rate Settings.
 
 ## Project Goal
 
@@ -126,8 +126,8 @@ Public.
 
 ## Current Milestone
 
-### Milestone 8 — Yearly 12-Month Bar Chart
+### Milestone 9 — Exchange-Rate Settings
 
-The Charts view now includes both the monthly category Pie Chart and a yearly
-12-month Bar Chart for a selected year and currency. The yearly result always
-contains January through December, including zero-total months.
+The Settings view lets users validate and persist a custom exchange-rate source
+or safely return to the built-in default source. Existing reports and charts
+consume the selected source through the shared exchange-rate service.

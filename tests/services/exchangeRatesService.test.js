@@ -78,6 +78,21 @@ describe("exchangeRatesService", () => {
     expect(getCachedExchangeRates()).toEqual(validRates);
   });
 
+  it("can refresh and cache rates from an explicit URL without changing settings", async () => {
+    globalThis.fetch = mockFetchResponse(validRates);
+    setCustomExchangeRatesUrl("/active-rates.json");
+
+    await expect(refreshExchangeRates("/candidate-rates.json")).resolves.toEqual(
+      validRates
+    );
+
+    expect(globalThis.fetch).toHaveBeenCalledWith("/candidate-rates.json");
+    expect(getCachedExchangeRates()).toEqual(validRates);
+    expect(localStorage.getItem(SETTINGS_STORAGE_KEY)).toContain(
+      "/active-rates.json"
+    );
+  });
+
   it("rejects non-OK responses", async () => {
     globalThis.fetch = mockFetchResponse(validRates, {
       ok: false,

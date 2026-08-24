@@ -17,8 +17,8 @@ export async function fetchExchangeRates(url = getExchangeRatesUrl()) {
   return validateExchangeRates(payload);
 }
 
-export async function refreshExchangeRates() {
-  const rates = await fetchExchangeRates(getExchangeRatesUrl());
+export async function refreshExchangeRates(url = getExchangeRatesUrl()) {
+  const rates = await fetchExchangeRates(url);
 
   return setCachedExchangeRates(rates);
 }
