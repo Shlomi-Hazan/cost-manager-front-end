@@ -4,7 +4,7 @@ Final project for the **Front-End Development** course.
 
 This repository is intentionally being built from the project requirements outward: requirements, architecture, AI-agent instructions, testing strategy, Git/GitHub workflow, implementation, deployment, audit, and submission.
 
-> **Current status:** Milestone 6 — Detailed Monthly Report.
+> **Current status:** Milestone 7 — Monthly Category Pie Chart.
 
 ## Project Goal
 
@@ -126,8 +126,10 @@ Public.
 
 ## Current Milestone
 
-### Milestone 6 — Detailed Monthly Report
+### Milestone 7 — Monthly Category Pie Chart
 
-The Monthly Report view lets users select a month, year, and target currency,
-displays detailed original cost entries, and shows the report total in the
-selected currency through the existing synchronous db.js report API.
+The Charts view now provides a monthly category Pie Chart for a selected month,
+year, and target currency, using shared currency conversion and independently
+tested category aggregation. Category chart grouping is case-insensitive and
+whitespace-tolerant; common categories are canonicalized, while Add Cost offers
+common category suggestions without removing free-text custom categories.
