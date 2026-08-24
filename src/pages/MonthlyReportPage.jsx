@@ -15,6 +15,14 @@ import { useReportSorting } from "../hooks/useReportSorting.js";
 import { costsDatabase } from "../lib/costsDatabase.js";
 import { buildDetailedMonthlyReport } from "../services/detailedReportsService.js";
 import { refreshExchangeRates } from "../services/exchangeRatesService.js";
+import * as excelExportService from "../services/export/excelExportService.js";
+import {
+  buildMonthlyReportExportModel
+} from "../services/export/exportModels.js";
+import * as pdfExportService from "../services/export/pdfExportService.js";
+import {
+  getMonthlyReportExportFilename
+} from "../utils/exportFilenames.js";
 
 const MONTHS = [
   { value: 1, label: "January" },
@@ -101,6 +109,8 @@ function MonthlyReportPage() {
   const [errors, setErrors] = useState({});
   const [report, setReport] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
+  const [exportErrorMessage, setExportErrorMessage] = useState("");
+  const [exportingAction, setExportingAction] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [hasGenerated, setHasGenerated] = useState(false);
   const {
@@ -123,6 +133,7 @@ function MonthlyReportPage() {
       [name]: undefined
     }));
     setErrorMessage("");
+    setExportErrorMessage("");
     setReport(null);
     setHasGenerated(false);
     resetSort();
@@ -135,6 +146,7 @@ function MonthlyReportPage() {
 
     setErrors(validation.errors);
     setErrorMessage("");
+    setExportErrorMessage("");
     setReport(null);
     setHasGenerated(false);
 
@@ -165,6 +177,63 @@ function MonthlyReportPage() {
       setErrorMessage(getReportErrorMessage(error));
     } finally {
       setIsLoading(false);
+    }
+  }
+
+  function buildCurrentExportModel() {
+    return buildMonthlyReportExportModel({
+      costs: sortedCosts,
+      report
+    });
+  }
+
+  async function handleExcelExport() {
+    if (!report) {
+      return;
+    }
+
+    setExportErrorMessage("");
+    setExportingAction("excel");
+
+    try {
+      await excelExportService.downloadReportWorkbook(
+        buildCurrentExportModel(),
+        getMonthlyReportExportFilename({
+          year: report.year,
+          month: report.month,
+          currency: report.total.currency,
+          extension: "xlsx"
+        })
+      );
+    } catch {
+      setExportErrorMessage("Could not export the Excel file. Please try again.");
+    } finally {
+      setExportingAction(null);
+    }
+  }
+
+  async function handlePdfExport() {
+    if (!report) {
+      return;
+    }
+
+    setExportErrorMessage("");
+    setExportingAction("pdf");
+
+    try {
+      await pdfExportService.downloadReportPdf(
+        buildCurrentExportModel(),
+        getMonthlyReportExportFilename({
+          year: report.year,
+          month: report.month,
+          currency: report.total.currency,
+          extension: "pdf"
+        })
+      );
+    } catch {
+      setExportErrorMessage("Could not export the PDF file. Please try again.");
+    } finally {
+      setExportingAction(null);
     }
   }
 
@@ -280,6 +349,27 @@ function MonthlyReportPage() {
                 Total: {formatAmount(report.total.sum)} {report.total.currency}
               </Typography>
             </Box>
+
+            {exportErrorMessage ? (
+              <Alert severity="error">{exportErrorMessage}</Alert>
+            ) : null}
+
+            <Stack direction={{ xs: "column", sm: "row" }} spacing={1}>
+              <Button
+                disabled={Boolean(exportingAction)}
+                onClick={handleExcelExport}
+                variant="outlined"
+              >
+                {exportingAction === "excel" ? "Exporting..." : "Export Excel"}
+              </Button>
+              <Button
+                disabled={Boolean(exportingAction)}
+                onClick={handlePdfExport}
+                variant="outlined"
+              >
+                {exportingAction === "pdf" ? "Exporting..." : "Export PDF"}
+              </Button>
+            </Stack>
 
             {report.costs.length === 0 ? (
               <Alert severity="info">No costs found for this month.</Alert>

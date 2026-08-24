@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   Alert,
   Box,
@@ -27,6 +27,11 @@ import {
 import { SUPPORTED_CURRENCIES } from "../../constants/currencies.js";
 import { costsDatabase } from "../../lib/costsDatabase.js";
 import { refreshExchangeRates } from "../../services/exchangeRatesService.js";
+import * as excelExportService from "../../services/export/excelExportService.js";
+import { buildBarChartExportModel } from "../../services/export/exportModels.js";
+import * as pdfExportService from "../../services/export/pdfExportService.js";
+import { captureChartSvgAsPngDataUrl } from "../../utils/chartCapture.js";
+import { getBarChartExportFilename } from "../../utils/exportFilenames.js";
 import { buildYearlyMonthlyTotals } from "../../utils/yearlyAggregation.js";
 
 function getCurrentFilters() {
@@ -83,8 +88,11 @@ function YearlyBarChartSection() {
   const [errors, setErrors] = useState({});
   const [yearlyResult, setYearlyResult] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
+  const [exportErrorMessage, setExportErrorMessage] = useState("");
+  const [exportingAction, setExportingAction] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [hasGenerated, setHasGenerated] = useState(false);
+  const chartContainerRef = useRef(null);
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -98,6 +106,9 @@ function YearlyBarChartSection() {
       [name]: undefined
     }));
     setErrorMessage("");
+    setExportErrorMessage("");
+    setYearlyResult(null);
+    setHasGenerated(false);
   }
 
   async function handleSubmit(event) {
@@ -107,6 +118,7 @@ function YearlyBarChartSection() {
 
     setErrors(validation.errors);
     setErrorMessage("");
+    setExportErrorMessage("");
 
     if (!validation.isValid) {
       setErrorMessage("Please correct the highlighted yearly chart filters.");
@@ -140,6 +152,67 @@ function YearlyBarChartSection() {
       setErrorMessage(getYearlyErrorMessage(error));
     } finally {
       setIsLoading(false);
+    }
+  }
+
+  function buildCurrentExportModel() {
+    return buildBarChartExportModel({ yearlyResult });
+  }
+
+  async function handleExcelExport() {
+    if (!yearlyResult) {
+      return;
+    }
+
+    setExportErrorMessage("");
+    setExportingAction("excel");
+
+    try {
+      await excelExportService.downloadBarChartWorkbook(
+        buildCurrentExportModel(),
+        getBarChartExportFilename({
+          year: yearlyResult.year,
+          currency: yearlyResult.currency,
+          extension: "xlsx"
+        })
+      );
+    } catch {
+      setExportErrorMessage("Could not export the Excel file. Please try again.");
+    } finally {
+      setExportingAction(null);
+    }
+  }
+
+  async function handlePdfExport() {
+    if (!yearlyResult) {
+      return;
+    }
+
+    setExportErrorMessage("");
+    setExportingAction("pdf");
+
+    try {
+      const chartImageDataUrl = await captureChartSvgAsPngDataUrl(
+        chartContainerRef.current
+      );
+
+      if (chartImageDataUrl === null) {
+        throw new Error("Bar chart image capture failed.");
+      }
+
+      await pdfExportService.downloadChartPdf(
+        buildCurrentExportModel(),
+        getBarChartExportFilename({
+          year: yearlyResult.year,
+          currency: yearlyResult.currency,
+          extension: "pdf"
+        }),
+        chartImageDataUrl
+      );
+    } catch {
+      setExportErrorMessage("Could not export the chart PDF. Please try again.");
+    } finally {
+      setExportingAction(null);
     }
   }
 
@@ -240,12 +313,34 @@ function YearlyBarChartSection() {
               </Typography>
             </Box>
 
+            {exportErrorMessage ? (
+              <Alert severity="error">{exportErrorMessage}</Alert>
+            ) : null}
+
+            <Stack direction={{ xs: "column", sm: "row" }} spacing={1}>
+              <Button
+                disabled={Boolean(exportingAction)}
+                onClick={handleExcelExport}
+                variant="outlined"
+              >
+                {exportingAction === "excel" ? "Exporting..." : "Export Excel"}
+              </Button>
+              <Button
+                disabled={Boolean(exportingAction)}
+                onClick={handlePdfExport}
+                variant="outlined"
+              >
+                {exportingAction === "pdf" ? "Exporting..." : "Export PDF"}
+              </Button>
+            </Stack>
+
             {!hasYearlyCosts ? (
               <Alert severity="info">No costs found for this year.</Alert>
             ) : null}
 
             <Box
               aria-label="Yearly monthly bar chart"
+              ref={chartContainerRef}
               role="img"
               sx={{
                 height: 360,

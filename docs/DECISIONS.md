@@ -1205,20 +1205,35 @@ page level also supports the future export milestone.
 
 ---
 
-# ADR-035 — Provisional Export Architecture
+# ADR-035 — Export Architecture
 
-**Status:** PROVISIONAL
+**Status:** ACCEPTED
 
 **Date:** 2026-08-24
 
 ## Decision
 
-Future Excel/PDF export should consume already-prepared report/chart data from
-application services or page state instead of re-reading localStorage directly.
+Excel/PDF export consumes already-prepared report/chart data from application
+services or page state instead of re-reading localStorage directly.
 
-Excel exports should contain structured report/chart data. PDF exports should
-contain human-readable report content. Chart PDFs should include the chart
-visualization plus the relevant supporting data.
+Exports do not recalculate reports, charts, totals, currency conversion, or sort
+order. Monthly and Yearly report exports receive the current visible sorted rows
+from the report pages. Pie and Bar chart exports receive the already-generated
+chart data from their chart sections.
+
+Excel exports use `exceljs` to create real OOXML `.xlsx` workbooks. SheetJS
+`xlsx` was considered but not selected because npm reported unfixed high-severity
+advisories for the available package. PDF exports use `jspdf` and
+`jspdf-autotable` for human-readable metadata and multi-page tables.
+
+The export libraries are loaded dynamically from the export services so they do
+not become part of the initial application bundle. Chart PDFs serialize the
+rendered Recharts SVG from a local component ref, draw it to an offscreen canvas
+with a white background, and embed the PNG data in the PDF along with supporting
+data rows.
+
+Export filenames are deterministic and include the export type, selected period
+or year, target currency, and file extension.
 
 ## Reason
 
@@ -1227,9 +1242,13 @@ currency-conversion logic.
 
 ## Consequences
 
-- This does not implement export yet.
-- Exact export libraries remain undecided until Milestone 9.5E.
-- Do not install or select export libraries before the export milestone.
+- Export behavior remains separate from database/report/chart calculation.
+- The database, Vanilla `db.js`, and synchronous `getReport()` contract are
+  unchanged.
+- Export tests must verify real workbook/PDF output and visible sorted row order.
+- The selected XLSX dependency currently carries a moderate transitive `uuid`
+  npm audit advisory; the available npm fix downgrades `exceljs` and was not
+  chosen for this browser export milestone.
 
 ---
 

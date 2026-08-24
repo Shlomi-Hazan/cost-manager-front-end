@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   Alert,
   Box,
@@ -31,6 +31,11 @@ import {
 } from "../services/exchangeRatesService.js";
 import { aggregateCostsByCategory } from "../utils/chartAggregation.js";
 import YearlyBarChartSection from "../components/charts/YearlyBarChartSection.jsx";
+import * as excelExportService from "../services/export/excelExportService.js";
+import { buildPieChartExportModel } from "../services/export/exportModels.js";
+import * as pdfExportService from "../services/export/pdfExportService.js";
+import { captureChartSvgAsPngDataUrl } from "../utils/chartCapture.js";
+import { getPieChartExportFilename } from "../utils/exportFilenames.js";
 
 const MONTHS = [
   { value: 1, label: "January" },
@@ -123,8 +128,11 @@ function ChartsPage() {
   const [errors, setErrors] = useState({});
   const [chartResult, setChartResult] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
+  const [exportErrorMessage, setExportErrorMessage] = useState("");
+  const [exportingAction, setExportingAction] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [hasGenerated, setHasGenerated] = useState(false);
+  const chartContainerRef = useRef(null);
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -138,6 +146,7 @@ function ChartsPage() {
       [name]: undefined
     }));
     setErrorMessage("");
+    setExportErrorMessage("");
     setChartResult(null);
     setHasGenerated(false);
   }
@@ -149,6 +158,7 @@ function ChartsPage() {
 
     setErrors(validation.errors);
     setErrorMessage("");
+    setExportErrorMessage("");
     setChartResult(null);
     setHasGenerated(false);
 
@@ -186,6 +196,72 @@ function ChartsPage() {
       setErrorMessage(getChartErrorMessage(error));
     } finally {
       setIsLoading(false);
+    }
+  }
+
+  function buildCurrentExportModel() {
+    return buildPieChartExportModel({
+      chartData,
+      report: chartResult.report
+    });
+  }
+
+  async function handleExcelExport() {
+    if (!chartResult) {
+      return;
+    }
+
+    setExportErrorMessage("");
+    setExportingAction("excel");
+
+    try {
+      await excelExportService.downloadPieChartWorkbook(
+        buildCurrentExportModel(),
+        getPieChartExportFilename({
+          year: chartResult.report.year,
+          month: chartResult.report.month,
+          currency: chartResult.report.total.currency,
+          extension: "xlsx"
+        })
+      );
+    } catch {
+      setExportErrorMessage("Could not export the Excel file. Please try again.");
+    } finally {
+      setExportingAction(null);
+    }
+  }
+
+  async function handlePdfExport() {
+    if (!chartResult) {
+      return;
+    }
+
+    setExportErrorMessage("");
+    setExportingAction("pdf");
+
+    try {
+      const chartImageDataUrl = hasPositiveChartData
+        ? await captureChartSvgAsPngDataUrl(chartContainerRef.current)
+        : null;
+
+      if (hasPositiveChartData && chartImageDataUrl === null) {
+        throw new Error("Pie chart image capture failed.");
+      }
+
+      await pdfExportService.downloadChartPdf(
+        buildCurrentExportModel(),
+        getPieChartExportFilename({
+          year: chartResult.report.year,
+          month: chartResult.report.month,
+          currency: chartResult.report.total.currency,
+          extension: "pdf"
+        }),
+        chartImageDataUrl
+      );
+    } catch {
+      setExportErrorMessage("Could not export the chart PDF. Please try again.");
+    } finally {
+      setExportingAction(null);
     }
   }
 
@@ -312,6 +388,27 @@ function ChartsPage() {
               </Typography>
             </Box>
 
+            {exportErrorMessage ? (
+              <Alert severity="error">{exportErrorMessage}</Alert>
+            ) : null}
+
+            <Stack direction={{ xs: "column", sm: "row" }} spacing={1}>
+              <Button
+                disabled={Boolean(exportingAction)}
+                onClick={handleExcelExport}
+                variant="outlined"
+              >
+                {exportingAction === "excel" ? "Exporting..." : "Export Excel"}
+              </Button>
+              <Button
+                disabled={Boolean(exportingAction)}
+                onClick={handlePdfExport}
+                variant="outlined"
+              >
+                {exportingAction === "pdf" ? "Exporting..." : "Export PDF"}
+              </Button>
+            </Stack>
+
             {!hasChartData ? (
               <Alert severity="info">No costs found for this month.</Alert>
             ) : !hasPositiveChartData ? (
@@ -321,6 +418,7 @@ function ChartsPage() {
             ) : (
               <Box
                 aria-label="Monthly category pie chart"
+                ref={chartContainerRef}
                 role="img"
                 sx={{
                   height: 360,
