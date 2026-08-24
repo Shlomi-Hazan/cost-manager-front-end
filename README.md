@@ -4,7 +4,7 @@ Final project for the **Front-End Development** course.
 
 This repository is intentionally being built from the project requirements outward: requirements, architecture, AI-agent instructions, testing strategy, Git/GitHub workflow, implementation, deployment, audit, and submission.
 
-> **Current status:** Milestone 7 — Monthly Category Pie Chart.
+> **Current status:** Milestone 8 — Yearly 12-Month Bar Chart.
 
 ## Project Goal
 
@@ -126,10 +126,8 @@ Public.
 
 ## Current Milestone
 
-### Milestone 7 — Monthly Category Pie Chart
+### Milestone 8 — Yearly 12-Month Bar Chart
 
-The Charts view now provides a monthly category Pie Chart for a selected month,
-year, and target currency, using shared currency conversion and independently
-tested category aggregation. Category chart grouping is case-insensitive and
-whitespace-tolerant; common categories are canonicalized, while Add Cost offers
-common category suggestions without removing free-text custom categories.
+The Charts view now includes both the monthly category Pie Chart and a yearly
+12-month Bar Chart for a selected year and currency. The yearly result always
+contains January through December, including zero-total months.

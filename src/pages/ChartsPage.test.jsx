@@ -137,6 +137,17 @@ describe("ChartsPage", () => {
       "USD"
     );
     expect(screen.getByRole("button", { name: "Generate Chart" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Yearly 12-Month Bar Chart" })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Generate Yearly Chart" })
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText(
+        "Yearly Bar Chart functionality will be implemented in a later milestone."
+      )
+    ).not.toBeInTheDocument();
   });
 
   it("uses the selected month and year for chart data", async () => {
