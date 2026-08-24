@@ -111,6 +111,15 @@ describe("exchangeRatesService", () => {
     await expect(refreshExchangeRates()).rejects.toThrow("Invalid JSON");
   });
 
+  it("propagates network Fetch failures without replacing a valid cache", async () => {
+    setCachedExchangeRates(validRates);
+    globalThis.fetch = vi.fn().mockRejectedValue(new TypeError("Network error"));
+
+    await expect(refreshExchangeRates()).rejects.toThrow("Network error");
+
+    expect(getCachedExchangeRates()).toEqual(validRates);
+  });
+
   it("does not replace an existing valid cache with invalid data", async () => {
     setCachedExchangeRates(validRates);
     globalThis.fetch = mockFetchResponse({
