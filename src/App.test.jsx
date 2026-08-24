@@ -20,9 +20,31 @@ describe("App", () => {
     renderApp();
 
     expect(screen.getByText("Cost Manager")).toBeInTheDocument();
+    expect(screen.getAllByRole("tab").map((tab) => tab.textContent)).toEqual([
+      "Dashboard",
+      "Add Cost",
+      "Manage Costs",
+      "Reports",
+      "Charts",
+      "Settings"
+    ]);
     expect(screen.getByRole("heading", { name: "Dashboard" })).toBeInTheDocument();
     expect(
       screen.getByText("Track, review, and visualize your expenses.")
+    ).toBeInTheDocument();
+  });
+
+  it("switches to the Manage Costs view without reloading", async () => {
+    const user = userEvent.setup();
+    renderApp();
+
+    await user.click(screen.getByRole("tab", { name: "Manage Costs" }));
+
+    expect(
+      screen.getByRole("heading", { name: "Manage Costs" })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("Review, edit, or delete your saved expenses.")
     ).toBeInTheDocument();
   });
 

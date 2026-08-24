@@ -1142,61 +1142,61 @@ official course requirements unless the lecturer later confirms them.
 ## X-001 — Stable Cost Identity
 
 - **Type:** Team extension
-- **Status:** `IN PROGRESS`
+- **Status:** `VERIFIED`
 - New application cost records must include a generated stable string `id`.
 - IDs are generated internally; callers of `addCost()` must not provide IDs.
 - IDs must distinguish otherwise identical costs.
 
 ### Verification
 
-- [ ] Adding two identical costs creates two different IDs.
-- [ ] The same ID is returned by CRUD reads after storage/reload.
-- [ ] Existing official `addCost()` input remains compatible.
+- [x] Adding two identical costs creates two different IDs.
+- [x] The same ID is returned by CRUD reads after storage/reload.
+- [x] Existing official `addCost()` input remains compatible.
 
 ---
 
 ## X-002 — Cost Editing
 
 - **Type:** Team extension
-- **Status:** `IN PROGRESS`
+- **Status:** `VERIFIED`
 - The database object returned by `openCostsDB()` should support `updateCost(id, cost)`.
 - `updateCost()` uses a full editable payload containing `sum`, `currency`,
   `category`, `description`, and full date/time.
 - Updating a cost must preserve its original `id`.
-- Manage Costs UI work is the future user-facing implementation of this
-  requirement.
+- Manage Costs UI is the user-facing implementation of this requirement.
 
 ### Verification
 
-- [ ] Existing cost can be updated by ID.
-- [ ] Missing valid ID returns `null`.
-- [ ] Invalid ID throws a validation error.
-- [ ] Invalid editable payload is rejected.
+- [x] Existing cost can be updated by ID.
+- [x] Missing valid ID returns `null`.
+- [x] Invalid ID throws a validation error.
+- [x] Invalid editable payload is rejected.
+- [x] Manage Costs UI can edit sum/currency/category/description/date/time.
 
 ---
 
 ## X-003 — Cost Deletion
 
 - **Type:** Team extension
-- **Status:** `IN PROGRESS`
+- **Status:** `VERIFIED`
 - The database object returned by `openCostsDB()` should support `deleteCost(id)`.
 - Deletion is ID-based so duplicate-looking costs remain distinguishable.
-- Manage Costs UI work is the future user-facing implementation of this
-  requirement.
+- Manage Costs UI is the user-facing implementation of this requirement.
 
 ### Verification
 
-- [ ] Existing cost can be deleted by ID.
-- [ ] Deleting one duplicate-looking cost does not delete the other.
-- [ ] Missing valid ID returns `null`.
-- [ ] Invalid ID throws a validation error.
+- [x] Existing cost can be deleted by ID.
+- [x] Deleting one duplicate-looking cost does not delete the other.
+- [x] Missing valid ID returns `null`.
+- [x] Invalid ID throws a validation error.
+- [x] Manage Costs UI deletes costs only after confirmation.
 
 ---
 
 ## X-004 — Cost Time
 
 - **Type:** Team extension
-- **Status:** `IN PROGRESS`
+- **Status:** `VERIFIED`
 - New application cost records should store:
 
 ```javascript
@@ -1219,11 +1219,11 @@ date: {
 
 ### Verification
 
-- [ ] Newly added costs store day/month/year/hour/minute.
-- [ ] Monthly filtering continues to use month/year.
-- [ ] Official report item compatibility remains day-only while `OQ-002`
+- [x] Newly added costs store day/month/year/hour/minute.
+- [x] Monthly filtering continues to use month/year.
+- [x] Official report item compatibility remains day-only while `OQ-002`
       remains open.
-- [ ] Future Manage Costs UI can edit full date/time values.
+- [x] Manage Costs UI can edit full date/time values.
 
 ---
 
@@ -1307,7 +1307,7 @@ date: {
 ## X-009 — Reports Navigation Group
 
 - **Type:** Team extension
-- **Status:** `IN PROGRESS`
+- **Status:** `VERIFIED`
 - The application navigation should expose a top-level `Reports` section with
   Monthly and Yearly report tabs.
 - Monthly remains functional; Yearly may stay a placeholder until the detailed
@@ -1315,9 +1315,9 @@ date: {
 
 ### Verification
 
-- [ ] Top-level navigation shows `Reports`.
-- [ ] Monthly Report remains usable under `Reports`.
-- [ ] Yearly Report placeholder is present without implementing future logic.
+- [x] Top-level navigation shows `Reports`.
+- [x] Monthly Report remains usable under `Reports`.
+- [x] Yearly Report placeholder is present without implementing future logic.
 
 ---
 

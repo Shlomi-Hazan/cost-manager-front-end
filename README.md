@@ -4,7 +4,7 @@ Final project for the **Front-End Development** course.
 
 This repository is intentionally being built from the project requirements outward: requirements, architecture, AI-agent instructions, testing strategy, Git/GitHub workflow, implementation, deployment, audit, and submission.
 
-> **Current status:** Milestone 9.5A — Cost Data & CRUD Foundation.
+> **Current status:** Milestone 9.5B — Manage Costs.
 
 ## Project Goal
 
@@ -126,10 +126,8 @@ Public.
 
 ## Current Milestone
 
-### Milestone 9.5A — Cost Data & CRUD Foundation
+### Milestone 9.5B — Manage Costs
 
-New application costs use a version 2 storage namespace with generated stable
-IDs and day/month/year/hour/minute metadata. The module and Vanilla `db.js`
-objects now provide CRUD foundation methods while preserving the protected
-`addCost()` and synchronous `getReport()` contract, and the app groups monthly
-and future yearly reporting under Reports navigation.
+The Manage Costs section lets users review saved costs, edit
+sum/currency/category/description/date/time, and delete costs with confirmation
+through the existing `db.js` CRUD foundation.
