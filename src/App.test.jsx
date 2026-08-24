@@ -15,7 +15,7 @@ function renderApp() {
   );
 }
 
-describe("App skeleton", () => {
+describe("App", () => {
   it("renders the Cost Manager application shell", () => {
     renderApp();
 
@@ -26,7 +26,7 @@ describe("App skeleton", () => {
     ).toBeInTheDocument();
   });
 
-  it("switches between placeholder views without reloading", async () => {
+  it("switches to the Monthly Report view without reloading", async () => {
     const user = userEvent.setup();
     renderApp();
 
@@ -35,10 +35,8 @@ describe("App skeleton", () => {
     expect(
       screen.getByRole("heading", { name: "Monthly Report" })
     ).toBeInTheDocument();
-    expect(
-      screen.getByText(
-        "Detailed monthly report functionality will be implemented in a later milestone."
-      )
-    ).toBeInTheDocument();
+    expect(screen.getByRole("combobox", { name: "Month" })).toBeInTheDocument();
+    expect(screen.getByLabelText("Year")).toBeInTheDocument();
+    expect(screen.getByRole("combobox", { name: "Currency" })).toBeInTheDocument();
   });
 });
