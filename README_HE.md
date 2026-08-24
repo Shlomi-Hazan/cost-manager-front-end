@@ -671,14 +671,14 @@ Dec
 
 ---
 
-# 13.5. Milestone 9.5 — Cost Maintenance and Reporting Extensions
+# 13.5. Milestone 9.5 — הרחבות מוצר
 
 ## מטרה
 
 להוסיף הרחבות צוותיות אחרי שהפיצ'רים הרשמיים המרכזיים עובדים, בלי לשנות את חוזה
 `db.js` שמוגן לצורכי הקורס.
 
-## 9.5A — Cost Data & CRUD Foundation
+## 9.5A — תשתית נתונים ו־CRUD להוצאות
 
 - GitHub Issue: [#24](https://github.com/Shlomi-Hazan/cost-manager-front-end/issues/24)
 - יצירת ID יציב לכל הוצאה חדשה.
@@ -692,28 +692,53 @@ Dec
 - הוספת Reports navigation עם tabs של Monthly ו־Yearly.
 - השארת Yearly Report כ־placeholder בלבד.
 
-## 9.5B — Manage Costs UI
+## 9.5B — ניהול, עריכה ומחיקת הוצאות
 
 - GitHub Issue: [#25](https://github.com/Shlomi-Hazan/cost-manager-front-end/issues/25)
-- צפייה בהוצאות שמורות.
-- עריכת הוצאות שמורות.
-- מחיקת הוצאות שמורות.
+- הוספת אזור Manage Costs לניהול הוצאות שמורות.
+- עריכה מלאה של:
+  - sum,
+  - currency,
+  - category,
+  - description,
+  - date,
+  - time.
+- מחיקת הוצאות לפי ID יציב.
+- הצגת אישור לפני מחיקה.
+- שמירה על התנהגות category autocomplete/free-text הקיימת בזמן עריכה.
 
-## 9.5C — Detailed Yearly Report
+## 9.5C — דוח שנתי מפורט + שעה בדוחות
 
 - GitHub Issue: [#26](https://github.com/Shlomi-Hazan/cost-manager-front-end/issues/26)
-- מימוש מסך Yearly Report מפורט.
-- שימוש מחדש בארכיטקטורת reports/currency הקיימת.
+- מימוש דוח Yearly Report מפורט.
+- בחירת שנה ומטבע.
+- הצגת כל שורות הדוח השנתי.
+- הצגת total שנתי מומר במטבע שנבחר.
+- הוספת הצגת שעה לשורות Monthly Report.
+- הוספת תאריך + שעה לשורות Yearly Report.
 
-## 9.5D — Sortable Reports
+## 9.5D — מיון דוחות
 
 - GitHub Issue: [#27](https://github.com/Shlomi-Hazan/cost-manager-front-end/issues/27)
-- הוספת sorting לטבלאות Monthly ו־Yearly reports.
+- הוספת כותרות טבלה לחיצות בדוחות Monthly ו־Yearly.
+- תמיכה במיון עולה ויורד.
+- הצגת חץ שמראה את כיוון המיון הפעיל.
+- מיון Date/Time בסדר כרונולוגי.
+- מיון Description, Category ו־Currency לפי סדר אלפביתי.
+- מיון Sum לפי ערך מספרי.
+- שימוש במימוש sorting משותף לטבלאות הדוחות.
 
-## 9.5E — Excel/PDF Export
+## 9.5E — ייצוא Excel ו־PDF
 
 - GitHub Issue: [#28](https://github.com/Shlomi-Hazan/cost-manager-front-end/issues/28)
-- ייצוא reports ו־charts ל־Excel/PDF אחרי שמסכי הנתונים יציבים.
+- ייצוא Monthly Report ל־XLSX.
+- ייצוא Monthly Report ל־PDF.
+- ייצוא Yearly Report ל־XLSX.
+- ייצוא Yearly Report ל־PDF.
+- ייצוא נתוני Pie Chart ל־Excel.
+- ייצוא Pie Chart visualization/data ל־PDF.
+- ייצוא נתוני Bar Chart ל־Excel.
+- ייצוא Bar Chart visualization/data ל־PDF.
 
 ---
 

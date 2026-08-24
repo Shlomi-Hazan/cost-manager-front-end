@@ -511,6 +511,18 @@ describe("module db contract", () => {
     expect(ob.updateCost("missing-id", editableCost())).toBeNull();
   });
 
+  it("returns null before payload validation when updateCost cannot find a valid ID", () => {
+    const ob = db.openCostsDB("costsdb", 1);
+
+    expect(
+      ob.updateCost("missing-id", {
+        ...editableCost(),
+        sum: Number.NaN,
+        date: { day: 29, month: 2, year: 2026, hour: 99, minute: 99 }
+      })
+    ).toBeNull();
+  });
+
   it("throws when updateCost receives an invalid ID", () => {
     const ob = db.openCostsDB("costsdb", 1);
 

@@ -482,6 +482,19 @@ describe("standalone Vanilla db.js", () => {
     expect(ob.deleteCost("missing-id")).toBeNull();
   });
 
+  it("returns null before payload validation when updateCost cannot find a valid ID", () => {
+    const vanillaDb = loadVanillaDb();
+    const ob = vanillaDb.openCostsDB("costsdb", 1);
+
+    expect(
+      ob.updateCost("missing-id", {
+        ...editableCost(),
+        sum: Number.NaN,
+        date: { day: 29, month: 2, year: 2026, hour: 99, minute: 99 }
+      })
+    ).toBeNull();
+  });
+
   it("throws for invalid cost IDs", () => {
     const vanillaDb = loadVanillaDb();
     const ob = vanillaDb.openCostsDB("costsdb", 1);

@@ -1155,7 +1155,7 @@ official course requirements unless the lecturer later confirms them.
 
 ---
 
-## X-002 — Cost Editing Foundation
+## X-002 — Cost Editing
 
 - **Type:** Team extension
 - **Status:** `IN PROGRESS`
@@ -1163,6 +1163,8 @@ official course requirements unless the lecturer later confirms them.
 - `updateCost()` uses a full editable payload containing `sum`, `currency`,
   `category`, `description`, and full date/time.
 - Updating a cost must preserve its original `id`.
+- Manage Costs UI work is the future user-facing implementation of this
+  requirement.
 
 ### Verification
 
@@ -1173,12 +1175,14 @@ official course requirements unless the lecturer later confirms them.
 
 ---
 
-## X-003 — Cost Deletion Foundation
+## X-003 — Cost Deletion
 
 - **Type:** Team extension
 - **Status:** `IN PROGRESS`
 - The database object returned by `openCostsDB()` should support `deleteCost(id)`.
 - Deletion is ID-based so duplicate-looking costs remain distinguishable.
+- Manage Costs UI work is the future user-facing implementation of this
+  requirement.
 
 ### Verification
 
@@ -1189,7 +1193,7 @@ official course requirements unless the lecturer later confirms them.
 
 ---
 
-## X-004 — Cost Time Metadata
+## X-004 — Cost Time
 
 - **Type:** Team extension
 - **Status:** `IN PROGRESS`
@@ -1219,40 +1223,84 @@ date: {
 - [ ] Monthly filtering continues to use month/year.
 - [ ] Official report item compatibility remains day-only while `OQ-002`
       remains open.
+- [ ] Future Manage Costs UI can edit full date/time values.
 
 ---
 
-## X-005 — Manage Costs UI
-
-- **Type:** Team extension
-- **Status:** `NOT STARTED`
-- Users should be able to view, edit, and delete saved costs in a dedicated UI.
-- This is tracked separately from the database foundation.
-
----
-
-## X-006 — Detailed Yearly Report
+## X-005 — Detailed Yearly Report
 
 - **Type:** Team extension
 - **Status:** `NOT STARTED`
 - Users should be able to generate a detailed yearly report after the Reports
   navigation foundation exists.
+- The report should support selected year and selected currency.
+- It should display yearly detail rows and a yearly converted total.
+- It should also support the documented date/time display strategy for reports.
+
+### Verification
+
+- [ ] User can select year and currency.
+- [ ] Yearly rows are visible.
+- [ ] Yearly total uses the selected currency.
+- [ ] Date/time display matches the decided report behavior.
 
 ---
 
-## X-007 — Report Sorting
+## X-006 — Sortable Reports
 
 - **Type:** Team extension
 - **Status:** `NOT STARTED`
 - Monthly and yearly report tables should support consistent sorting controls.
+- Sorting should cover Date/Time, Description, Category, Sum, and Currency.
+
+### Verification
+
+- [ ] Monthly Report can be sorted.
+- [ ] Yearly Report can be sorted.
+- [ ] Ascending/descending state is visible.
+- [ ] Date/Time sorting is chronological.
+- [ ] Text sorting is alphabetical.
+- [ ] Sum sorting is numeric.
 
 ---
 
-## X-008 — Report and Chart Export
+## X-007 — Excel Export
 
 - **Type:** Team extension
 - **Status:** `NOT STARTED`
-- Users should be able to export relevant reports/charts to Excel and PDF formats.
+- Users should be able to export structured spreadsheet files for:
+  - Monthly Report,
+  - Yearly Report,
+  - Pie Chart data,
+  - Bar Chart data.
+- Real XLSX/spreadsheet output is intended; CSV renamed to `.xlsx` is not
+  sufficient.
+
+### Verification
+
+- [ ] Monthly Report exports to XLSX.
+- [ ] Yearly Report exports to XLSX.
+- [ ] Pie Chart data exports to XLSX.
+- [ ] Bar Chart data exports to XLSX.
+
+---
+
+## X-008 — PDF Export
+
+- **Type:** Team extension
+- **Status:** `NOT STARTED`
+- Users should be able to export human-readable PDF files for:
+  - Monthly Report,
+  - Yearly Report,
+  - Pie Chart visualization and relevant data,
+  - Bar Chart visualization and relevant data.
+
+### Verification
+
+- [ ] Monthly Report exports to PDF.
+- [ ] Yearly Report exports to PDF.
+- [ ] Pie Chart exports visualization/data to PDF.
+- [ ] Bar Chart exports visualization/data to PDF.
 
 ---
 

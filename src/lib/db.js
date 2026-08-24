@@ -252,7 +252,6 @@ function openCostsDB(databaseName, databaseVersion) {
 
     updateCost(id, cost) {
       validateCostId(id);
-      validateEditableCost(cost);
 
       const costs = readCosts(storageKey);
       const costIndex = costs.findIndex((storedCost) => storedCost.id === id);
@@ -260,6 +259,8 @@ function openCostsDB(databaseName, databaseVersion) {
       if (costIndex === -1) {
         return null;
       }
+
+      validateEditableCost(cost);
 
       const updatedCost = {
         id,

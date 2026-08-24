@@ -697,25 +697,50 @@ without changing the protected course `db.js` contract.
 ## 9.5B — Manage Costs UI
 
 - GitHub Issue: [#25](https://github.com/Shlomi-Hazan/cost-manager-front-end/issues/25)
-- View saved costs.
-- Edit saved costs.
-- Delete saved costs.
+- Add a Manage Costs section for saved cost maintenance.
+- Allow full editing of:
+  - sum,
+  - currency,
+  - category,
+  - description,
+  - date,
+  - time.
+- Support cost deletion by stable ID.
+- Show a confirmation step before destructive deletion.
+- Preserve the existing category autocomplete/free-text behavior for editing.
 
 ## 9.5C — Detailed Yearly Report
 
 - GitHub Issue: [#26](https://github.com/Shlomi-Hazan/cost-manager-front-end/issues/26)
-- Implement a detailed yearly report view.
-- Reuse the existing report/currency architecture.
+- Implement a detailed Yearly Report.
+- Let the user select year and currency.
+- Display full yearly rows.
+- Display the yearly converted total in the selected currency.
+- Add Time display to Monthly Report rows.
+- Add Date + Time display to Yearly Report rows.
 
 ## 9.5D — Sortable Reports
 
 - GitHub Issue: [#27](https://github.com/Shlomi-Hazan/cost-manager-front-end/issues/27)
-- Add sorting to monthly and yearly report tables.
+- Add clickable table headers to Monthly and Yearly reports.
+- Support ascending and descending order.
+- Show an arrow indicator for the active sort.
+- Sort Date/Time chronologically.
+- Sort Description, Category, and Currency alphabetically.
+- Sort Sum numerically.
+- Use a shared sorting implementation across report tables.
 
 ## 9.5E — Excel/PDF Export
 
 - GitHub Issue: [#28](https://github.com/Shlomi-Hazan/cost-manager-front-end/issues/28)
-- Export reports and charts to Excel/PDF formats after the data views are stable.
+- Export Monthly Report to XLSX.
+- Export Monthly Report to PDF.
+- Export Yearly Report to XLSX.
+- Export Yearly Report to PDF.
+- Export Pie Chart data to Excel.
+- Export Pie Chart visualization/data to PDF.
+- Export Bar Chart data to Excel.
+- Export Bar Chart visualization/data to PDF.
 
 ---
 

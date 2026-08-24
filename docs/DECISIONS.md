@@ -39,7 +39,7 @@ A decision marked `PROVISIONAL` is intentionally not fully locked because an off
 
 # ADR-001 — Use React
 
-**Status:** ACCEPTED
+**Status:** ACCEPTED  
 **Date:** 2026-08-22
 
 ## Decision
@@ -92,7 +92,7 @@ Only if React itself creates a direct grading/compatibility problem.
 
 # ADR-002 — Use Vite
 
-**Status:** ACCEPTED
+**Status:** ACCEPTED  
 **Date:** 2026-08-22
 
 ## Decision
@@ -130,7 +130,7 @@ It avoids unnecessary framework complexity.
 
 # ADR-003 — Use JavaScript, Not TypeScript
 
-**Status:** ACCEPTED
+**Status:** ACCEPTED  
 **Date:** 2026-08-22
 
 ## Decision
@@ -170,7 +170,7 @@ Only with explicit project-owner approval and a strong course-compatible reason.
 
 # ADR-004 — Use MUI for UI Components
 
-**Status:** ACCEPTED
+**Status:** ACCEPTED  
 **Date:** 2026-08-22
 
 ## Decision
@@ -211,7 +211,7 @@ MUI is allowed by the course document and reduces time spent rebuilding standard
 
 # ADR-005 — Use Recharts as the Single Chart Library
 
-**Status:** ACCEPTED
+**Status:** ACCEPTED  
 **Date:** 2026-08-22
 
 ## Decision
@@ -250,7 +250,7 @@ If Recharts cannot satisfy a mandatory requirement or causes deployment/browser 
 
 # ADR-006 — Use localStorage as the Required Persistence Layer
 
-**Status:** ACCEPTED
+**Status:** ACCEPTED  
 **Date:** 2026-08-22
 
 ## Decision
@@ -285,7 +285,7 @@ Additional temporary in-memory state is allowed, but localStorage remains the pe
 
 # ADR-007 — Maintain Two `db.js` Forms
 
-**Status:** ACCEPTED
+**Status:** ACCEPTED  
 **Date:** 2026-08-22
 
 ## Decision
@@ -324,7 +324,7 @@ Logic drift between versions must be prevented through contract tests.
 
 # ADR-008 — Protect the Official `db.js` API
 
-**Status:** ACCEPTED
+**Status:** ACCEPTED  
 **Date:** 2026-08-22
 
 ## Decision
@@ -351,7 +351,7 @@ Required method ownership and argument ordering remain stable.
 
 # ADR-009 — No Global State Library Initially
 
-**Status:** ACCEPTED
+**Status:** ACCEPTED  
 **Date:** 2026-08-22
 
 ## Decision
@@ -385,7 +385,7 @@ Only if shared state becomes genuinely difficult to manage with ordinary React p
 
 # ADR-010 — No React Router Initially
 
-**Status:** ACCEPTED
+**Status:** ACCEPTED  
 **Date:** 2026-08-22
 
 ## Decision
@@ -414,7 +414,7 @@ If URL-based routes materially improve required behavior or deployment without a
 
 # ADR-011 — Keep Business Logic Outside React Components
 
-**Status:** ACCEPTED
+**Status:** ACCEPTED  
 **Date:** 2026-08-22
 
 ## Decision
@@ -451,7 +451,7 @@ Pages should call functions/services rather than reproduce algorithms.
 
 # ADR-012 — Centralize Supported Currency Identifiers
 
-**Status:** ACCEPTED
+**Status:** ACCEPTED  
 **Date:** 2026-08-22
 
 ## Decision
@@ -480,7 +480,7 @@ The official specification uses these exact identifiers.
 
 # ADR-013 — Use One Reusable Currency Conversion Utility
 
-**Status:** ACCEPTED
+**Status:** ACCEPTED  
 **Date:** 2026-08-22
 
 ## Decision
@@ -514,7 +514,7 @@ Reports and charts should consume the same conversion behavior.
 
 # ADR-014 — Use GitHub Issues + Branches + Pull Requests
 
-**Status:** ACCEPTED
+**Status:** ACCEPTED  
 **Date:** 2026-08-22
 
 ## Decision
@@ -553,7 +553,7 @@ Keep changes scoped.
 
 # ADR-015 — Codex Is the Primary Coding Agent
 
-**Status:** ACCEPTED
+**Status:** ACCEPTED  
 **Date:** 2026-08-22
 
 ## Decision
@@ -586,7 +586,7 @@ Do not have both agents independently modify the same branch at the same time.
 
 # ADR-016 — Use Vitest for Automated Unit Tests
 
-**Status:** ACCEPTED
+**Status:** ACCEPTED  
 **Date:** 2026-08-22
 
 ## Decision
@@ -611,7 +611,7 @@ The official Vanilla HTML test remains separate and mandatory.
 
 # ADR-017 — Use ESLint
 
-**Status:** ACCEPTED
+**Status:** ACCEPTED  
 **Date:** 2026-08-22
 
 ## Decision
@@ -632,7 +632,7 @@ ESLint configuration should remain practical and not become a project unto itsel
 
 # ADR-018 — Default Exchange-Rate Source Is Team-Controlled
 
-**Status:** ACCEPTED
+**Status:** ACCEPTED  
 **Date:** 2026-08-22
 
 ## Decision
@@ -658,7 +658,7 @@ The final hosting location will be decided during the exchange-rate/deployment m
 
 # ADR-019 — Persist Custom Exchange-Rate URL
 
-**Status:** ACCEPTED
+**Status:** ACCEPTED  
 **Date:** 2026-08-22
 
 ## Decision
@@ -691,7 +691,7 @@ use default URL
 
 # ADR-020 — Cache Last Valid Exchange Rates
 
-**Status:** PROVISIONAL
+**Status:** PROVISIONAL  
 **Date:** 2026-08-22
 
 ## Decision
@@ -737,7 +737,7 @@ During the `db.js` + exchange-rate design milestone or after course clarificatio
 
 # ADR-021 — Proposed Internal Cost Date Stores Day, Month, and Year
 
-**Status:** PROVISIONAL
+**Status:** PROVISIONAL  
 **Date:** 2026-08-22
 
 ## Decision
@@ -780,7 +780,7 @@ Before finalizing `getReport()` output.
 
 # ADR-022 — Do Not Define a Fixed Category List Yet
 
-**Status:** ACCEPTED
+**Status:** ACCEPTED  
 **Date:** 2026-08-22
 
 ## Decision
@@ -803,7 +803,7 @@ The UI may later provide convenient choices, but core required behavior must rem
 
 # ADR-023 — Keep Validation Conservative
 
-**Status:** ACCEPTED
+**Status:** ACCEPTED  
 **Date:** 2026-08-22
 
 ## Decision
@@ -840,7 +840,7 @@ Detailed validation changes should be documented and tested.
 
 # ADR-024 — Use GitHub Actions for CI
 
-**Status:** ACCEPTED
+**Status:** ACCEPTED  
 **Date:** 2026-08-22
 
 ## Decision
@@ -868,7 +868,7 @@ Manual Vanilla/Chrome tests still remain necessary.
 
 # ADR-025 — Deploy as a Static Front-End
 
-**Status:** ACCEPTED
+**Status:** ACCEPTED  
 **Date:** 2026-08-22
 
 ## Decision
@@ -896,7 +896,7 @@ Exact platform remains open until deployment milestone.
 
 # ADR-026 — Do Not Add Secrets for Core Project Operation
 
-**Status:** ACCEPTED
+**Status:** ACCEPTED  
 **Date:** 2026-08-22
 
 ## Decision
@@ -917,7 +917,7 @@ The required exchange-rate source can be a static JSON file.
 
 # ADR-027 — Documentation Has Separate Sources of Responsibility
 
-**Status:** ACCEPTED
+**Status:** ACCEPTED  
 **Date:** 2026-08-22
 
 ## Decision
@@ -963,7 +963,7 @@ Update the appropriate source document instead of copying changes everywhere.
 
 # ADR-028 — Requirement Compliance Beats Visual Complexity
 
-**Status:** ACCEPTED
+**Status:** ACCEPTED  
 **Date:** 2026-08-22
 
 ## Decision
@@ -1192,6 +1192,10 @@ sorting when sortable reports are implemented.
 Future Excel/PDF export should consume already-prepared report/chart data from
 application services or page state instead of re-reading localStorage directly.
 
+Excel exports should contain structured report/chart data. PDF exports should
+contain human-readable report content. Chart PDFs should include the chart
+visualization plus the relevant supporting data.
+
 ## Reason
 
 Exports should match what users see and should not duplicate report, chart, or
@@ -1200,7 +1204,8 @@ currency-conversion logic.
 ## Consequences
 
 - This does not implement export yet.
-- Any future dependency choice must be reviewed in the export milestone.
+- Exact export libraries remain undecided until Milestone 9.5E.
+- Do not install or select export libraries before the export milestone.
 
 ---
 

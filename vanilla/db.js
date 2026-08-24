@@ -361,7 +361,6 @@
         var updatedCost;
 
         validateCostId(id);
-        validateEditableCost(cost);
 
         costs = readCosts(storageKey);
         costIndex = costs.findIndex(function hasMatchingId(storedCost) {
@@ -371,6 +370,8 @@
         if (costIndex === -1) {
           return null;
         }
+
+        validateEditableCost(cost);
 
         updatedCost = {
           id: id,
