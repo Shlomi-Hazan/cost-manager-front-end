@@ -4,7 +4,7 @@ Final project for the **Front-End Development** course.
 
 This repository is intentionally being built from the project requirements outward: requirements, architecture, AI-agent instructions, testing strategy, Git/GitHub workflow, implementation, deployment, audit, and submission.
 
-> **Current status:** Milestone 5 — Exchange Rates Infrastructure.
+> **Current status:** Milestone 6 — Detailed Monthly Report.
 
 ## Project Goal
 
@@ -126,8 +126,8 @@ Public.
 
 ## Current Milestone
 
-### Milestone 5 — Exchange Rates Infrastructure
+### Milestone 6 — Detailed Monthly Report
 
-The application retrieves and validates exchange rates through Fetch, caches the
-latest valid rates for synchronous report calculations, and supports a
-team-controlled default static rate source plus custom URL infrastructure.
+The Monthly Report view lets users select a month, year, and target currency,
+displays detailed original cost entries, and shows the report total in the
+selected currency through the existing synchronous db.js report API.
