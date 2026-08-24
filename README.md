@@ -4,7 +4,7 @@ Final project for the **Front-End Development** course.
 
 This repository is intentionally being built from the project requirements outward: requirements, architecture, AI-agent instructions, testing strategy, Git/GitHub workflow, implementation, deployment, audit, and submission.
 
-> **Current status:** Milestone 4 — Add Cost.
+> **Current status:** Milestone 5 — Exchange Rates Infrastructure.
 
 ## Project Goal
 
@@ -126,8 +126,8 @@ Public.
 
 ## Current Milestone
 
-### Milestone 4 — Add Cost
+### Milestone 5 — Exchange Rates Infrastructure
 
-The Add Cost view provides validated English-language cost entry, persists
-costs through the module db.js/localStorage layer, records dates automatically,
-and preserves the selected original currency.
+The application retrieves and validates exchange rates through Fetch, caches the
+latest valid rates for synchronous report calculations, and supports a
+team-controlled default static rate source plus custom URL infrastructure.

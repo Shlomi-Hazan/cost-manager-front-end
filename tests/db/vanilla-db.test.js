@@ -16,6 +16,10 @@ function getStorageKey(databaseName, databaseVersion) {
   return `cost-manager:${encodeURIComponent(databaseName)}:v${databaseVersion}:costs`;
 }
 
+function setCachedExchangeRates(rates) {
+  localStorage.setItem("cost-manager:exchange-rates-cache", JSON.stringify(rates));
+}
+
 function readStoredCosts(databaseName = "costsdb", databaseVersion = 1) {
   return JSON.parse(localStorage.getItem(getStorageKey(databaseName, databaseVersion)) ?? "[]");
 }
@@ -339,5 +343,70 @@ describe("standalone Vanilla db.js", () => {
       currency: "USD",
       sum: 600
     });
+  });
+
+  it("converts cross-currency report totals from cached rates while preserving original cost values", () => {
+    const vanillaDb = loadVanillaDb();
+    setCachedExchangeRates({
+      USD: 1,
+      GBP: 0.5,
+      EURO: 0.8,
+      ILS: 4
+    });
+    const ob = vanillaDb.openCostsDB("costsdb", 1);
+
+    ob.addCost({
+      sum: 100,
+      currency: "USD",
+      category: "FOOD",
+      description: "Groceries"
+    });
+    ob.addCost({
+      sum: 50,
+      currency: "GBP",
+      category: "TRAVEL",
+      description: "Train"
+    });
+
+    const report = ob.getReport("USD", 2026, 8);
+    const storedCosts = readStoredCosts();
+
+    expect(report).not.toBeInstanceOf(Promise);
+    expect(report.total).toEqual({
+      currency: "USD",
+      sum: 200
+    });
+    expect(report.costs[1]).toMatchObject({
+      sum: 50,
+      currency: "GBP",
+      category: "TRAVEL",
+      description: "Train"
+    });
+    expect(storedCosts[1]).toMatchObject({
+      sum: 50,
+      currency: "GBP"
+    });
+  });
+
+  it("fails explicitly for cross-currency totals when no valid rate cache exists", () => {
+    const vanillaDb = loadVanillaDb();
+    const ob = vanillaDb.openCostsDB("costsdb", 1);
+
+    ob.addCost({
+      sum: 100,
+      currency: "USD",
+      category: "FOOD",
+      description: "Groceries"
+    });
+    ob.addCost({
+      sum: 50,
+      currency: "GBP",
+      category: "TRAVEL",
+      description: "Train"
+    });
+
+    expect(() => ob.getReport("USD", 2026, 8)).toThrow(
+      "Cross-currency report totals require cached exchange rates."
+    );
   });
 });
