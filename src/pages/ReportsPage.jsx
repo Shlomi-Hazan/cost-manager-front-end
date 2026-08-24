@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { Alert, Box, Paper, Stack, Tab, Tabs, Typography } from "@mui/material";
+import { Box, Paper, Stack, Tab, Tabs, Typography } from "@mui/material";
 import MonthlyReportPage from "./MonthlyReportPage.jsx";
+import YearlyReportPage from "./YearlyReportPage.jsx";
 
 const REPORT_TABS = {
   monthly: "monthly",
@@ -17,7 +18,7 @@ function ReportsPage() {
           Reports
         </Typography>
         <Typography color="text.secondary" variant="body1">
-          Review monthly cost details now, with yearly reporting planned next.
+          Review detailed monthly and yearly cost reports.
         </Typography>
       </Box>
 
@@ -41,25 +42,7 @@ function ReportsPage() {
 
       {activeReport === REPORT_TABS.monthly ? <MonthlyReportPage /> : null}
 
-      {activeReport === REPORT_TABS.yearly ? (
-        <Paper
-          elevation={0}
-          sx={{
-            border: "1px solid",
-            borderColor: "divider",
-            p: 3
-          }}
-        >
-          <Stack spacing={2}>
-            <Typography component="h2" variant="h2">
-              Yearly Report
-            </Typography>
-            <Alert severity="info">
-              Detailed yearly reporting will be implemented in Milestone 9.5C.
-            </Alert>
-          </Stack>
-        </Paper>
-      ) : null}
+      {activeReport === REPORT_TABS.yearly ? <YearlyReportPage /> : null}
     </Stack>
   );
 }

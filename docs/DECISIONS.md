@@ -1209,6 +1209,39 @@ currency-conversion logic.
 
 ---
 
+# ADR-036 — Detailed Reports Compose Rich Rows Outside `db.js`
+
+**Status:** ACCEPTED
+
+**Date:** 2026-08-24
+
+## Decision
+
+Detailed Monthly and Yearly report screens should use a small reporting service
+that composes rich row data from `costsDatabase.getAllCosts()` with converted
+totals from the existing synchronous `costsDatabase.getReport()` API.
+
+The protected `db.js` `getReport()` contract remains unchanged: report items
+continue to expose the current compatibility date shape while richer application
+views may use stored cost IDs and full date/time from `getAllCosts()`.
+
+## Reason
+
+The official report contract is externally sensitive, especially for the
+standalone Vanilla `db.js`. Rich application reports need IDs and timestamps, but
+adding those fields to `getReport()` would blur the current `OQ-002`
+compatibility boundary.
+
+## Consequences
+
+- React pages must not read cost localStorage directly.
+- Report total conversion remains owned by `getReport()`.
+- Detailed report rows can display stored IDs internally and date/time values
+  without changing the official report-facing payload.
+- `OQ-001`, `OQ-002`, and `OQ-003` remain formally open.
+
+---
+
 # 2. Open Decisions
 
 The following decisions remain intentionally unresolved.

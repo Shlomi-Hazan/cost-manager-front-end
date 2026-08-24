@@ -1,0 +1,447 @@
+import { CssBaseline } from "@mui/material";
+import { ThemeProvider } from "@mui/material/styles";
+import { render, screen, within } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { setCachedExchangeRates } from "../lib/exchangeRatesCache.js";
+import { costsDatabase } from "../lib/costsDatabase.js";
+import YearlyReportPage from "./YearlyReportPage.jsx";
+import theme from "../theme.js";
+
+const validRates = {
+  USD: 1,
+  GBP: 0.5,
+  EURO: 0.8,
+  ILS: 4
+};
+
+const originalFetch = globalThis.fetch;
+
+function renderYearlyReportPage() {
+  return render(
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <YearlyReportPage />
+    </ThemeProvider>
+  );
+}
+
+function setLocalDate(year, month, day, hour = 12, minute = 0) {
+  vi.setSystemTime(new Date(year, month - 1, day, hour, minute, 0));
+}
+
+function setupUser() {
+  return userEvent.setup();
+}
+
+function mockSuccessfulRatesFetch(rates = validRates) {
+  globalThis.fetch = vi.fn().mockResolvedValue({
+    ok: true,
+    status: 200,
+    json: vi.fn().mockResolvedValue(rates)
+  });
+}
+
+function mockFailedRatesFetch() {
+  globalThis.fetch = vi.fn().mockRejectedValue(new TypeError("Network error"));
+}
+
+function addCostOnDate({
+  year = 2026,
+  month,
+  day,
+  hour = 12,
+  minute = 0,
+  cost
+}) {
+  setLocalDate(year, month, day, hour, minute);
+  costsDatabase.addCost(cost);
+}
+
+async function chooseCurrency(user, currency) {
+  await user.click(screen.getByRole("combobox", { name: "Currency" }));
+  await user.click(screen.getByRole("option", { name: currency }));
+}
+
+async function setYear(user, year) {
+  await user.clear(screen.getByLabelText("Year"));
+  await user.type(screen.getByLabelText("Year"), year);
+}
+
+async function generateReport(user) {
+  await user.click(screen.getByRole("button", { name: "Generate Yearly Report" }));
+}
+
+function getReportTable() {
+  return screen.getByRole("table", { name: "Yearly report costs" });
+}
+
+function expectYearlyRow({
+  description,
+  category,
+  sum,
+  currency,
+  date,
+  time
+}) {
+  const row = within(getReportTable()).getByRole("row", {
+    name: new RegExp(description)
+  });
+
+  expect(within(row).getByText(date)).toBeInTheDocument();
+  expect(within(row).getByText(time)).toBeInTheDocument();
+  expect(within(row).getByText(description)).toBeInTheDocument();
+  expect(within(row).getByText(category)).toBeInTheDocument();
+  expect(within(row).getByText(String(sum))).toBeInTheDocument();
+  expect(within(row).getByText(currency)).toBeInTheDocument();
+}
+
+describe("YearlyReportPage", () => {
+  beforeEach(() => {
+    localStorage.clear();
+    vi.useFakeTimers({
+      toFake: ["Date"]
+    });
+    setLocalDate(2026, 8, 22);
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+    vi.useRealTimers();
+    localStorage.clear();
+
+    if (originalFetch === undefined) {
+      delete globalThis.fetch;
+    } else {
+      globalThis.fetch = originalFetch;
+    }
+  });
+
+  it("renders yearly filters with current year default and USD currency", () => {
+    renderYearlyReportPage();
+
+    expect(screen.getByRole("heading", { name: "Yearly Report" })).toBeInTheDocument();
+    expect(screen.getByLabelText("Year")).toHaveValue("2026");
+    expect(screen.getByRole("combobox", { name: "Currency" })).toHaveTextContent(
+      "USD"
+    );
+    expect(
+      screen.getByRole("button", { name: "Generate Yearly Report" })
+    ).toBeInTheDocument();
+  });
+
+  it("displays matching yearly detail rows with dates and times in insertion order", async () => {
+    const user = setupUser();
+    mockSuccessfulRatesFetch();
+    addCostOnDate({
+      month: 1,
+      day: 10,
+      hour: 9,
+      minute: 5,
+      cost: {
+        sum: 100,
+        currency: "USD",
+        category: "Food",
+        description: "January groceries"
+      }
+    });
+    addCostOnDate({
+      month: 8,
+      day: 24,
+      hour: 16,
+      minute: 37,
+      cost: {
+        sum: 50,
+        currency: "GBP",
+        category: "Travel",
+        description: "August train"
+      }
+    });
+    addCostOnDate({
+      month: 12,
+      day: 5,
+      hour: 21,
+      minute: 14,
+      cost: {
+        sum: 80,
+        currency: "USD",
+        category: "Shopping",
+        description: "December gift"
+      }
+    });
+    addCostOnDate({
+      year: 2025,
+      month: 7,
+      day: 15,
+      hour: 11,
+      minute: 20,
+      cost: {
+        sum: 40,
+        currency: "USD",
+        category: "Other",
+        description: "Previous year"
+      }
+    });
+    setLocalDate(2026, 8, 22);
+
+    renderYearlyReportPage();
+    await generateReport(user);
+
+    expect(screen.getByRole("heading", { name: "2026 Yearly Report" })).toBeInTheDocument();
+    expect(screen.getByText("Total: 280 USD")).toBeInTheDocument();
+    expectYearlyRow({
+      description: "January groceries",
+      category: "Food",
+      sum: 100,
+      currency: "USD",
+      date: "10/01/2026",
+      time: "09:05"
+    });
+    expectYearlyRow({
+      description: "August train",
+      category: "Travel",
+      sum: 50,
+      currency: "GBP",
+      date: "24/08/2026",
+      time: "16:37"
+    });
+    expectYearlyRow({
+      description: "December gift",
+      category: "Shopping",
+      sum: 80,
+      currency: "USD",
+      date: "05/12/2026",
+      time: "21:14"
+    });
+    expect(screen.queryByText("Previous year")).not.toBeInTheDocument();
+    expect(
+      within(getReportTable()).getAllByRole("row").slice(1).map((row) => row.cells[2].textContent)
+    ).toEqual(["January groceries", "August train", "December gift"]);
+  });
+
+  it("shows an empty state and zero selected-currency total for an empty year", async () => {
+    const user = setupUser();
+    mockSuccessfulRatesFetch();
+    renderYearlyReportPage();
+
+    await setYear(user, "2031");
+    await generateReport(user);
+
+    expect(screen.getByRole("heading", { name: "2031 Yearly Report" })).toBeInTheDocument();
+    expect(screen.getByText("Total: 0 USD")).toBeInTheDocument();
+    expect(screen.getByText("No costs found for this year.")).toBeInTheDocument();
+    expect(
+      screen.queryByRole("table", { name: "Yearly report costs" })
+    ).not.toBeInTheDocument();
+  });
+
+  it("displays a converted yearly total while preserving original item currencies", async () => {
+    const user = setupUser();
+    mockSuccessfulRatesFetch();
+    addCostOnDate({
+      month: 8,
+      day: 1,
+      cost: {
+        sum: 100,
+        currency: "USD",
+        category: "Food",
+        description: "Groceries"
+      }
+    });
+    addCostOnDate({
+      month: 8,
+      day: 2,
+      cost: {
+        sum: 50,
+        currency: "GBP",
+        category: "Travel",
+        description: "Train"
+      }
+    });
+
+    renderYearlyReportPage();
+    await chooseCurrency(user, "ILS");
+    await generateReport(user);
+
+    expect(screen.getByText("Report currency: ILS")).toBeInTheDocument();
+    expect(screen.getByText("Total: 800 ILS")).toBeInTheDocument();
+    expectYearlyRow({
+      description: "Train",
+      category: "Travel",
+      sum: 50,
+      currency: "GBP",
+      date: "02/08/2026",
+      time: "12:00"
+    });
+  });
+
+  it("uses existing valid cached rates when refresh fails", async () => {
+    const user = setupUser();
+    setCachedExchangeRates(validRates);
+    mockFailedRatesFetch();
+    addCostOnDate({
+      month: 8,
+      day: 1,
+      cost: {
+        sum: 100,
+        currency: "USD",
+        category: "Food",
+        description: "Cached groceries"
+      }
+    });
+    addCostOnDate({
+      month: 8,
+      day: 2,
+      cost: {
+        sum: 50,
+        currency: "GBP",
+        category: "Travel",
+        description: "Cached train"
+      }
+    });
+
+    renderYearlyReportPage();
+    await generateReport(user);
+
+    expect(screen.getByText("Total: 200 USD")).toBeInTheDocument();
+    expect(screen.getByText("Cached train")).toBeInTheDocument();
+  });
+
+  it("still generates same-currency yearly reports when refresh fails and no cache exists", async () => {
+    const user = setupUser();
+    mockFailedRatesFetch();
+    addCostOnDate({
+      month: 8,
+      day: 1,
+      cost: {
+        sum: 75,
+        currency: "USD",
+        category: "Food",
+        description: "Same currency lunch"
+      }
+    });
+
+    renderYearlyReportPage();
+    await generateReport(user);
+
+    expect(screen.getByText("Same currency lunch")).toBeInTheDocument();
+    expect(screen.getByText("Total: 75 USD")).toBeInTheDocument();
+  });
+
+  it("shows a conversion error when mixed-currency yearly rates are unavailable", async () => {
+    const user = setupUser();
+    mockFailedRatesFetch();
+    addCostOnDate({
+      month: 8,
+      day: 1,
+      cost: {
+        sum: 100,
+        currency: "USD",
+        category: "Food",
+        description: "No-rate groceries"
+      }
+    });
+    addCostOnDate({
+      month: 8,
+      day: 2,
+      cost: {
+        sum: 50,
+        currency: "GBP",
+        category: "Travel",
+        description: "No-rate train"
+      }
+    });
+
+    renderYearlyReportPage();
+    await generateReport(user);
+
+    expect(
+      screen.getByText(
+        "Exchange rates are unavailable for converting this yearly report. Please try again."
+      )
+    ).toBeInTheDocument();
+    expect(screen.queryByText("No-rate groceries")).not.toBeInTheDocument();
+  });
+
+  it("rejects invalid report years before requesting rates", async () => {
+    const user = setupUser();
+    mockSuccessfulRatesFetch();
+    renderYearlyReportPage();
+
+    await setYear(user, "2026.5");
+    await generateReport(user);
+
+    expect(screen.getByText("Enter a whole report year.")).toBeInTheDocument();
+    expect(
+      screen.getByText("Please correct the highlighted report filters.")
+    ).toBeInTheDocument();
+    expect(globalThis.fetch).not.toHaveBeenCalled();
+  });
+
+  it("rejects an empty report year before requesting rates", async () => {
+    const user = setupUser();
+    mockSuccessfulRatesFetch();
+    renderYearlyReportPage();
+
+    await user.clear(screen.getByLabelText("Year"));
+    await generateReport(user);
+
+    expect(screen.getByText("Enter a report year.")).toBeInTheDocument();
+    expect(globalThis.fetch).not.toHaveBeenCalled();
+  });
+
+  it("disables the generate button and shows loading feedback while rates load", async () => {
+    const user = setupUser();
+    let resolveFetch;
+
+    globalThis.fetch = vi.fn().mockImplementation(() => {
+      return new Promise((resolve) => {
+        resolveFetch = resolve;
+      });
+    });
+    renderYearlyReportPage();
+
+    await generateReport(user);
+
+    const loadingButton = screen.getByRole("button", { name: "Generating..." });
+
+    expect(loadingButton).toBeDisabled();
+
+    resolveFetch({
+      ok: true,
+      status: 200,
+      json: vi.fn().mockResolvedValue(validRates)
+    });
+
+    expect(await screen.findByText("No costs found for this year.")).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Generate Yearly Report" })
+    ).toBeEnabled();
+  });
+
+  it("clears stale generated report data when filters change", async () => {
+    const user = setupUser();
+    mockSuccessfulRatesFetch();
+    addCostOnDate({
+      month: 8,
+      day: 1,
+      cost: {
+        sum: 75,
+        currency: "USD",
+        category: "Food",
+        description: "Stale lunch"
+      }
+    });
+
+    renderYearlyReportPage();
+    await generateReport(user);
+    expect(screen.getByText("Stale lunch")).toBeInTheDocument();
+
+    await setYear(user, "2025");
+
+    expect(screen.queryByText("Stale lunch")).not.toBeInTheDocument();
+    expect(
+      screen.getByText("Choose filters and generate a detailed yearly report.")
+    ).toBeInTheDocument();
+  });
+});
