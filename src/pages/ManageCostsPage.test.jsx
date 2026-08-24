@@ -296,12 +296,14 @@ describe("ManageCostsPage", () => {
     changeField(dialog, "Time", "99:99");
     await saveEdit(user, dialog);
 
-    expect(screen.getByText("Enter a valid numeric sum.")).toBeInTheDocument();
-    expect(screen.getByText("Enter a category.")).toBeInTheDocument();
-    expect(screen.getByText("Enter a description.")).toBeInTheDocument();
-    expect(screen.getByText("Enter a date.")).toBeInTheDocument();
-    expect(screen.getByText("Enter a time.")).toBeInTheDocument();
-    expect(screen.getByText("Could not update cost. Please review the fields and try again.")).toBeInTheDocument();
+    expect(within(dialog).getByText("Enter a valid numeric sum.")).toBeInTheDocument();
+    expect(within(dialog).getByText("Enter a category.")).toBeInTheDocument();
+    expect(within(dialog).getByText("Enter a description.")).toBeInTheDocument();
+    expect(within(dialog).getByText("Enter a date.")).toBeInTheDocument();
+    expect(within(dialog).getByText("Enter a time.")).toBeInTheDocument();
+    expect(within(dialog).getByRole("alert")).toHaveTextContent(
+      "Could not update cost. Please review the fields and try again."
+    );
   });
 
   it("rejects missing date and time before persistence", async () => {
@@ -331,8 +333,38 @@ describe("ManageCostsPage", () => {
 
     await saveEdit(user, dialog);
 
-    expect(screen.getByText("Enter a real calendar date.")).toBeInTheDocument();
+    expect(within(dialog).getByRole("alert")).toHaveTextContent(
+      "Enter a real calendar date."
+    );
     expect(screen.getByRole("dialog", { name: "Edit Cost" })).toBeInTheDocument();
+  });
+
+  it("clears edit dialog feedback before opening another cost", async () => {
+    const user = setupUser();
+    addStoredCost({
+      description: "Lunch"
+    });
+    addStoredCost({
+      description: "Train"
+    });
+    vi.spyOn(costsDatabase, "updateCost").mockImplementationOnce(() => {
+      throw new Error("Storage failure");
+    });
+    renderManageCostsPage();
+
+    const firstDialog = await openEditDialog(user, getDataRows()[0]);
+
+    await saveEdit(user, firstDialog);
+
+    expect(within(firstDialog).getByRole("alert")).toHaveTextContent(
+      "Could not update cost. Please review the fields and try again."
+    );
+
+    await user.click(within(firstDialog).getByRole("button", { name: "Cancel" }));
+
+    const secondDialog = await openEditDialog(user, getDataRows()[1]);
+
+    expect(within(secondDialog).queryByRole("alert")).not.toBeInTheDocument();
   });
 
   it("handles stale update results by refreshing the list", async () => {
@@ -452,6 +484,37 @@ describe("ManageCostsPage", () => {
 
     await user.click(within(dialog).getByRole("button", { name: "Delete" }));
 
-    expect(screen.getByText("Could not delete cost. Please try again.")).toBeInTheDocument();
+    expect(within(dialog).getByRole("alert")).toHaveTextContent(
+      "Could not delete cost. Please try again."
+    );
+    expect(screen.getByRole("dialog", { name: "Delete cost?" })).toBeInTheDocument();
+  });
+
+  it("clears delete dialog feedback before opening another cost", async () => {
+    const user = setupUser();
+    addStoredCost({
+      description: "Lunch"
+    });
+    addStoredCost({
+      description: "Train"
+    });
+    vi.spyOn(costsDatabase, "deleteCost").mockImplementationOnce(() => {
+      throw new Error("Storage failure");
+    });
+    renderManageCostsPage();
+
+    const firstDialog = await openDeleteDialog(user, getDataRows()[0]);
+
+    await user.click(within(firstDialog).getByRole("button", { name: "Delete" }));
+
+    expect(within(firstDialog).getByRole("alert")).toHaveTextContent(
+      "Could not delete cost. Please try again."
+    );
+
+    await user.click(within(firstDialog).getByRole("button", { name: "Cancel" }));
+
+    const secondDialog = await openDeleteDialog(user, getDataRows()[1]);
+
+    expect(within(secondDialog).queryByRole("alert")).not.toBeInTheDocument();
   });
 });

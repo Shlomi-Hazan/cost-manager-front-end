@@ -115,7 +115,9 @@ function ManageCostsPage() {
   const [editCost, setEditCost] = useState(null);
   const [editValues, setEditValues] = useState(null);
   const [editErrors, setEditErrors] = useState({});
+  const [editFeedback, setEditFeedback] = useState("");
   const [deleteCost, setDeleteCost] = useState(null);
+  const [deleteFeedback, setDeleteFeedback] = useState("");
 
   function loadCosts() {
     setCosts(costsDatabase.getAllCosts());
@@ -125,6 +127,7 @@ function ManageCostsPage() {
     setEditCost(cost);
     setEditValues(createEditValues(cost));
     setEditErrors({});
+    setEditFeedback("");
     setFeedback(null);
   }
 
@@ -132,6 +135,7 @@ function ManageCostsPage() {
     setEditCost(null);
     setEditValues(null);
     setEditErrors({});
+    setEditFeedback("");
   }
 
   function handleEditFieldChange(event) {
@@ -145,6 +149,7 @@ function ManageCostsPage() {
       ...currentErrors,
       [name]: undefined
     }));
+    setEditFeedback("");
   }
 
   function handleCategoryChange(_event, value) {
@@ -156,6 +161,7 @@ function ManageCostsPage() {
       ...currentErrors,
       category: undefined
     }));
+    setEditFeedback("");
   }
 
   function handleCategoryInputChange(_event, value) {
@@ -167,20 +173,19 @@ function ManageCostsPage() {
       ...currentErrors,
       category: undefined
     }));
+    setEditFeedback("");
   }
 
   function handleSaveEdit(event) {
     event.preventDefault();
+    setEditFeedback("");
 
     const validation = validateEditValues(editValues);
 
     setEditErrors(validation.errors);
 
     if (!validation.isValid) {
-      setFeedback({
-        severity: "error",
-        message: "Could not update cost. Please review the fields and try again."
-      });
+      setEditFeedback("Could not update cost. Please review the fields and try again.");
       return;
     }
 
@@ -213,26 +218,29 @@ function ManageCostsPage() {
         message: "Cost updated successfully."
       });
     } catch (error) {
-      setFeedback({
-        severity: "error",
-        message: getDatabaseErrorMessage(
-          error,
-          "Could not update cost. Please review the fields and try again."
-        )
-      });
+      const message = getDatabaseErrorMessage(
+        error,
+        "Could not update cost. Please review the fields and try again."
+      );
+
+      setEditFeedback(message);
     }
   }
 
   function handleOpenDelete(cost) {
     setDeleteCost(cost);
+    setDeleteFeedback("");
     setFeedback(null);
   }
 
   function handleCloseDelete() {
     setDeleteCost(null);
+    setDeleteFeedback("");
   }
 
   function handleConfirmDelete() {
+    setDeleteFeedback("");
+
     try {
       const deletedCost = costsDatabase.deleteCost(deleteCost.id);
 
@@ -252,10 +260,7 @@ function ManageCostsPage() {
         message: "Cost deleted successfully."
       });
     } catch {
-      setFeedback({
-        severity: "error",
-        message: "Could not delete cost. Please try again."
-      });
+      setDeleteFeedback("Could not delete cost. Please try again.");
     }
   }
 
@@ -344,6 +349,10 @@ function ManageCostsPage() {
           <DialogContent>
             {editValues ? (
               <Stack spacing={3} sx={{ pt: 1 }}>
+                {editFeedback ? (
+                  <Alert severity="error">{editFeedback}</Alert>
+                ) : null}
+
                 <Box
                   sx={{
                     display: "grid",
@@ -472,6 +481,10 @@ function ManageCostsPage() {
         <DialogContent>
           {deleteCost ? (
             <Stack spacing={1}>
+              {deleteFeedback ? (
+                <Alert severity="error">{deleteFeedback}</Alert>
+              ) : null}
+
               <Typography>
                 Are you sure you want to delete this cost? This action cannot be
                 undone.
