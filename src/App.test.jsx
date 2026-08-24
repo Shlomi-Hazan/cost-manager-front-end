@@ -39,4 +39,17 @@ describe("App", () => {
     expect(screen.getByLabelText("Year")).toBeInTheDocument();
     expect(screen.getByRole("combobox", { name: "Currency" })).toBeInTheDocument();
   });
+
+  it("switches to the Charts view without reloading", async () => {
+    const user = userEvent.setup();
+    renderApp();
+
+    await user.click(screen.getByRole("tab", { name: "Charts" }));
+
+    expect(screen.getByRole("heading", { name: "Charts" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Monthly Category Pie Chart" })
+    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Generate Chart" })).toBeInTheDocument();
+  });
 });
