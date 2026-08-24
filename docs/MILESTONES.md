@@ -673,6 +673,77 @@ The application must be able to retrieve exchange rates from a default URL even 
 
 ---
 
+# 13.5. Milestone 9.5 — Cost Maintenance and Reporting Extensions
+
+## Goal
+
+Add team-approved extensions after the official core features are functional,
+without changing the protected course `db.js` contract.
+
+## 9.5A — Cost Data & CRUD Foundation
+
+- GitHub Issue: [#24](https://github.com/Shlomi-Hazan/cost-manager-front-end/issues/24)
+- Add generated stable cost IDs.
+- Store cost day/month/year/hour/minute for new application costs.
+- Add module and Vanilla CRUD methods:
+  - `getAllCosts()`
+  - `getCostById(id)`
+  - `updateCost(id, cost)`
+  - `deleteCost(id)`
+- Move the React application cost namespace to database version 2.
+- Add Reports navigation with Monthly and Yearly tabs.
+- Keep Yearly Report as a placeholder.
+
+## 9.5B — Manage Costs UI
+
+- GitHub Issue: [#25](https://github.com/Shlomi-Hazan/cost-manager-front-end/issues/25)
+- Add a Manage Costs section for saved cost maintenance.
+- Allow full editing of:
+  - sum,
+  - currency,
+  - category,
+  - description,
+  - date,
+  - time.
+- Support cost deletion by stable ID.
+- Show a confirmation step before destructive deletion.
+- Preserve the existing category autocomplete/free-text behavior for editing.
+
+## 9.5C — Detailed Yearly Report
+
+- GitHub Issue: [#26](https://github.com/Shlomi-Hazan/cost-manager-front-end/issues/26)
+- Implement a detailed Yearly Report.
+- Let the user select year and currency.
+- Display full yearly rows.
+- Display the yearly converted total in the selected currency.
+- Add Time display to Monthly Report rows.
+- Add Date + Time display to Yearly Report rows.
+
+## 9.5D — Sortable Reports
+
+- GitHub Issue: [#27](https://github.com/Shlomi-Hazan/cost-manager-front-end/issues/27)
+- Add clickable table headers to Monthly and Yearly reports.
+- Support ascending and descending order.
+- Show an arrow indicator for the active sort.
+- Sort Date/Time chronologically.
+- Sort Description, Category, and Currency alphabetically.
+- Sort Sum numerically.
+- Use a shared sorting implementation across report tables.
+
+## 9.5E — Excel/PDF Export
+
+- GitHub Issue: [#28](https://github.com/Shlomi-Hazan/cost-manager-front-end/issues/28)
+- Export Monthly Report to XLSX.
+- Export Monthly Report to PDF.
+- Export Yearly Report to XLSX.
+- Export Yearly Report to PDF.
+- Export Pie Chart data to Excel.
+- Export Pie Chart visualization/data to PDF.
+- Export Bar Chart data to Excel.
+- Export Bar Chart visualization/data to PDF.
+
+---
+
 # 14. Milestone 10 — UI/UX Polish
 
 ## Goal

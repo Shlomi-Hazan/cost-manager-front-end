@@ -1133,7 +1133,195 @@ The official specification gives input types but does not define detailed UI val
 
 ---
 
-# 19. Project Decisions — Not Official Requirements
+# 19. Team Extension Requirements — Not Official Requirements
+
+The following requirements are team-approved extensions for Milestone 9.5. They
+support cost maintenance, richer reporting, and exports, but they are not
+official course requirements unless the lecturer later confirms them.
+
+## X-001 — Stable Cost Identity
+
+- **Type:** Team extension
+- **Status:** `IN PROGRESS`
+- New application cost records must include a generated stable string `id`.
+- IDs are generated internally; callers of `addCost()` must not provide IDs.
+- IDs must distinguish otherwise identical costs.
+
+### Verification
+
+- [ ] Adding two identical costs creates two different IDs.
+- [ ] The same ID is returned by CRUD reads after storage/reload.
+- [ ] Existing official `addCost()` input remains compatible.
+
+---
+
+## X-002 — Cost Editing
+
+- **Type:** Team extension
+- **Status:** `IN PROGRESS`
+- The database object returned by `openCostsDB()` should support `updateCost(id, cost)`.
+- `updateCost()` uses a full editable payload containing `sum`, `currency`,
+  `category`, `description`, and full date/time.
+- Updating a cost must preserve its original `id`.
+- Manage Costs UI work is the future user-facing implementation of this
+  requirement.
+
+### Verification
+
+- [ ] Existing cost can be updated by ID.
+- [ ] Missing valid ID returns `null`.
+- [ ] Invalid ID throws a validation error.
+- [ ] Invalid editable payload is rejected.
+
+---
+
+## X-003 — Cost Deletion
+
+- **Type:** Team extension
+- **Status:** `IN PROGRESS`
+- The database object returned by `openCostsDB()` should support `deleteCost(id)`.
+- Deletion is ID-based so duplicate-looking costs remain distinguishable.
+- Manage Costs UI work is the future user-facing implementation of this
+  requirement.
+
+### Verification
+
+- [ ] Existing cost can be deleted by ID.
+- [ ] Deleting one duplicate-looking cost does not delete the other.
+- [ ] Missing valid ID returns `null`.
+- [ ] Invalid ID throws a validation error.
+
+---
+
+## X-004 — Cost Time
+
+- **Type:** Team extension
+- **Status:** `IN PROGRESS`
+- New application cost records should store:
+
+```javascript
+date: {
+  day,
+  month,
+  year,
+  hour,
+  minute
+}
+```
+
+- The current official report-facing compatibility shape remains:
+
+```javascript
+date: {
+  day
+}
+```
+
+### Verification
+
+- [ ] Newly added costs store day/month/year/hour/minute.
+- [ ] Monthly filtering continues to use month/year.
+- [ ] Official report item compatibility remains day-only while `OQ-002`
+      remains open.
+- [ ] Future Manage Costs UI can edit full date/time values.
+
+---
+
+## X-005 — Detailed Yearly Report
+
+- **Type:** Team extension
+- **Status:** `NOT STARTED`
+- Users should be able to generate a detailed yearly report after the Reports
+  navigation foundation exists.
+- The report should support selected year and selected currency.
+- It should display yearly detail rows and a yearly converted total.
+- It should also support the documented date/time display strategy for reports.
+
+### Verification
+
+- [ ] User can select year and currency.
+- [ ] Yearly rows are visible.
+- [ ] Yearly total uses the selected currency.
+- [ ] Date/time display matches the decided report behavior.
+
+---
+
+## X-006 — Sortable Reports
+
+- **Type:** Team extension
+- **Status:** `NOT STARTED`
+- Monthly and yearly report tables should support consistent sorting controls.
+- Sorting should cover Date/Time, Description, Category, Sum, and Currency.
+
+### Verification
+
+- [ ] Monthly Report can be sorted.
+- [ ] Yearly Report can be sorted.
+- [ ] Ascending/descending state is visible.
+- [ ] Date/Time sorting is chronological.
+- [ ] Text sorting is alphabetical.
+- [ ] Sum sorting is numeric.
+
+---
+
+## X-007 — Excel Export
+
+- **Type:** Team extension
+- **Status:** `NOT STARTED`
+- Users should be able to export structured spreadsheet files for:
+  - Monthly Report,
+  - Yearly Report,
+  - Pie Chart data,
+  - Bar Chart data.
+- Real XLSX/spreadsheet output is intended; CSV renamed to `.xlsx` is not
+  sufficient.
+
+### Verification
+
+- [ ] Monthly Report exports to XLSX.
+- [ ] Yearly Report exports to XLSX.
+- [ ] Pie Chart data exports to XLSX.
+- [ ] Bar Chart data exports to XLSX.
+
+---
+
+## X-008 — PDF Export
+
+- **Type:** Team extension
+- **Status:** `NOT STARTED`
+- Users should be able to export human-readable PDF files for:
+  - Monthly Report,
+  - Yearly Report,
+  - Pie Chart visualization and relevant data,
+  - Bar Chart visualization and relevant data.
+
+### Verification
+
+- [ ] Monthly Report exports to PDF.
+- [ ] Yearly Report exports to PDF.
+- [ ] Pie Chart exports visualization/data to PDF.
+- [ ] Bar Chart exports visualization/data to PDF.
+
+---
+
+## X-009 — Reports Navigation Group
+
+- **Type:** Team extension
+- **Status:** `IN PROGRESS`
+- The application navigation should expose a top-level `Reports` section with
+  Monthly and Yearly report tabs.
+- Monthly remains functional; Yearly may stay a placeholder until the detailed
+  yearly report milestone.
+
+### Verification
+
+- [ ] Top-level navigation shows `Reports`.
+- [ ] Monthly Report remains usable under `Reports`.
+- [ ] Yearly Report placeholder is present without implementing future logic.
+
+---
+
+# 20. Project Decisions — Not Official Requirements
 
 These decisions belong in `docs/ARCHITECTURE.md` / `docs/DECISIONS.md` and must remain clearly separate from the official course requirements.
 
@@ -1156,7 +1344,7 @@ None of these should be described as a course requirement unless the official sp
 
 ---
 
-# 20. Final Traceability Template
+# 21. Final Traceability Template
 
 As development progresses, every mandatory requirement should be traceable:
 
