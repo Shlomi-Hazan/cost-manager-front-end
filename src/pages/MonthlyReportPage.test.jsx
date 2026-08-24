@@ -84,6 +84,56 @@ function expectReportRow({ description, category, sum, currency, day, time }) {
   expect(within(row).getByText(currency)).toBeInTheDocument();
 }
 
+function getReportRows() {
+  return within(screen.getByRole("table", { name: "Monthly report costs" }))
+    .getAllByRole("row")
+    .slice(1);
+}
+
+function getColumnValues(columnIndex) {
+  return getReportRows().map((row) => row.cells[columnIndex].textContent);
+}
+
+async function sortBy(user, columnName) {
+  await user.click(screen.getByRole("button", { name: columnName }));
+}
+
+function addSortableMonthlyCosts() {
+  addCostOnDate({
+    day: 10,
+    hour: 16,
+    minute: 37,
+    cost: {
+      sum: 100,
+      currency: "USD",
+      category: "Food",
+      description: "banana"
+    }
+  });
+  addCostOnDate({
+    day: 2,
+    hour: 9,
+    minute: 7,
+    cost: {
+      sum: 2,
+      currency: "USD",
+      category: "Travel",
+      description: "Apple"
+    }
+  });
+  addCostOnDate({
+    day: 24,
+    hour: 0,
+    minute: 5,
+    cost: {
+      sum: 25.5,
+      currency: "USD",
+      category: "Shopping",
+      description: "car"
+    }
+  });
+}
+
 describe("MonthlyReportPage", () => {
   beforeEach(() => {
     localStorage.clear();
@@ -371,5 +421,126 @@ describe("MonthlyReportPage", () => {
 
     expect(await screen.findByText("No costs found for this month.")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Generate Report" })).toBeEnabled();
+  });
+
+  it("sorts by Day ascending and descending without changing the total", async () => {
+    const user = setupUser();
+    mockSuccessfulRatesFetch();
+    addSortableMonthlyCosts();
+
+    renderMonthlyReportPage();
+    await generateReport(user);
+
+    expect(getColumnValues(2)).toEqual(["banana", "Apple", "car"]);
+    expect(screen.getByText("Total: 127.5 USD")).toBeInTheDocument();
+
+    await sortBy(user, "Day");
+
+    expect(screen.getByRole("columnheader", { name: "Day" })).toHaveAttribute(
+      "aria-sort",
+      "ascending"
+    );
+    expect(getColumnValues(0)).toEqual(["2", "10", "24"]);
+    expect(getColumnValues(2)).toEqual(["Apple", "banana", "car"]);
+    expect(screen.getByText("Total: 127.5 USD")).toBeInTheDocument();
+
+    await sortBy(user, "Day");
+
+    expect(screen.getByRole("columnheader", { name: "Day" })).toHaveAttribute(
+      "aria-sort",
+      "descending"
+    );
+    expect(getColumnValues(0)).toEqual(["24", "10", "2"]);
+    expect(getColumnValues(2)).toEqual(["car", "banana", "Apple"]);
+    expect(screen.getByText("Total: 127.5 USD")).toBeInTheDocument();
+  });
+
+  it("sorts by Time chronologically", async () => {
+    const user = setupUser();
+    mockSuccessfulRatesFetch();
+    addSortableMonthlyCosts();
+
+    renderMonthlyReportPage();
+    await generateReport(user);
+    await sortBy(user, "Time");
+
+    expect(getColumnValues(1)).toEqual(["00:05", "09:07", "16:37"]);
+    expect(getColumnValues(2)).toEqual(["car", "Apple", "banana"]);
+  });
+
+  it("sorts Sum numerically", async () => {
+    const user = setupUser();
+    mockSuccessfulRatesFetch();
+    addSortableMonthlyCosts();
+
+    renderMonthlyReportPage();
+    await generateReport(user);
+    await sortBy(user, "Sum");
+
+    expect(getColumnValues(4)).toEqual(["2", "25.5", "100"]);
+    expect(getColumnValues(2)).toEqual(["Apple", "car", "banana"]);
+  });
+
+  it("sorts Description alphabetically and starts a new column at ascending", async () => {
+    const user = setupUser();
+    mockSuccessfulRatesFetch();
+    addSortableMonthlyCosts();
+
+    renderMonthlyReportPage();
+    await generateReport(user);
+    await sortBy(user, "Sum");
+    await sortBy(user, "Sum");
+    await sortBy(user, "Description");
+
+    expect(screen.getByRole("columnheader", { name: "Description" }))
+      .toHaveAttribute("aria-sort", "ascending");
+    expect(getColumnValues(2)).toEqual(["Apple", "banana", "car"]);
+  });
+
+  it("resets sorting when filters change and the report is regenerated", async () => {
+    const user = setupUser();
+    mockSuccessfulRatesFetch();
+    addSortableMonthlyCosts();
+    addCostOnDate({
+      month: 9,
+      day: 3,
+      cost: {
+        sum: 100,
+        currency: "USD",
+        category: "Food",
+        description: "September first"
+      }
+    });
+    addCostOnDate({
+      month: 9,
+      day: 4,
+      cost: {
+        sum: 2,
+        currency: "USD",
+        category: "Travel",
+        description: "September second"
+      }
+    });
+    setLocalDate(2026, 8, 22);
+
+    renderMonthlyReportPage();
+    await generateReport(user);
+    await sortBy(user, "Sum");
+
+    expect(getColumnValues(2)).toEqual(["Apple", "car", "banana"]);
+
+    await chooseMonth(user, "September");
+
+    expect(screen.queryByText("banana")).not.toBeInTheDocument();
+    expect(
+      screen.getByText("Choose filters and generate a detailed monthly report.")
+    ).toBeInTheDocument();
+
+    await generateReport(user);
+
+    expect(getColumnValues(2)).toEqual(["September first", "September second"]);
+    expect(screen.getByRole("columnheader", { name: "Sum" })).not.toHaveAttribute(
+      "aria-sort"
+    );
   });
 });

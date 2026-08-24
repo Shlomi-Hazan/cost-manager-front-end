@@ -4,7 +4,7 @@ Final project for the **Front-End Development** course.
 
 This repository is intentionally being built from the project requirements outward: requirements, architecture, AI-agent instructions, testing strategy, Git/GitHub workflow, implementation, deployment, audit, and submission.
 
-> **Current status:** Milestone 9.5C — Detailed Yearly Report + Report Timestamps.
+> **Current status:** Milestone 9.5D — Sortable Reports.
 
 ## Project Goal
 
@@ -126,8 +126,8 @@ Public.
 
 ## Current Milestone
 
-### Milestone 9.5C — Detailed Yearly Report + Report Timestamps
+### Milestone 9.5D — Sortable Reports
 
-The Reports section now includes detailed Monthly and Yearly reports with stored
-cost timestamps, original line-item values/currencies, and converted totals from
-the existing synchronous `db.js` report API.
+Monthly and Yearly report table headers are sortable with visible ascending and
+descending indicators, shared chronological/text/numeric sorting semantics, and a
+reusable implementation for future export work.

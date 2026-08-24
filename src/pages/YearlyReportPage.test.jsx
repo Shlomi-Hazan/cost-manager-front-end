@@ -96,6 +96,59 @@ function expectYearlyRow({
   expect(within(row).getByText(currency)).toBeInTheDocument();
 }
 
+function getYearlyRows() {
+  return within(screen.getByRole("table", { name: "Yearly report costs" }))
+    .getAllByRole("row")
+    .slice(1);
+}
+
+function getColumnValues(columnIndex) {
+  return getYearlyRows().map((row) => row.cells[columnIndex].textContent);
+}
+
+async function sortBy(user, columnName) {
+  await user.click(screen.getByRole("button", { name: columnName }));
+}
+
+function addSortableYearlyCosts() {
+  addCostOnDate({
+    month: 12,
+    day: 5,
+    hour: 21,
+    minute: 14,
+    cost: {
+      sum: 25.5,
+      currency: "EURO",
+      category: "Shopping",
+      description: "car"
+    }
+  });
+  addCostOnDate({
+    month: 1,
+    day: 10,
+    hour: 16,
+    minute: 37,
+    cost: {
+      sum: 100,
+      currency: "USD",
+      category: "Food",
+      description: "banana"
+    }
+  });
+  addCostOnDate({
+    month: 8,
+    day: 24,
+    hour: 9,
+    minute: 5,
+    cost: {
+      sum: 2,
+      currency: "GBP",
+      category: "Travel",
+      description: "Apple"
+    }
+  });
+}
+
 describe("YearlyReportPage", () => {
   beforeEach(() => {
     localStorage.clear();
@@ -443,5 +496,143 @@ describe("YearlyReportPage", () => {
     expect(
       screen.getByText("Choose filters and generate a detailed yearly report.")
     ).toBeInTheDocument();
+  });
+
+  it("sorts by Date ascending and descending without changing the total", async () => {
+    const user = setupUser();
+    mockSuccessfulRatesFetch();
+    addSortableYearlyCosts();
+
+    renderYearlyReportPage();
+    await generateReport(user);
+
+    expect(getColumnValues(2)).toEqual(["car", "banana", "Apple"]);
+    expect(screen.getByText("Total: 135.875 USD")).toBeInTheDocument();
+
+    await sortBy(user, "Date");
+
+    expect(screen.getByRole("columnheader", { name: "Date" })).toHaveAttribute(
+      "aria-sort",
+      "ascending"
+    );
+    expect(getColumnValues(0)).toEqual([
+      "10/01/2026",
+      "24/08/2026",
+      "05/12/2026"
+    ]);
+    expect(getColumnValues(2)).toEqual(["banana", "Apple", "car"]);
+    expect(screen.getByText("Total: 135.875 USD")).toBeInTheDocument();
+
+    await sortBy(user, "Date");
+
+    expect(screen.getByRole("columnheader", { name: "Date" })).toHaveAttribute(
+      "aria-sort",
+      "descending"
+    );
+    expect(getColumnValues(0)).toEqual([
+      "05/12/2026",
+      "24/08/2026",
+      "10/01/2026"
+    ]);
+    expect(getColumnValues(2)).toEqual(["car", "Apple", "banana"]);
+  });
+
+  it("sorts by Time chronologically", async () => {
+    const user = setupUser();
+    mockSuccessfulRatesFetch();
+    addSortableYearlyCosts();
+
+    renderYearlyReportPage();
+    await generateReport(user);
+    await sortBy(user, "Time");
+
+    expect(getColumnValues(1)).toEqual(["09:05", "16:37", "21:14"]);
+    expect(getColumnValues(2)).toEqual(["Apple", "banana", "car"]);
+  });
+
+  it("sorts Sum numerically while preserving original currencies", async () => {
+    const user = setupUser();
+    mockSuccessfulRatesFetch();
+    addSortableYearlyCosts();
+
+    renderYearlyReportPage();
+    await generateReport(user);
+    await sortBy(user, "Sum");
+
+    expect(getColumnValues(4)).toEqual(["2", "25.5", "100"]);
+    expect(getColumnValues(5)).toEqual(["GBP", "EURO", "USD"]);
+
+    await sortBy(user, "Sum");
+
+    expect(getColumnValues(4)).toEqual(["100", "25.5", "2"]);
+    expect(getColumnValues(5)).toEqual(["USD", "EURO", "GBP"]);
+  });
+
+  it("sorts Category and Currency alphabetically", async () => {
+    const user = setupUser();
+    mockSuccessfulRatesFetch();
+    addSortableYearlyCosts();
+
+    renderYearlyReportPage();
+    await generateReport(user);
+    await sortBy(user, "Category");
+
+    expect(getColumnValues(3)).toEqual(["Food", "Shopping", "Travel"]);
+    expect(getColumnValues(2)).toEqual(["banana", "car", "Apple"]);
+
+    await sortBy(user, "Currency");
+
+    expect(getColumnValues(5)).toEqual(["EURO", "GBP", "USD"]);
+    expect(getColumnValues(2)).toEqual(["car", "Apple", "banana"]);
+  });
+
+  it("resets sorting when filters change and the report is regenerated", async () => {
+    const user = setupUser();
+    mockSuccessfulRatesFetch();
+    addSortableYearlyCosts();
+    addCostOnDate({
+      year: 2025,
+      month: 1,
+      day: 3,
+      cost: {
+        sum: 100,
+        currency: "USD",
+        category: "Food",
+        description: "Previous first"
+      }
+    });
+    addCostOnDate({
+      year: 2025,
+      month: 12,
+      day: 4,
+      cost: {
+        sum: 2,
+        currency: "USD",
+        category: "Travel",
+        description: "Previous second"
+      }
+    });
+    setLocalDate(2026, 8, 22);
+
+    renderYearlyReportPage();
+    await generateReport(user);
+    await sortBy(user, "Date");
+    await sortBy(user, "Date");
+
+    expect(getColumnValues(2)).toEqual(["car", "Apple", "banana"]);
+
+    await setYear(user, "2025");
+
+    expect(screen.queryByText("banana")).not.toBeInTheDocument();
+    expect(
+      screen.getByText("Choose filters and generate a detailed yearly report.")
+    ).toBeInTheDocument();
+
+    await generateReport(user);
+
+    expect(getColumnValues(2)).toEqual(["Previous first", "Previous second"]);
+    expect(screen.getByRole("columnheader", { name: "Date" })).not.toHaveAttribute(
+      "aria-sort"
+    );
   });
 });
