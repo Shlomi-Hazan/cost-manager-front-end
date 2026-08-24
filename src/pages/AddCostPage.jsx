@@ -1,6 +1,7 @@
 import { useState } from "react";
 import {
   Alert,
+  Autocomplete,
   Box,
   Button,
   MenuItem,
@@ -9,8 +10,10 @@ import {
   TextField,
   Typography
 } from "@mui/material";
+import { COMMON_CATEGORIES } from "../constants/categories.js";
 import { SUPPORTED_CURRENCIES } from "../constants/currencies.js";
 import { costsDatabase } from "../lib/costsDatabase.js";
+import { normalizeCategoryInput } from "../utils/category.js";
 
 const initialFormValues = {
   sum: "",
@@ -23,6 +26,7 @@ function validateForm(values) {
   const nextErrors = {};
   const trimmedSum = values.sum.trim();
   const numericSum = Number(trimmedSum);
+  const normalizedCategory = normalizeCategoryInput(values.category);
 
   if (trimmedSum === "") {
     nextErrors.sum = "Enter a cost sum.";
@@ -34,7 +38,7 @@ function validateForm(values) {
     nextErrors.currency = "Select a supported currency.";
   }
 
-  if (values.category.trim() === "") {
+  if (normalizedCategory === "") {
     nextErrors.category = "Enter a category.";
   }
 
@@ -45,6 +49,7 @@ function validateForm(values) {
   return {
     errors: nextErrors,
     isValid: Object.keys(nextErrors).length === 0,
+    normalizedCategory,
     numericSum
   };
 }
@@ -68,6 +73,30 @@ function AddCostPage() {
     setFeedback(null);
   }
 
+  function handleCategoryChange(_event, value) {
+    setFormValues((currentValues) => ({
+      ...currentValues,
+      category: value ?? ""
+    }));
+    setErrors((currentErrors) => ({
+      ...currentErrors,
+      category: undefined
+    }));
+    setFeedback(null);
+  }
+
+  function handleCategoryInputChange(_event, value) {
+    setFormValues((currentValues) => ({
+      ...currentValues,
+      category: value
+    }));
+    setErrors((currentErrors) => ({
+      ...currentErrors,
+      category: undefined
+    }));
+    setFeedback(null);
+  }
+
   function handleSubmit(event) {
     event.preventDefault();
 
@@ -87,7 +116,7 @@ function AddCostPage() {
       costsDatabase.addCost({
         sum: validation.numericSum,
         currency: formValues.currency,
-        category: formValues.category.trim(),
+        category: validation.normalizedCategory,
         description: formValues.description.trim()
       });
 
@@ -165,13 +194,22 @@ function AddCostPage() {
             </TextField>
           </Box>
 
-          <TextField
-            error={Boolean(errors.category)}
-            helperText={errors.category ?? "Free-text category."}
-            label="Category"
-            name="category"
-            onChange={handleChange}
-            value={formValues.category}
+          <Autocomplete
+            freeSolo
+            inputValue={formValues.category}
+            onChange={handleCategoryChange}
+            onInputChange={handleCategoryInputChange}
+            openOnFocus
+            options={COMMON_CATEGORIES}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                error={Boolean(errors.category)}
+                helperText={errors.category ?? "Choose a suggestion or type a custom category."}
+                label="Category"
+                name="category"
+              />
+            )}
           />
 
           <TextField

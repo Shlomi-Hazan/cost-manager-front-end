@@ -1,4 +1,5 @@
 import { isSupportedCurrency, convertCurrency } from "./currency.js";
+import { getCategoryDisplayName, getCategoryKey } from "./category.js";
 
 function validateCostForAggregation(cost) {
   if (cost === null || typeof cost !== "object") {
@@ -43,14 +44,14 @@ export function aggregateCostsByCategory(costs, targetCurrency, rates) {
         ? cost.sum
         : convertCurrency(cost.sum, cost.currency, targetCurrency, rates);
 
-    totalsByCategory.set(
-      cost.category,
-      (totalsByCategory.get(cost.category) ?? 0) + value
-    );
+    const categoryKey = getCategoryKey(cost.category);
+    const currentCategory = totalsByCategory.get(categoryKey);
+
+    totalsByCategory.set(categoryKey, {
+      category: currentCategory?.category ?? getCategoryDisplayName(cost.category),
+      total: (currentCategory?.total ?? 0) + value
+    });
   });
 
-  return Array.from(totalsByCategory, ([category, total]) => ({
-    category,
-    total
-  }));
+  return Array.from(totalsByCategory.values());
 }

@@ -20,14 +20,14 @@ describe("chart aggregation", () => {
           {
             sum: 100,
             currency: "USD",
-            category: "FOOD"
+            category: "Food"
           }
         ],
         "USD"
       )
     ).toEqual([
       {
-        category: "FOOD",
+        category: "Food",
         total: 100
       }
     ]);
@@ -40,48 +40,48 @@ describe("chart aggregation", () => {
           {
             sum: 100,
             currency: "USD",
-            category: "FOOD"
+            category: "Food"
           },
           {
             sum: 25,
             currency: "USD",
-            category: "FOOD"
+            category: "Food"
           }
         ],
         "USD"
       )
     ).toEqual([
       {
-        category: "FOOD",
+        category: "Food",
         total: 125
       }
     ]);
   });
 
-  it("keeps multiple categories separate", () => {
+  it("keeps multiple category identities separate", () => {
     expect(
       aggregateCostsByCategory(
         [
           {
             sum: 100,
             currency: "USD",
-            category: "FOOD"
+            category: "Food"
           },
           {
             sum: 25,
             currency: "USD",
-            category: "TRAVEL"
+            category: "Travel"
           }
         ],
         "USD"
       )
     ).toEqual([
       {
-        category: "FOOD",
+        category: "Food",
         total: 100
       },
       {
-        category: "TRAVEL",
+        category: "Travel",
         total: 25
       }
     ]);
@@ -93,17 +93,17 @@ describe("chart aggregation", () => {
         {
           sum: 100,
           currency: "USD",
-          category: "FOOD"
+          category: "Food"
         },
         {
           sum: 50,
           currency: "GBP",
-          category: "FOOD"
+          category: "Food"
         },
         {
           sum: 25,
           currency: "USD",
-          category: "TRAVEL"
+          category: "Travel"
         }
       ],
       "USD",
@@ -112,11 +112,11 @@ describe("chart aggregation", () => {
 
     expect(aggregation).toEqual([
       {
-        category: "FOOD",
+        category: "Food",
         total: 200
       },
       {
-        category: "TRAVEL",
+        category: "Travel",
         total: 25
       }
     ]);
@@ -152,7 +152,7 @@ describe("chart aggregation", () => {
           {
             sum: 50,
             currency: "GBP",
-            category: "TRAVEL"
+            category: "Travel"
           }
         ],
         "USD"
@@ -167,19 +167,19 @@ describe("chart aggregation", () => {
           {
             sum: 0.1,
             currency: "USD",
-            category: "FOOD"
+            category: "Food"
           },
           {
             sum: 0.2,
             currency: "USD",
-            category: "FOOD"
+            category: "Food"
           }
         ],
         "USD"
       )
     ).toEqual([
       {
-        category: "FOOD",
+        category: "Food",
         total: 0.30000000000000004
       }
     ]);
@@ -190,7 +190,7 @@ describe("chart aggregation", () => {
       {
         sum: 50,
         currency: "GBP",
-        category: "FOOD"
+        category: "Food"
       }
     ];
 
@@ -200,27 +200,52 @@ describe("chart aggregation", () => {
       {
         sum: 50,
         currency: "GBP",
-        category: "FOOD"
+        category: "Food"
       }
     ]);
   });
 
-  it("preserves category strings exactly", () => {
+  it("merges common category case variants into the canonical display category", () => {
     expect(
       aggregateCostsByCategory(
         [
           {
-            sum: 10,
+            sum: 35,
             currency: "USD",
-            category: "FOOD"
+            category: "food"
           },
           {
-            sum: 20,
+            sum: 10,
             currency: "USD",
             category: "Food"
           },
           {
-            sum: 30,
+            sum: 5,
+            currency: "USD",
+            category: "FOOD"
+          }
+        ],
+        "USD"
+      )
+    ).toEqual([
+      {
+        category: "Food",
+        total: 50
+      }
+    ]);
+  });
+
+  it("merges common category whitespace variants", () => {
+    expect(
+      aggregateCostsByCategory(
+        [
+          {
+            sum: 35,
+            currency: "USD",
+            category: " Food "
+          },
+          {
+            sum: 10,
             currency: "USD",
             category: "food"
           }
@@ -229,16 +254,89 @@ describe("chart aggregation", () => {
       )
     ).toEqual([
       {
-        category: "FOOD",
-        total: 10
-      },
+        category: "Food",
+        total: 45
+      }
+    ]);
+  });
+
+  it("merges custom category case variants using the first cleaned display label", () => {
+    expect(
+      aggregateCostsByCategory(
+        [
+          {
+            sum: 10,
+            currency: "USD",
+            category: "My Pets"
+          },
+          {
+            sum: 20,
+            currency: "USD",
+            category: "my pets"
+          },
+          {
+            sum: 30,
+            currency: "USD",
+            category: "MY PETS"
+          }
+        ],
+        "USD"
+      )
+    ).toEqual([
+      {
+        category: "My Pets",
+        total: 60
+      }
+    ]);
+  });
+
+  it("merges custom category whitespace variants", () => {
+    expect(
+      aggregateCostsByCategory(
+        [
+          {
+            sum: 10,
+            currency: "USD",
+            category: "Pet   Supplies"
+          },
+          {
+            sum: 20,
+            currency: "USD",
+            category: " pet supplies "
+          }
+        ],
+        "USD"
+      )
+    ).toEqual([
+      {
+        category: "Pet Supplies",
+        total: 30
+      }
+    ]);
+  });
+
+  it("merges mixed-case mixed-currency categories while preserving conversion behavior", () => {
+    expect(
+      aggregateCostsByCategory(
+        [
+          {
+            sum: 100,
+            currency: "USD",
+            category: "food"
+          },
+          {
+            sum: 50,
+            currency: "GBP",
+            category: " Food "
+          }
+        ],
+        "USD",
+        validRates
+      )
+    ).toEqual([
       {
         category: "Food",
-        total: 20
-      },
-      {
-        category: "food",
-        total: 30
+        total: 200
       }
     ]);
   });

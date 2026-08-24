@@ -130,4 +130,6 @@ Public.
 
 The Charts view now provides a monthly category Pie Chart for a selected month,
 year, and target currency, using shared currency conversion and independently
-tested category aggregation.
+tested category aggregation. Category chart grouping is case-insensitive and
+whitespace-tolerant; common categories are canonicalized, while Add Cost offers
+common category suggestions without removing free-text custom categories.

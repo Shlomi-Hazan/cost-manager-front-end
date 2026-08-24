@@ -169,11 +169,11 @@ describe("ChartsPage", () => {
 
     expect(screen.getByRole("heading", { name: "September 2026" })).toBeInTheDocument();
     expectCategoryTotal({
-      category: "TRAVEL",
+      category: "Travel",
       total: 25,
       currency: "USD"
     });
-    expect(screen.queryByText("FOOD")).not.toBeInTheDocument();
+    expect(screen.queryByText("Food")).not.toBeInTheDocument();
   });
 
   it("renders category chart data for a populated month", async () => {
@@ -206,12 +206,12 @@ describe("ChartsPage", () => {
     ).toBeInTheDocument();
     expect(screen.getByText("Chart currency: USD")).toBeInTheDocument();
     expectCategoryTotal({
-      category: "FOOD",
+      category: "Food",
       total: 100,
       currency: "USD"
     });
     expectCategoryTotal({
-      category: "TRAVEL",
+      category: "Travel",
       total: 25,
       currency: "USD"
     });
@@ -269,12 +269,12 @@ describe("ChartsPage", () => {
 
     expect(screen.getByText("Chart currency: ILS")).toBeInTheDocument();
     expectCategoryTotal({
-      category: "FOOD",
+      category: "Food",
       total: 800,
       currency: "ILS"
     });
     expectCategoryTotal({
-      category: "TRAVEL",
+      category: "Travel",
       total: 100,
       currency: "ILS"
     });
@@ -308,7 +308,7 @@ describe("ChartsPage", () => {
     await generateChart(user);
 
     expectCategoryTotal({
-      category: "FOOD",
+      category: "Food",
       total: 200,
       currency: "USD"
     });
@@ -331,7 +331,7 @@ describe("ChartsPage", () => {
     await generateChart(user);
 
     expectCategoryTotal({
-      category: "FOOD",
+      category: "Food",
       total: 75,
       currency: "USD"
     });
@@ -367,7 +367,71 @@ describe("ChartsPage", () => {
         "Exchange rates are unavailable for converting this chart. Please try again."
       )
     ).toBeInTheDocument();
-    expect(screen.queryByText("FOOD")).not.toBeInTheDocument();
+    expect(screen.queryByText("Food")).not.toBeInTheDocument();
+  });
+
+  it("merges case variants into one visible category total", async () => {
+    const user = setupUser();
+    mockSuccessfulRatesFetch();
+    addCostOnDate({
+      day: 12,
+      cost: {
+        sum: 35,
+        currency: "USD",
+        category: "food",
+        description: "Lowercase food"
+      }
+    });
+    addCostOnDate({
+      day: 13,
+      cost: {
+        sum: 10,
+        currency: "USD",
+        category: "Food",
+        description: "Title food"
+      }
+    });
+    addCostOnDate({
+      day: 14,
+      cost: {
+        sum: 5,
+        currency: "USD",
+        category: "FOOD",
+        description: "Uppercase food"
+      }
+    });
+    addCostOnDate({
+      day: 15,
+      cost: {
+        sum: 25,
+        currency: "USD",
+        category: "Travel",
+        description: "Trip"
+      }
+    });
+
+    renderChartsPage();
+    await generateChart(user);
+
+    const table = getTotalsTable();
+    const foodRows = within(table).getAllByRole("row").filter((row) => {
+      return row.textContent.includes("Food");
+    });
+
+    expect(
+      screen.getByRole("img", { name: "Monthly category pie chart" })
+    ).toBeInTheDocument();
+    expect(foodRows).toHaveLength(1);
+    expectCategoryTotal({
+      category: "Food",
+      total: 50,
+      currency: "USD"
+    });
+    expectCategoryTotal({
+      category: "Travel",
+      total: 25,
+      currency: "USD"
+    });
   });
 
   it("rejects invalid years before requesting rates", async () => {

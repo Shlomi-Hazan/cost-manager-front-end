@@ -29,6 +29,11 @@ async function chooseCurrency(user, currency) {
   await user.click(screen.getByRole("option", { name: currency }));
 }
 
+async function chooseCategory(user, category) {
+  await user.click(screen.getByRole("combobox", { name: "Category" }));
+  await user.click(screen.getByRole("option", { name: category }));
+}
+
 async function submitCost(user, { sum, currency = "USD", category, description }) {
   await user.type(screen.getByLabelText("Sum"), sum);
 
@@ -64,7 +69,7 @@ describe("AddCostPage", () => {
     expect(screen.getByRole("combobox", { name: "Currency" })).toHaveTextContent(
       "USD"
     );
-    expect(screen.getByLabelText("Category")).toBeInTheDocument();
+    expect(screen.getByRole("combobox", { name: "Category" })).toBeInTheDocument();
     expect(screen.getByLabelText("Description")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Add Cost" })).toBeInTheDocument();
   });
@@ -75,7 +80,7 @@ describe("AddCostPage", () => {
 
     await submitCost(user, {
       sum: "125.5",
-      category: "FOOD",
+      category: "Food",
       description: "Lunch"
     });
 
@@ -87,7 +92,7 @@ describe("AddCostPage", () => {
       {
         sum: 125.5,
         currency: "USD",
-        category: "FOOD",
+        category: "Food",
         description: "Lunch",
         date: {
           day: 22
@@ -103,7 +108,7 @@ describe("AddCostPage", () => {
     expect(screen.getByRole("combobox", { name: "Currency" })).toHaveTextContent(
       "USD"
     );
-    expect(screen.getByLabelText("Category")).toHaveValue("");
+    expect(screen.getByRole("combobox", { name: "Category" })).toHaveValue("");
     expect(screen.getByLabelText("Description")).toHaveValue("");
   });
 
@@ -114,7 +119,7 @@ describe("AddCostPage", () => {
     await submitCost(user, {
       sum: "44",
       currency: "GBP",
-      category: "TRAVEL",
+      category: "Travel",
       description: "Train"
     });
 
@@ -124,7 +129,7 @@ describe("AddCostPage", () => {
     expect(report.costs[0]).toMatchObject({
       sum: 44,
       currency: "GBP",
-      category: "TRAVEL",
+      category: "Travel",
       description: "Train"
     });
     expect(report.total).toEqual({
@@ -151,7 +156,7 @@ describe("AddCostPage", () => {
     renderAddCostPage();
 
     await user.type(screen.getByLabelText("Sum"), "not a number");
-    await user.type(screen.getByLabelText("Category"), "FOOD");
+    await user.type(screen.getByRole("combobox", { name: "Category" }), "Food");
     await user.type(screen.getByLabelText("Description"), "Lunch");
     await user.click(screen.getByRole("button", { name: "Add Cost" }));
 
@@ -170,14 +175,14 @@ describe("AddCostPage", () => {
 
     await submitCost(user, {
       sum: "22",
-      category: "FOOD",
+      category: "Food",
       description: "Snack"
     });
 
     expect(addCostSpy).toHaveBeenCalledWith({
       sum: 22,
       currency: "USD",
-      category: "FOOD",
+      category: "Food",
       description: "Snack"
     });
     expect(screen.getByText("Could not add cost. Please try again.")).toBeInTheDocument();
@@ -197,5 +202,117 @@ describe("AddCostPage", () => {
       "GBP",
       "EURO"
     ]);
+  });
+
+  it("offers common category suggestions", async () => {
+    const user = setupUser();
+    renderAddCostPage();
+
+    await user.click(screen.getByRole("combobox", { name: "Category" }));
+
+    const listbox = screen.getByRole("listbox");
+
+    expect(within(listbox).getAllByRole("option").map((option) => option.textContent)).toEqual([
+      "Food",
+      "Transportation",
+      "Housing",
+      "Bills",
+      "Shopping",
+      "Health",
+      "Entertainment",
+      "Education",
+      "Travel",
+      "Other"
+    ]);
+  });
+
+  it("saves a selected common category suggestion", async () => {
+    const user = setupUser();
+    renderAddCostPage();
+
+    await user.type(screen.getByLabelText("Sum"), "30");
+    await chooseCategory(user, "Food");
+    await user.type(screen.getByLabelText("Description"), "Dinner");
+    await user.click(screen.getByRole("button", { name: "Add Cost" }));
+
+    expect(costsDatabase.getReport("USD", 2026, 8).costs[0]).toMatchObject({
+      sum: 30,
+      currency: "USD",
+      category: "Food",
+      description: "Dinner"
+    });
+  });
+
+  it("canonicalizes lowercase common category input before saving", async () => {
+    const user = setupUser();
+    renderAddCostPage();
+
+    await submitCost(user, {
+      sum: "12",
+      category: "food",
+      description: "Snack"
+    });
+
+    expect(costsDatabase.getReport("USD", 2026, 8).costs[0]).toMatchObject({
+      category: "Food"
+    });
+  });
+
+  it("canonicalizes uppercase common category input before saving", async () => {
+    const user = setupUser();
+    renderAddCostPage();
+
+    await submitCost(user, {
+      sum: "18",
+      category: "FOOD",
+      description: "Lunch"
+    });
+
+    expect(costsDatabase.getReport("USD", 2026, 8).costs[0]).toMatchObject({
+      category: "Food"
+    });
+  });
+
+  it("accepts and saves custom free-text categories", async () => {
+    const user = setupUser();
+    renderAddCostPage();
+
+    await submitCost(user, {
+      sum: "99",
+      category: "Vinyl Records",
+      description: "Album"
+    });
+
+    expect(costsDatabase.getReport("USD", 2026, 8).costs[0]).toMatchObject({
+      category: "Vinyl Records"
+    });
+  });
+
+  it("cleans repeated category whitespace before saving", async () => {
+    const user = setupUser();
+    renderAddCostPage();
+
+    await submitCost(user, {
+      sum: "42",
+      category: "  My   Pets  ",
+      description: "Pet supplies"
+    });
+
+    expect(costsDatabase.getReport("USD", 2026, 8).costs[0]).toMatchObject({
+      category: "My Pets"
+    });
+  });
+
+  it("rejects whitespace-only categories after normalization", async () => {
+    const user = setupUser();
+    renderAddCostPage();
+
+    await user.type(screen.getByLabelText("Sum"), "10");
+    await user.type(screen.getByRole("combobox", { name: "Category" }), "     ");
+    await user.type(screen.getByLabelText("Description"), "Invalid");
+    await user.click(screen.getByRole("button", { name: "Add Cost" }));
+
+    expect(screen.getByText("Enter a category.")).toBeInTheDocument();
+    expect(costsDatabase.getReport("USD", 2026, 8).costs).toHaveLength(0);
   });
 });
