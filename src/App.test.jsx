@@ -58,4 +58,22 @@ describe("App", () => {
       screen.getByRole("button", { name: "Generate Yearly Chart" })
     ).toBeInTheDocument();
   });
+
+  it("switches to the Settings view without reloading", async () => {
+    const user = userEvent.setup();
+    renderApp();
+
+    await user.click(screen.getByRole("tab", { name: "Settings" }));
+
+    expect(screen.getByRole("heading", { name: "Settings" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Exchange Rate Source" })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Save & Test Source" })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Use Default Source" })
+    ).toBeInTheDocument();
+  });
 });
