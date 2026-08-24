@@ -4,7 +4,7 @@ Final project for the **Front-End Development** course.
 
 This repository is intentionally being built from the project requirements outward: requirements, architecture, AI-agent instructions, testing strategy, Git/GitHub workflow, implementation, deployment, audit, and submission.
 
-> **Current status:** Milestone 9.5B — Manage Costs.
+> **Current status:** Milestone 9.5C — Detailed Yearly Report + Report Timestamps.
 
 ## Project Goal
 
@@ -126,8 +126,8 @@ Public.
 
 ## Current Milestone
 
-### Milestone 9.5B — Manage Costs
+### Milestone 9.5C — Detailed Yearly Report + Report Timestamps
 
-The Manage Costs section lets users review saved costs, edit
-sum/currency/category/description/date/time, and delete costs with confirmation
-through the existing `db.js` CRUD foundation.
+The Reports section now includes detailed Monthly and Yearly reports with stored
+cost timestamps, original line-item values/currencies, and converted totals from
+the existing synchronous `db.js` report API.

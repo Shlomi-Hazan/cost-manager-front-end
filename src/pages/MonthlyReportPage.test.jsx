@@ -26,8 +26,8 @@ function renderMonthlyReportPage() {
   );
 }
 
-function setLocalDate(year, month, day) {
-  vi.setSystemTime(new Date(year, month - 1, day, 12, 0, 0));
+function setLocalDate(year, month, day, hour = 12, minute = 0) {
+  vi.setSystemTime(new Date(year, month - 1, day, hour, minute, 0));
 }
 
 function setupUser() {
@@ -60,16 +60,24 @@ async function generateReport(user) {
   await user.click(screen.getByRole("button", { name: "Generate Report" }));
 }
 
-function addCostOnDate({ year = 2026, month = 8, day, cost }) {
-  setLocalDate(year, month, day);
+function addCostOnDate({
+  year = 2026,
+  month = 8,
+  day,
+  hour = 12,
+  minute = 0,
+  cost
+}) {
+  setLocalDate(year, month, day, hour, minute);
   costsDatabase.addCost(cost);
 }
 
-function expectReportRow({ description, category, sum, currency, day }) {
+function expectReportRow({ description, category, sum, currency, day, time }) {
   const table = screen.getByRole("table", { name: "Monthly report costs" });
   const row = within(table).getByRole("row", { name: new RegExp(description) });
 
   expect(within(row).getByText(String(day))).toBeInTheDocument();
+  expect(within(row).getByText(time)).toBeInTheDocument();
   expect(within(row).getByText(description)).toBeInTheDocument();
   expect(within(row).getByText(category)).toBeInTheDocument();
   expect(within(row).getByText(String(sum))).toBeInTheDocument();
@@ -118,6 +126,8 @@ describe("MonthlyReportPage", () => {
     mockSuccessfulRatesFetch();
     addCostOnDate({
       day: 10,
+      hour: 9,
+      minute: 5,
       cost: {
         sum: 100,
         currency: "USD",
@@ -127,6 +137,8 @@ describe("MonthlyReportPage", () => {
     });
     addCostOnDate({
       day: 11,
+      hour: 16,
+      minute: 37,
       cost: {
         sum: 50,
         currency: "USD",
@@ -152,19 +164,22 @@ describe("MonthlyReportPage", () => {
     expect(screen.getByRole("heading", { name: "August 2026" })).toBeInTheDocument();
     expect(screen.getByText("Report currency: USD")).toBeInTheDocument();
     expect(screen.getByText("Total: 150 USD")).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "Time" })).toBeInTheDocument();
     expectReportRow({
       description: "Groceries",
       category: "FOOD",
       sum: 100,
       currency: "USD",
-      day: 10
+      day: 10,
+      time: "09:05"
     });
     expectReportRow({
       description: "Bus",
       category: "TRAVEL",
       sum: 50,
       currency: "USD",
-      day: 11
+      day: 11,
+      time: "16:37"
     });
     expect(screen.queryByText("September cost")).not.toBeInTheDocument();
   });
@@ -187,6 +202,8 @@ describe("MonthlyReportPage", () => {
     mockSuccessfulRatesFetch();
     addCostOnDate({
       day: 12,
+      hour: 9,
+      minute: 5,
       cost: {
         sum: 100,
         currency: "USD",
@@ -196,6 +213,8 @@ describe("MonthlyReportPage", () => {
     });
     addCostOnDate({
       day: 13,
+      hour: 16,
+      minute: 37,
       cost: {
         sum: 50,
         currency: "GBP",
@@ -215,14 +234,16 @@ describe("MonthlyReportPage", () => {
       category: "FOOD",
       sum: 100,
       currency: "USD",
-      day: 12
+      day: 12,
+      time: "09:05"
     });
     expectReportRow({
       description: "Train",
       category: "TRAVEL",
       sum: 50,
       currency: "GBP",
-      day: 13
+      day: 13,
+      time: "16:37"
     });
   });
 

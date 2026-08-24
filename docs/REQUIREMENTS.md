@@ -1224,25 +1224,36 @@ date: {
 - [x] Official report item compatibility remains day-only while `OQ-002`
       remains open.
 - [x] Manage Costs UI can edit full date/time values.
+- [x] Monthly Report displays stored cost time.
+- [x] Yearly Report displays stored cost date and time.
 
 ---
 
 ## X-005 — Detailed Yearly Report
 
 - **Type:** Team extension
-- **Status:** `NOT STARTED`
-- Users should be able to generate a detailed yearly report after the Reports
-  navigation foundation exists.
-- The report should support selected year and selected currency.
-- It should display yearly detail rows and a yearly converted total.
-- It should also support the documented date/time display strategy for reports.
+- **Status:** `VERIFIED`
+- Users can generate a detailed yearly report from the Reports navigation group.
+- The report supports selected year and selected currency.
+- It displays yearly detail rows for costs stored in the selected year.
+- Detail rows display full date, time, description, category, original sum, and
+  original currency.
+- The yearly total uses the selected target currency and reuses the existing
+  synchronous monthly `getReport()` conversion behavior.
+- Official `getReport()` report-item date shape remains unchanged while
+  `OQ-002` remains open.
 
 ### Verification
 
-- [ ] User can select year and currency.
-- [ ] Yearly rows are visible.
-- [ ] Yearly total uses the selected currency.
-- [ ] Date/time display matches the decided report behavior.
+- [x] User can select year and currency.
+- [x] Yearly rows are visible for all matching stored costs.
+- [x] Costs from another year are excluded.
+- [x] Yearly total uses the selected currency.
+- [x] Detail rows preserve original sum/currency.
+- [x] Detail rows display full date and time.
+- [x] Empty years show a zero total and a clear empty state.
+- [x] Report logic is implemented outside visual React components.
+- [x] Protected `db.js` `getReport()` output remains unchanged.
 
 ---
 
@@ -1310,14 +1321,13 @@ date: {
 - **Status:** `VERIFIED`
 - The application navigation should expose a top-level `Reports` section with
   Monthly and Yearly report tabs.
-- Monthly remains functional; Yearly may stay a placeholder until the detailed
-  yearly report milestone.
+- Monthly and Yearly report views remain available under the Reports section.
 
 ### Verification
 
 - [x] Top-level navigation shows `Reports`.
 - [x] Monthly Report remains usable under `Reports`.
-- [x] Yearly Report placeholder is present without implementing future logic.
+- [x] Yearly Report is available under `Reports`.
 
 ---
 

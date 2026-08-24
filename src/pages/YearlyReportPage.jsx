@@ -17,37 +17,15 @@ import {
 } from "@mui/material";
 import { SUPPORTED_CURRENCIES } from "../constants/currencies.js";
 import { costsDatabase } from "../lib/costsDatabase.js";
-import { buildDetailedMonthlyReport } from "../services/detailedReportsService.js";
+import { buildDetailedYearlyReport } from "../services/detailedReportsService.js";
 import { refreshExchangeRates } from "../services/exchangeRatesService.js";
-import { formatTime } from "../utils/dateTime.js";
-
-const MONTHS = [
-  { value: 1, label: "January" },
-  { value: 2, label: "February" },
-  { value: 3, label: "March" },
-  { value: 4, label: "April" },
-  { value: 5, label: "May" },
-  { value: 6, label: "June" },
-  { value: 7, label: "July" },
-  { value: 8, label: "August" },
-  { value: 9, label: "September" },
-  { value: 10, label: "October" },
-  { value: 11, label: "November" },
-  { value: 12, label: "December" }
-];
+import { formatDateForDisplay, formatTime } from "../utils/dateTime.js";
 
 function getCurrentFilters() {
-  const now = new Date();
-
   return {
-    month: String(now.getMonth() + 1),
-    year: String(now.getFullYear()),
+    year: String(new Date().getFullYear()),
     currency: "USD"
   };
-}
-
-function getMonthLabel(month) {
-  return MONTHS.find((option) => option.value === month)?.label ?? String(month);
 }
 
 function formatAmount(amount) {
@@ -60,17 +38,8 @@ function formatAmount(amount) {
 
 function validateFilters(filters) {
   const errors = {};
-  const reportMonth = Number(filters.month);
   const trimmedYear = filters.year.trim();
   const reportYear = Number(trimmedYear);
-
-  if (
-    !Number.isInteger(reportMonth) ||
-    reportMonth < 1 ||
-    reportMonth > 12
-  ) {
-    errors.month = "Select a report month.";
-  }
 
   if (trimmedYear === "") {
     errors.year = "Enter a report year.";
@@ -85,7 +54,6 @@ function validateFilters(filters) {
   return {
     errors,
     isValid: Object.keys(errors).length === 0,
-    reportMonth,
     reportYear
   };
 }
@@ -93,15 +61,16 @@ function validateFilters(filters) {
 function getReportErrorMessage(error) {
   if (
     error instanceof Error &&
-    error.message.includes("cached exchange rates")
+    (error.message.includes("cached exchange rates") ||
+      error.message.includes("Exchange rates"))
   ) {
-    return "Exchange rates are unavailable for converting this report. Please try again.";
+    return "Exchange rates are unavailable for converting this yearly report. Please try again.";
   }
 
-  return "Could not generate the monthly report. Please try again.";
+  return "Could not generate the yearly report. Please try again.";
 }
 
-function MonthlyReportPage() {
+function YearlyReportPage() {
   const [filters, setFilters] = useState(getCurrentFilters);
   const [errors, setErrors] = useState({});
   const [report, setReport] = useState(null);
@@ -146,14 +115,13 @@ function MonthlyReportPage() {
       try {
         await refreshExchangeRates();
       } catch {
-        // A failed refresh should not block same-currency reports or valid cached rates.
+        // Same-currency yearly reports and valid cached rates can still work.
       }
 
-      const nextReport = buildDetailedMonthlyReport(
+      const nextReport = buildDetailedYearlyReport(
         costsDatabase,
         filters.currency,
-        validation.reportYear,
-        validation.reportMonth
+        validation.reportYear
       );
 
       setReport(nextReport);
@@ -169,10 +137,10 @@ function MonthlyReportPage() {
     <Stack spacing={3}>
       <Box>
         <Typography component="h1" variant="h1">
-          Monthly Report
+          Yearly Report
         </Typography>
         <Typography color="text.secondary" variant="body1">
-          Select a month, year, and currency to review detailed cost entries.
+          Select a year and currency to review all cost entries for that year.
         </Typography>
       </Box>
 
@@ -195,26 +163,10 @@ function MonthlyReportPage() {
               gap: 2,
               gridTemplateColumns: {
                 xs: "1fr",
-                md: "220px 180px 180px auto"
+                md: "180px 180px auto"
               }
             }}
           >
-            <TextField
-              error={Boolean(errors.month)}
-              helperText={errors.month ?? " "}
-              label="Month"
-              name="month"
-              onChange={handleChange}
-              select
-              value={filters.month}
-            >
-              {MONTHS.map((month) => (
-                <MenuItem key={month.value} value={String(month.value)}>
-                  {month.label}
-                </MenuItem>
-              ))}
-            </TextField>
-
             <TextField
               error={Boolean(errors.year)}
               helperText={errors.year ?? " "}
@@ -243,7 +195,7 @@ function MonthlyReportPage() {
 
             <Box sx={{ alignSelf: "start", pt: { md: 1 } }}>
               <Button disabled={isLoading} type="submit" variant="contained">
-                {isLoading ? "Generating..." : "Generate Report"}
+                {isLoading ? "Generating..." : "Generate Yearly Report"}
               </Button>
             </Box>
           </Box>
@@ -252,7 +204,7 @@ function MonthlyReportPage() {
 
       {!hasGenerated && !errorMessage && !isLoading ? (
         <Alert severity="info">
-          Choose filters and generate a detailed monthly report.
+          Choose filters and generate a detailed yearly report.
         </Alert>
       ) : null}
 
@@ -268,7 +220,7 @@ function MonthlyReportPage() {
           <Stack spacing={3}>
             <Box>
               <Typography component="h2" variant="h2">
-                {getMonthLabel(report.month)} {report.year}
+                {report.year} Yearly Report
               </Typography>
               <Typography color="text.secondary" variant="body1">
                 Report currency: {report.total.currency}
@@ -279,13 +231,13 @@ function MonthlyReportPage() {
             </Box>
 
             {report.costs.length === 0 ? (
-              <Alert severity="info">No costs found for this month.</Alert>
+              <Alert severity="info">No costs found for this year.</Alert>
             ) : (
               <TableContainer>
-                <Table aria-label="Monthly report costs">
+                <Table aria-label="Yearly report costs">
                   <TableHead>
                     <TableRow>
-                      <TableCell>Day</TableCell>
+                      <TableCell>Date</TableCell>
                       <TableCell>Time</TableCell>
                       <TableCell>Description</TableCell>
                       <TableCell>Category</TableCell>
@@ -296,7 +248,7 @@ function MonthlyReportPage() {
                   <TableBody>
                     {report.costs.map((cost) => (
                       <TableRow key={cost.id}>
-                        <TableCell>{cost.date.day}</TableCell>
+                        <TableCell>{formatDateForDisplay(cost.date)}</TableCell>
                         <TableCell>{formatTime(cost.date)}</TableCell>
                         <TableCell>{cost.description}</TableCell>
                         <TableCell>{cost.category}</TableCell>
@@ -317,4 +269,4 @@ function MonthlyReportPage() {
   );
 }
 
-export default MonthlyReportPage;
+export default YearlyReportPage;

@@ -30,7 +30,7 @@ describe("ReportsPage", () => {
     expect(screen.getByRole("combobox", { name: "Month" })).toBeInTheDocument();
   });
 
-  it("switches to the Yearly Report placeholder without starting yearly reporting", async () => {
+  it("switches to the functional Yearly Report", async () => {
     const user = userEvent.setup();
     renderReportsPage();
 
@@ -42,11 +42,13 @@ describe("ReportsPage", () => {
     );
     expect(screen.getByRole("heading", { name: "Yearly Report" })).toBeInTheDocument();
     expect(
-      screen.getByText("Detailed yearly reporting will be implemented in Milestone 9.5C.")
+      screen.getByText(
+        "Select a year and currency to review all cost entries for that year."
+      )
     ).toBeInTheDocument();
     expect(
       screen.queryByRole("button", { name: "Generate Yearly Report" })
-    ).not.toBeInTheDocument();
+    ).toBeInTheDocument();
   });
 
   it("can return from Yearly to the functional Monthly Report", async () => {
