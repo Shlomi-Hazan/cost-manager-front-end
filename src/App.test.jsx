@@ -50,6 +50,12 @@ describe("App", () => {
     expect(
       screen.getByRole("heading", { name: "Monthly Category Pie Chart" })
     ).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Yearly 12-Month Bar Chart" })
+    ).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Generate Chart" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Generate Yearly Chart" })
+    ).toBeInTheDocument();
   });
 });

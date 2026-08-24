@@ -30,6 +30,7 @@ import {
   refreshExchangeRates
 } from "../services/exchangeRatesService.js";
 import { aggregateCostsByCategory } from "../utils/chartAggregation.js";
+import YearlyBarChartSection from "../components/charts/YearlyBarChartSection.jsx";
 
 const MONTHS = [
   { value: 1, label: "January" },
@@ -382,9 +383,7 @@ function ChartsPage() {
         </Paper>
       ) : null}
 
-      <Alert severity="info">
-        Yearly Bar Chart functionality will be implemented in a later milestone.
-      </Alert>
+      <YearlyBarChartSection />
     </Stack>
   );
 }
