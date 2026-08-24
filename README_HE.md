@@ -671,6 +671,52 @@ Dec
 
 ---
 
+# 13.5. Milestone 9.5 — Cost Maintenance and Reporting Extensions
+
+## מטרה
+
+להוסיף הרחבות צוותיות אחרי שהפיצ'רים הרשמיים המרכזיים עובדים, בלי לשנות את חוזה
+`db.js` שמוגן לצורכי הקורס.
+
+## 9.5A — Cost Data & CRUD Foundation
+
+- GitHub Issue: [#24](https://github.com/Shlomi-Hazan/cost-manager-front-end/issues/24)
+- יצירת ID יציב לכל הוצאה חדשה.
+- שמירת day/month/year/hour/minute להוצאות חדשות של האפליקציה.
+- הוספת מתודות CRUD לגרסת המודול ולגרסת Vanilla:
+  - `getAllCosts()`
+  - `getCostById(id)`
+  - `updateCost(id, cost)`
+  - `deleteCost(id)`
+- העברת namespace של הוצאות האפליקציה לגרסת database 2.
+- הוספת Reports navigation עם tabs של Monthly ו־Yearly.
+- השארת Yearly Report כ־placeholder בלבד.
+
+## 9.5B — Manage Costs UI
+
+- GitHub Issue: [#25](https://github.com/Shlomi-Hazan/cost-manager-front-end/issues/25)
+- צפייה בהוצאות שמורות.
+- עריכת הוצאות שמורות.
+- מחיקת הוצאות שמורות.
+
+## 9.5C — Detailed Yearly Report
+
+- GitHub Issue: [#26](https://github.com/Shlomi-Hazan/cost-manager-front-end/issues/26)
+- מימוש מסך Yearly Report מפורט.
+- שימוש מחדש בארכיטקטורת reports/currency הקיימת.
+
+## 9.5D — Sortable Reports
+
+- GitHub Issue: [#27](https://github.com/Shlomi-Hazan/cost-manager-front-end/issues/27)
+- הוספת sorting לטבלאות Monthly ו־Yearly reports.
+
+## 9.5E — Excel/PDF Export
+
+- GitHub Issue: [#28](https://github.com/Shlomi-Hazan/cost-manager-front-end/issues/28)
+- ייצוא reports ו־charts ל־Excel/PDF אחרי שמסכי הנתונים יציבים.
+
+---
+
 # 14. Milestone 10 — UI/UX Polish
 
 ## מטרה

@@ -26,15 +26,21 @@ describe("App", () => {
     ).toBeInTheDocument();
   });
 
-  it("switches to the Monthly Report view without reloading", async () => {
+  it("switches to the Reports view without reloading", async () => {
     const user = userEvent.setup();
     renderApp();
 
-    await user.click(screen.getByRole("tab", { name: "Monthly Report" }));
+    await user.click(screen.getByRole("tab", { name: "Reports" }));
 
+    expect(screen.getByRole("heading", { name: "Reports" })).toBeInTheDocument();
     expect(
       screen.getByRole("heading", { name: "Monthly Report" })
     ).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "Monthly" })).toHaveAttribute(
+      "aria-selected",
+      "true"
+    );
+    expect(screen.getByRole("tab", { name: "Yearly" })).toBeInTheDocument();
     expect(screen.getByRole("combobox", { name: "Month" })).toBeInTheDocument();
     expect(screen.getByLabelText("Year")).toBeInTheDocument();
     expect(screen.getByRole("combobox", { name: "Currency" })).toBeInTheDocument();

@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import DashboardPage from "./pages/DashboardPage.jsx";
 import AddCostPage from "./pages/AddCostPage.jsx";
-import MonthlyReportPage from "./pages/MonthlyReportPage.jsx";
+import ReportsPage from "./pages/ReportsPage.jsx";
 import ChartsPage from "./pages/ChartsPage.jsx";
 import SettingsPage from "./pages/SettingsPage.jsx";
 import AppLayout from "./components/layout/AppLayout.jsx";
@@ -18,9 +18,9 @@ const pages = [
     component: AddCostPage
   },
   {
-    id: "monthly-report",
-    label: "Monthly Report",
-    component: MonthlyReportPage
+    id: "reports",
+    label: "Reports",
+    component: ReportsPage
   },
   {
     id: "charts",

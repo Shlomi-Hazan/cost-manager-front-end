@@ -8,8 +8,8 @@ const vanillaDbSource = readFileSync(
   "utf8"
 );
 
-function setLocalDate(year, month, day) {
-  vi.setSystemTime(new Date(year, month - 1, day, 12, 0, 0));
+function setLocalDate(year, month, day, hour = 12, minute = 0) {
+  vi.setSystemTime(new Date(year, month - 1, day, hour, minute, 0));
 }
 
 function getStorageKey(databaseName, databaseVersion) {
@@ -30,6 +30,34 @@ function loadVanillaDb() {
   window.eval(vanillaDbSource);
 
   return window.db;
+}
+
+function expectDatabaseObject(ob) {
+  expect(ob).toEqual({
+    addCost: expect.any(Function),
+    getAllCosts: expect.any(Function),
+    getCostById: expect.any(Function),
+    updateCost: expect.any(Function),
+    deleteCost: expect.any(Function),
+    getReport: expect.any(Function)
+  });
+}
+
+function editableCost(overrides = {}) {
+  return {
+    sum: 300,
+    currency: "USD",
+    category: "Updated",
+    description: "Updated cost",
+    date: {
+      day: 29,
+      month: 2,
+      year: 2028,
+      hour: 9,
+      minute: 45
+    },
+    ...overrides
+  };
 }
 
 describe("standalone Vanilla db.js", () => {
@@ -65,20 +93,14 @@ describe("standalone Vanilla db.js", () => {
     const vanillaDb = loadVanillaDb();
     const ob = vanillaDb.openCostsDB("costsdb", 1);
 
-    expect(ob).toEqual({
-      addCost: expect.any(Function),
-      getReport: expect.any(Function)
-    });
+    expectDatabaseObject(ob);
   });
 
   it("accepts an empty database name because the official contract requires a string", () => {
     const vanillaDb = loadVanillaDb();
     const ob = vanillaDb.openCostsDB("", 1);
 
-    expect(ob).toEqual({
-      addCost: expect.any(Function),
-      getReport: expect.any(Function)
-    });
+    expectDatabaseObject(ob);
   });
 
   it("adds a cost, returns required fields, records the date, and does not mutate input", () => {
@@ -101,9 +123,13 @@ describe("standalone Vanilla db.js", () => {
       date: {
         day: 22,
         month: 8,
-        year: 2026
+        year: 2026,
+        hour: 12,
+        minute: 0
       }
     });
+    expect(result.id).toEqual(expect.any(String));
+    expect(result.id).not.toBe("");
     expect(inputCost).toEqual({
       sum: 200,
       currency: "USD",
@@ -285,7 +311,9 @@ describe("standalone Vanilla db.js", () => {
       date: {
         day: 22,
         month: 8,
-        year: 2026
+        year: 2026,
+        hour: 12,
+        minute: 0
       }
     });
     expect(report.costs[0]).toMatchObject({
@@ -343,6 +371,285 @@ describe("standalone Vanilla db.js", () => {
       currency: "USD",
       sum: 600
     });
+  });
+
+  it("generates stable unique IDs for identical new costs", () => {
+    const vanillaDb = loadVanillaDb();
+    const ob = vanillaDb.openCostsDB("costsdb", 1);
+    const first = ob.addCost({
+      sum: 20,
+      currency: "USD",
+      category: "Food",
+      description: "Coffee"
+    });
+    const second = ob.addCost({
+      sum: 20,
+      currency: "USD",
+      category: "Food",
+      description: "Coffee"
+    });
+
+    expect(first.id).toEqual(expect.any(String));
+    expect(second.id).toEqual(expect.any(String));
+    expect(first.id).not.toBe("");
+    expect(second.id).not.toBe("");
+    expect(first.id).not.toBe(second.id);
+    expect(ob.getCostById(first.id)?.id).toBe(first.id);
+  });
+
+  it("records hour and minute on new stored costs", () => {
+    const vanillaDb = loadVanillaDb();
+    const ob = vanillaDb.openCostsDB("costsdb", 1);
+
+    setLocalDate(2026, 8, 22, 16, 37);
+
+    const added = ob.addCost({
+      sum: 42,
+      currency: "USD",
+      category: "Time",
+      description: "Timed cost"
+    });
+
+    expect(added.date).toEqual({
+      day: 22,
+      month: 8,
+      year: 2026,
+      hour: 16,
+      minute: 37
+    });
+    expect(readStoredCosts()[0].date).toEqual(added.date);
+  });
+
+  it("returns all stored costs as defensive copies", () => {
+    const vanillaDb = loadVanillaDb();
+    const ob = vanillaDb.openCostsDB("costsdb", 1);
+    ob.addCost({
+      sum: 15,
+      currency: "USD",
+      category: "Copy",
+      description: "First"
+    });
+    ob.addCost({
+      sum: 25,
+      currency: "USD",
+      category: "Copy",
+      description: "Second"
+    });
+
+    const costs = ob.getAllCosts();
+
+    costs[0].description = "Mutated outside";
+    costs[0].date.day = 1;
+
+    expect(costs).toHaveLength(2);
+    expect(ob.getAllCosts()[0]).toMatchObject({
+      description: "First",
+      date: { day: 22 }
+    });
+  });
+
+  it("gets a cost by ID as a defensive copy", () => {
+    const vanillaDb = loadVanillaDb();
+    const ob = vanillaDb.openCostsDB("costsdb", 1);
+    const added = ob.addCost({
+      sum: 60,
+      currency: "USD",
+      category: "Lookup",
+      description: "Lookup cost"
+    });
+
+    const found = ob.getCostById(added.id);
+
+    found.description = "Mutated outside";
+
+    expect(found).toMatchObject({
+      id: added.id,
+      sum: 60,
+      description: "Mutated outside"
+    });
+    expect(ob.getCostById(added.id)).toMatchObject({
+      id: added.id,
+      description: "Lookup cost"
+    });
+  });
+
+  it("returns null for missing valid IDs", () => {
+    const vanillaDb = loadVanillaDb();
+    const ob = vanillaDb.openCostsDB("costsdb", 1);
+
+    expect(ob.getCostById("missing-id")).toBeNull();
+    expect(ob.updateCost("missing-id", editableCost())).toBeNull();
+    expect(ob.deleteCost("missing-id")).toBeNull();
+  });
+
+  it("throws for invalid cost IDs", () => {
+    const vanillaDb = loadVanillaDb();
+    const ob = vanillaDb.openCostsDB("costsdb", 1);
+
+    expect(() => ob.getCostById("")).toThrow("id must be a non-empty string.");
+    expect(() => ob.updateCost("   ", editableCost())).toThrow(
+      "id must be a non-empty string."
+    );
+    expect(() => ob.deleteCost(123)).toThrow("id must be a non-empty string.");
+  });
+
+  it("updates a cost by ID while preserving the original ID", () => {
+    const vanillaDb = loadVanillaDb();
+    const ob = vanillaDb.openCostsDB("costsdb", 1);
+    const added = ob.addCost({
+      sum: 100,
+      currency: "USD",
+      category: "Before",
+      description: "Before update"
+    });
+    const input = editableCost({
+      id: "ignored-id",
+      sum: 250,
+      currency: "GBP",
+      category: "After",
+      description: "After update"
+    });
+
+    const updated = ob.updateCost(added.id, input);
+
+    expect(updated).toEqual({
+      id: added.id,
+      sum: 250,
+      currency: "GBP",
+      category: "After",
+      description: "After update",
+      date: {
+        day: 29,
+        month: 2,
+        year: 2028,
+        hour: 9,
+        minute: 45
+      }
+    });
+    expect(input.id).toBe("ignored-id");
+    expect(ob.getCostById(added.id)).toEqual(updated);
+  });
+
+  it("validates the full editable cost payload on update", () => {
+    const vanillaDb = loadVanillaDb();
+    const ob = vanillaDb.openCostsDB("costsdb", 1);
+    const added = ob.addCost({
+      sum: 100,
+      currency: "USD",
+      category: "Before",
+      description: "Before update"
+    });
+
+    expect(() =>
+      ob.updateCost(added.id, {
+        ...editableCost(),
+        date: { day: 29, month: 2, year: 2026, hour: 8, minute: 30 }
+      })
+    ).toThrow("cost.date must be a real calendar date.");
+    expect(() =>
+      ob.updateCost(added.id, {
+        ...editableCost(),
+        date: { day: 20, month: 8, year: 2026, hour: 24, minute: 30 }
+      })
+    ).toThrow("cost.date.hour must be an integer from 0 to 23.");
+    expect(() =>
+      ob.updateCost(added.id, { ...editableCost(), currency: "EUR" })
+    ).toThrow("cost.currency must be one of USD, ILS, GBP, EURO.");
+  });
+
+  it("deletes the requested cost by ID without touching matching content", () => {
+    const vanillaDb = loadVanillaDb();
+    const ob = vanillaDb.openCostsDB("costsdb", 1);
+    const first = ob.addCost({
+      sum: 30,
+      currency: "USD",
+      category: "Same",
+      description: "Same content"
+    });
+    const second = ob.addCost({
+      sum: 30,
+      currency: "USD",
+      category: "Same",
+      description: "Same content"
+    });
+
+    const deleted = ob.deleteCost(first.id);
+
+    expect(deleted).toMatchObject({ id: first.id });
+    expect(ob.getCostById(first.id)).toBeNull();
+    expect(ob.getCostById(second.id)).toMatchObject({ id: second.id });
+    expect(ob.getAllCosts()).toHaveLength(1);
+  });
+
+  it("does not expose ID or time fields through the required report item shape", () => {
+    const vanillaDb = loadVanillaDb();
+    const ob = vanillaDb.openCostsDB("costsdb", 1);
+    ob.addCost({
+      sum: 70,
+      currency: "USD",
+      category: "Report",
+      description: "Report item"
+    });
+
+    const [reportCost] = ob.getReport("USD", 2026, 8).costs;
+
+    expect(reportCost).toEqual({
+      sum: 70,
+      currency: "USD",
+      category: "Report",
+      description: "Report item",
+      date: {
+        day: 22
+      }
+    });
+  });
+
+  it("uses updated and deleted costs in report results", () => {
+    const vanillaDb = loadVanillaDb();
+    const ob = vanillaDb.openCostsDB("costsdb", 1);
+    const moved = ob.addCost({
+      sum: 80,
+      currency: "USD",
+      category: "Move",
+      description: "Moved month"
+    });
+    const deleted = ob.addCost({
+      sum: 20,
+      currency: "USD",
+      category: "Delete",
+      description: "Deleted cost"
+    });
+
+    ob.updateCost(
+      moved.id,
+      editableCost({
+        sum: 80,
+        category: "Move",
+        description: "Moved month",
+        date: { day: 15, month: 9, year: 2026, hour: 11, minute: 20 }
+      })
+    );
+    ob.deleteCost(deleted.id);
+
+    expect(ob.getReport("USD", 2026, 8).costs).toEqual([]);
+    expect(ob.getReport("USD", 2026, 9).total.sum).toBe(80);
+  });
+
+  it("keeps CRUD operations isolated by database name and version", () => {
+    const vanillaDb = loadVanillaDb();
+    const base = vanillaDb.openCostsDB("costsdb", 1);
+    const otherName = vanillaDb.openCostsDB("otherdb", 1);
+    const otherVersion = vanillaDb.openCostsDB("costsdb", 2);
+    const added = base.addCost({
+      sum: 110,
+      currency: "USD",
+      category: "Base",
+      description: "Base only"
+    });
+
+    expect(otherName.getCostById(added.id)).toBeNull();
+    expect(otherVersion.getCostById(added.id)).toBeNull();
+    expect(base.getCostById(added.id)).toMatchObject({ id: added.id });
   });
 
   it("converts cross-currency report totals from cached rates while preserving original cost values", () => {

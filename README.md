@@ -4,7 +4,7 @@ Final project for the **Front-End Development** course.
 
 This repository is intentionally being built from the project requirements outward: requirements, architecture, AI-agent instructions, testing strategy, Git/GitHub workflow, implementation, deployment, audit, and submission.
 
-> **Current status:** Milestone 9 — Exchange-Rate Settings.
+> **Current status:** Milestone 9.5A — Cost Data & CRUD Foundation.
 
 ## Project Goal
 
@@ -126,8 +126,10 @@ Public.
 
 ## Current Milestone
 
-### Milestone 9 — Exchange-Rate Settings
+### Milestone 9.5A — Cost Data & CRUD Foundation
 
-The Settings view lets users validate and persist a custom exchange-rate source
-or safely return to the built-in default source. Existing reports and charts
-consume the selected source through the shared exchange-rate service.
+New application costs use a version 2 storage namespace with generated stable
+IDs and day/month/year/hour/minute metadata. The module and Vanilla `db.js`
+objects now provide CRUD foundation methods while preserving the protected
+`addCost()` and synchronous `getReport()` contract, and the app groups monthly
+and future yearly reporting under Reports navigation.

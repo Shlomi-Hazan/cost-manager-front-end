@@ -15,8 +15,23 @@
     return {
       day: now.getDate(),
       month: now.getMonth() + 1,
-      year: now.getFullYear()
+      year: now.getFullYear(),
+      hour: now.getHours(),
+      minute: now.getMinutes()
     };
+  }
+
+  function generateCostId() {
+    if (global.crypto && typeof global.crypto.randomUUID === "function") {
+      return global.crypto.randomUUID();
+    }
+
+    return (
+      "cost-" +
+      Date.now().toString(36) +
+      "-" +
+      Math.random().toString(36).slice(2)
+    );
   }
 
   function getStorageKey(databaseName, databaseVersion) {
@@ -62,6 +77,74 @@
     }
   }
 
+  function validateCostId(id) {
+    if (typeof id !== "string" || id.trim() === "") {
+      throw new TypeError("id must be a non-empty string.");
+    }
+  }
+
+  function isRealCalendarDate(day, month, year) {
+    var candidate = new Date(0);
+
+    candidate.setFullYear(year, month - 1, day);
+    candidate.setHours(0, 0, 0, 0);
+
+    return (
+      candidate.getFullYear() === year &&
+      candidate.getMonth() === month - 1 &&
+      candidate.getDate() === day
+    );
+  }
+
+  function validateCostDate(date) {
+    var day;
+    var month;
+    var year;
+    var hour;
+    var minute;
+
+    if (date === null || typeof date !== "object" || Array.isArray(date)) {
+      throw new TypeError("cost.date must be an object.");
+    }
+
+    day = date.day;
+    month = date.month;
+    year = date.year;
+    hour = date.hour;
+    minute = date.minute;
+
+    if (
+      !Number.isInteger(day) ||
+      !Number.isInteger(month) ||
+      !Number.isInteger(year) ||
+      !Number.isInteger(hour) ||
+      !Number.isInteger(minute)
+    ) {
+      throw new TypeError("cost.date values must be integers.");
+    }
+
+    if (month < 1 || month > 12) {
+      throw new TypeError("cost.date.month must be an integer from 1 to 12.");
+    }
+
+    if (!isRealCalendarDate(day, month, year)) {
+      throw new TypeError("cost.date must be a real calendar date.");
+    }
+
+    if (hour < 0 || hour > 23) {
+      throw new TypeError("cost.date.hour must be an integer from 0 to 23.");
+    }
+
+    if (minute < 0 || minute > 59) {
+      throw new TypeError("cost.date.minute must be an integer from 0 to 59.");
+    }
+  }
+
+  function validateEditableCost(cost) {
+    validateCost(cost);
+    validateCostDate(cost.date);
+  }
+
   function validateReportArguments(currency, year, month) {
     if (!isSupportedCurrency(currency)) {
       throw new TypeError("currency must be one of USD, ILS, GBP, EURO.");
@@ -100,6 +183,23 @@
 
   function writeCosts(storageKey, costs) {
     localStorage.setItem(storageKey, JSON.stringify(costs));
+  }
+
+  function copyStoredCost(cost) {
+    return {
+      id: cost.id,
+      sum: cost.sum,
+      currency: cost.currency,
+      category: cost.category,
+      description: cost.description,
+      date: {
+        day: cost.date.day,
+        month: cost.date.month,
+        year: cost.date.year,
+        hour: cost.date.hour,
+        minute: cost.date.minute
+      }
+    };
   }
 
   function validateExchangeRates(rates) {
@@ -225,6 +325,7 @@
         validateCost(cost);
 
         storedCost = {
+          id: generateCostId(),
           sum: cost.sum,
           currency: cost.currency,
           category: cost.category,
@@ -235,17 +336,83 @@
 
         writeCosts(storageKey, costs.concat([storedCost]));
 
-        return {
-          sum: storedCost.sum,
-          currency: storedCost.currency,
-          category: storedCost.category,
-          description: storedCost.description,
+        return copyStoredCost(storedCost);
+      },
+
+      getAllCosts: function getAllCosts() {
+        return readCosts(storageKey).map(copyStoredCost);
+      },
+
+      getCostById: function getCostById(id) {
+        var matchingCost;
+
+        validateCostId(id);
+
+        matchingCost = readCosts(storageKey).find(function hasMatchingId(cost) {
+          return cost.id === id;
+        });
+
+        return matchingCost ? copyStoredCost(matchingCost) : null;
+      },
+
+      updateCost: function updateCost(id, cost) {
+        var costs;
+        var costIndex;
+        var updatedCost;
+
+        validateCostId(id);
+        validateEditableCost(cost);
+
+        costs = readCosts(storageKey);
+        costIndex = costs.findIndex(function hasMatchingId(storedCost) {
+          return storedCost.id === id;
+        });
+
+        if (costIndex === -1) {
+          return null;
+        }
+
+        updatedCost = {
+          id: id,
+          sum: cost.sum,
+          currency: cost.currency,
+          category: cost.category,
+          description: cost.description,
           date: {
-            day: storedCost.date.day,
-            month: storedCost.date.month,
-            year: storedCost.date.year
+            day: cost.date.day,
+            month: cost.date.month,
+            year: cost.date.year,
+            hour: cost.date.hour,
+            minute: cost.date.minute
           }
         };
+
+        costs[costIndex] = updatedCost;
+        writeCosts(storageKey, costs);
+
+        return copyStoredCost(updatedCost);
+      },
+
+      deleteCost: function deleteCost(id) {
+        var costs;
+        var costIndex;
+        var deletedCost;
+
+        validateCostId(id);
+
+        costs = readCosts(storageKey);
+        costIndex = costs.findIndex(function hasMatchingId(storedCost) {
+          return storedCost.id === id;
+        });
+
+        if (costIndex === -1) {
+          return null;
+        }
+
+        deletedCost = costs.splice(costIndex, 1)[0];
+        writeCosts(storageKey, costs);
+
+        return copyStoredCost(deletedCost);
       },
 
       getReport: function getReport(currency, year, month) {
