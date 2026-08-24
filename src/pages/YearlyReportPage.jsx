@@ -6,20 +6,15 @@ import {
   MenuItem,
   Paper,
   Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
   TextField,
   Typography
 } from "@mui/material";
+import SortableReportTable from "../components/reports/SortableReportTable.jsx";
 import { SUPPORTED_CURRENCIES } from "../constants/currencies.js";
+import { useReportSorting } from "../hooks/useReportSorting.js";
 import { costsDatabase } from "../lib/costsDatabase.js";
 import { buildDetailedYearlyReport } from "../services/detailedReportsService.js";
 import { refreshExchangeRates } from "../services/exchangeRatesService.js";
-import { formatDateForDisplay, formatTime } from "../utils/dateTime.js";
 
 function getCurrentFilters() {
   return {
@@ -77,6 +72,13 @@ function YearlyReportPage() {
   const [errorMessage, setErrorMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [hasGenerated, setHasGenerated] = useState(false);
+  const {
+    sortedCosts,
+    sortDirection,
+    sortKey,
+    requestSort,
+    resetSort
+  } = useReportSorting(report?.costs ?? []);
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -92,6 +94,7 @@ function YearlyReportPage() {
     setErrorMessage("");
     setReport(null);
     setHasGenerated(false);
+    resetSort();
   }
 
   async function handleSubmit(event) {
@@ -233,34 +236,13 @@ function YearlyReportPage() {
             {report.costs.length === 0 ? (
               <Alert severity="info">No costs found for this year.</Alert>
             ) : (
-              <TableContainer>
-                <Table aria-label="Yearly report costs">
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>Date</TableCell>
-                      <TableCell>Time</TableCell>
-                      <TableCell>Description</TableCell>
-                      <TableCell>Category</TableCell>
-                      <TableCell align="right">Sum</TableCell>
-                      <TableCell>Currency</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {report.costs.map((cost) => (
-                      <TableRow key={cost.id}>
-                        <TableCell>{formatDateForDisplay(cost.date)}</TableCell>
-                        <TableCell>{formatTime(cost.date)}</TableCell>
-                        <TableCell>{cost.description}</TableCell>
-                        <TableCell>{cost.category}</TableCell>
-                        <TableCell align="right">
-                          {formatAmount(cost.sum)}
-                        </TableCell>
-                        <TableCell>{cost.currency}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
+              <SortableReportTable
+                costs={sortedCosts}
+                dateMode="yearly"
+                onRequestSort={requestSort}
+                sortDirection={sortDirection}
+                sortKey={sortKey}
+              />
             )}
           </Stack>
         </Paper>

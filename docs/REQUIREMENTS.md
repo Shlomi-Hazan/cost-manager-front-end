@@ -1260,18 +1260,24 @@ date: {
 ## X-006 — Sortable Reports
 
 - **Type:** Team extension
-- **Status:** `NOT STARTED`
+- **Status:** `VERIFIED`
 - Monthly and yearly report tables should support consistent sorting controls.
 - Sorting should cover Date/Time, Description, Category, Sum, and Currency.
 
 ### Verification
 
-- [ ] Monthly Report can be sorted.
-- [ ] Yearly Report can be sorted.
-- [ ] Ascending/descending state is visible.
-- [ ] Date/Time sorting is chronological.
-- [ ] Text sorting is alphabetical.
-- [ ] Sum sorting is numeric.
+- [x] Monthly Report can be sorted.
+- [x] Yearly Report can be sorted.
+- [x] Ascending/descending state is visible.
+- [x] Date/Day sorting is chronological.
+- [x] Time sorting is chronological.
+- [x] Description sorting is alphabetical.
+- [x] Category sorting is alphabetical.
+- [x] Sum sorting is numeric.
+- [x] Currency sorting is alphabetical.
+- [x] Monthly and Yearly reports share sorting behavior.
+- [x] Equal values preserve source order.
+- [x] Sorting does not mutate source arrays or stored cost order.
 
 ---
 

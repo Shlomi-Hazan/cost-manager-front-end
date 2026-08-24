@@ -1158,26 +1158,50 @@ improves navigation without starting future reporting logic prematurely.
 
 ---
 
-# ADR-034 — Provisional Shared Sorting Behavior for Reports
+# ADR-034 — Shared Sorting Behavior for Reports
 
-**Status:** PROVISIONAL
+**Status:** ACCEPTED
 
 **Date:** 2026-08-24
 
 ## Decision
 
-Future monthly and yearly report sorting should be implemented as shared
-report-table behavior rather than separate one-off sort algorithms in each page.
+Monthly and yearly report sorting is implemented through shared report-table
+behavior rather than separate one-off sort algorithms in each page.
+
+The implementation uses:
+
+- a pure report sorting utility,
+- a shared report sorting hook for sort state and toggle behavior,
+- a shared sortable report table component for the common report columns.
+
+Initial report order remains the detailed report service/storage order. The
+first click on a sortable column starts ascending. Repeated clicks on the same
+column toggle ascending/descending. Clicking a different column starts that
+column ascending.
+
+Date/Day sorting is chronological, Time sorting is chronological,
+Description/Category/Currency sorting is alphabetical, and Sum sorting is
+numeric. Equal primary values preserve source order through stable sorting.
+
+Sorting is display-only: it sorts copies, never mutates report/source arrays,
+and never persists cost order. Sort state resets when the report filter context
+changes. Pages keep access to the currently sorted rows so future export work can
+export the visible row order without reimplementing sorting.
 
 ## Reason
 
-Users should get consistent date, category, description, sum, and currency
-sorting when sortable reports are implemented.
+Users should get consistent date, time, category, description, sum, and currency
+sorting across Monthly and Yearly reports. Keeping sorted rows available at the
+page level also supports the future export milestone.
 
 ## Consequences
 
-- This does not implement sorting yet.
-- Detailed behavior remains for the dedicated sorting milestone.
+- Monthly and Yearly reports share the same sorting semantics.
+- Sorting remains separate from report membership and total calculation.
+- The database and detailed report service do not persist or own presentation
+  sorting.
+- Export libraries and export behavior remain deferred to Milestone 9.5E.
 
 ---
 
