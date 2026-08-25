@@ -35,7 +35,15 @@ import * as excelExportService from "../services/export/excelExportService.js";
 import { buildPieChartExportModel } from "../services/export/exportModels.js";
 import * as pdfExportService from "../services/export/pdfExportService.js";
 import { captureChartSvgAsPngDataUrl } from "../utils/chartCapture.js";
+import {
+  addCategoryShare,
+  shouldShowPieSliceLabel
+} from "../utils/chartPresentation.js";
 import { getPieChartExportFilename } from "../utils/exportFilenames.js";
+import {
+  formatDisplayAmount,
+  formatDisplayPercentage
+} from "../utils/amountFormat.js";
 
 const MONTHS = [
   { value: 1, label: "January" },
@@ -73,14 +81,6 @@ function getCurrentFilters() {
 
 function getMonthLabel(month) {
   return MONTHS.find((option) => option.value === month)?.label ?? String(month);
-}
-
-function formatAmount(amount) {
-  return Number.isInteger(amount)
-    ? String(amount)
-    : amount.toLocaleString("en-US", {
-        maximumFractionDigits: 6
-      });
 }
 
 function validateFilters(filters) {
@@ -121,6 +121,38 @@ function getChartErrorMessage(error) {
   }
 
   return "Could not generate the monthly category chart. Please try again.";
+}
+
+function renderPieLabel(labelProps) {
+  const payload = labelProps.payload ?? labelProps;
+  const category = payload.category ?? labelProps.name;
+  const percentage = payload.percentage ?? labelProps.percent ?? 0;
+  const { midAngle } = labelProps;
+
+  if (!shouldShowPieSliceLabel({ percentage })) {
+    return null;
+  }
+
+  const radius =
+    labelProps.middleRadius ??
+    (Number(labelProps.innerRadius) + Number(labelProps.outerRadius)) / 2;
+  const radians = (Math.PI / 180) * -midAngle;
+  const x = labelProps.cx + radius * Math.cos(radians);
+  const y = labelProps.cy + radius * Math.sin(radians);
+
+  return (
+    <text
+      dominantBaseline="central"
+      fill="#FFFFFF"
+      fontSize={12}
+      fontWeight="700"
+      textAnchor="middle"
+      x={x}
+      y={y}
+    >
+      {`${category} ${formatDisplayPercentage(percentage)}`}
+    </text>
+  );
 }
 
 function ChartsPage() {
@@ -266,6 +298,7 @@ function ChartsPage() {
   }
 
   const chartData = chartResult?.chartData ?? [];
+  const pieDisplayData = addCategoryShare(chartData);
   const hasChartData = chartData.length > 0;
   const hasPositiveChartData = chartData.some((entry) => entry.total > 0);
 
@@ -428,13 +461,18 @@ function ChartsPage() {
                 <ResponsiveContainer height="100%" width="100%">
                   <PieChart>
                     <Pie
-                      data={chartData}
+                      data={pieDisplayData}
                       dataKey="total"
+                      cx="50%"
+                      cy={150}
                       innerRadius={60}
+                      isAnimationActive={false}
+                      label={renderPieLabel}
+                      labelLine={false}
                       nameKey="category"
                       outerRadius={120}
                     >
-                      {chartData.map((entry, index) => (
+                      {pieDisplayData.map((entry, index) => (
                         <Cell
                           fill={CHART_COLORS[index % CHART_COLORS.length]}
                           key={entry.category}
@@ -443,11 +481,17 @@ function ChartsPage() {
                     </Pie>
                     <Tooltip
                       formatter={(value, name) => [
-                        `${formatAmount(value)} ${chartResult.report.total.currency}`,
+                        `${formatDisplayAmount(value)} ${chartResult.report.total.currency}`,
                         name
                       ]}
                     />
-                    <Legend />
+                    <Legend
+                      formatter={(value, entry) => {
+                        const item = entry.payload;
+
+                        return `${value} - ${formatDisplayAmount(item.total)} ${chartResult.report.total.currency} - ${formatDisplayPercentage(item.percentage)}`;
+                      }}
+                    />
                   </PieChart>
                 </ResponsiveContainer>
               </Box>
@@ -460,15 +504,19 @@ function ChartsPage() {
                     <TableRow>
                       <TableCell>Category</TableCell>
                       <TableCell align="right">Total</TableCell>
+                      <TableCell align="right">Share</TableCell>
                       <TableCell>Currency</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {chartData.map((entry) => (
+                    {pieDisplayData.map((entry) => (
                       <TableRow key={entry.category}>
                         <TableCell>{entry.category}</TableCell>
                         <TableCell align="right">
-                          {formatAmount(entry.total)}
+                          {formatDisplayAmount(entry.total)}
+                        </TableCell>
+                        <TableCell align="right">
+                          {formatDisplayPercentage(entry.percentage)}
                         </TableCell>
                         <TableCell>{chartResult.report.total.currency}</TableCell>
                       </TableRow>

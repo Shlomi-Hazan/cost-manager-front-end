@@ -41,6 +41,24 @@ function addNoDataMessage(doc, message, y) {
   return y + 20;
 }
 
+function getChartMetadataLines(model) {
+  if (model.type === "pie-chart") {
+    return [
+      `Period: ${model.metadata.periodLabel}`,
+      `Currency: ${model.metadata.currency}`,
+      `Total: ${model.metadata.totalLabel}`,
+      `Categories: ${model.metadata.categoryCount}`
+    ];
+  }
+
+  return [
+    `Year: ${model.metadata.year}`,
+    `Currency: ${model.metadata.currency}`,
+    `Annual total: ${model.metadata.annualTotalLabel}`,
+    `Months with costs: ${model.metadata.monthsWithCosts}`
+  ];
+}
+
 export function fitImageWithinBounds({ width, height, maxWidth, maxHeight }) {
   const scale = Math.min(maxWidth / width, maxHeight / height);
 
@@ -84,10 +102,11 @@ export async function createReportPdfBuffer(model) {
   addTitle(doc, model.title);
   const nextY = addMetadata(doc, [
     model.type === "monthly-report"
-      ? `Period: ${model.metadata.monthLabel} ${model.metadata.year}`
+      ? `Period: ${model.metadata.periodLabel}`
       : `Year: ${model.metadata.year}`,
     `Report currency: ${model.metadata.currency}`,
-    `Total: ${model.metadata.totalLabel}`
+    `Total: ${model.metadata.totalLabel}`,
+    `Number of costs: ${model.metadata.numberOfCosts}`
   ]);
 
   if (model.rows.length === 0) {
@@ -109,15 +128,7 @@ export async function createChartPdfBuffer(model, chartImageDataUrl = null) {
   const { autoTable, doc } = await createPdfDocument();
 
   addTitle(doc, model.title);
-  let nextY = addMetadata(
-    doc,
-    model.type === "pie-chart"
-      ? [
-          `Period: ${model.metadata.monthLabel} ${model.metadata.year}`,
-          `Currency: ${model.metadata.currency}`
-        ]
-      : [`Year: ${model.metadata.year}`, `Currency: ${model.metadata.currency}`]
-  );
+  let nextY = addMetadata(doc, getChartMetadataLines(model));
 
   if (chartImageDataUrl) {
     nextY = addChartImage(doc, chartImageDataUrl, nextY);

@@ -19,6 +19,7 @@ import {
   Bar,
   BarChart as RechartsBarChart,
   CartesianGrid,
+  LabelList,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -33,20 +34,14 @@ import * as pdfExportService from "../../services/export/pdfExportService.js";
 import { captureChartSvgAsPngDataUrl } from "../../utils/chartCapture.js";
 import { getBarChartExportFilename } from "../../utils/exportFilenames.js";
 import { buildYearlyMonthlyTotals } from "../../utils/yearlyAggregation.js";
+import { formatDisplayAmount } from "../../utils/amountFormat.js";
+import { formatPositiveBarValueLabel } from "../../utils/chartPresentation.js";
 
 function getCurrentFilters() {
   return {
     year: String(new Date().getFullYear()),
     currency: "USD"
   };
-}
-
-function formatAmount(amount) {
-  return Number.isInteger(amount)
-    ? String(amount)
-    : amount.toLocaleString("en-US", {
-        maximumFractionDigits: 6
-      });
 }
 
 function validateFilters(filters) {
@@ -354,21 +349,36 @@ function YearlyBarChartSection() {
                     bottom: 16,
                     left: 12,
                     right: 12,
-                    top: 16
+                    top: 32
                   }}
                 >
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="shortLabel" />
-                  <YAxis />
+                  <YAxis
+                    domain={[
+                      0,
+                      (dataMax) => (dataMax > 0 ? dataMax * 1.15 : 1)
+                    ]}
+                    tickFormatter={formatDisplayAmount}
+                    width={72}
+                  />
                   <Tooltip
                     formatter={(value) =>
-                      `${formatAmount(value)} ${yearlyResult.currency}`
+                      `${formatDisplayAmount(value)} ${yearlyResult.currency}`
                     }
                     labelFormatter={(_label, payload) =>
                       payload?.[0]?.payload?.label ?? ""
                     }
                   />
-                  <Bar dataKey="total" fill="#2563eb" name="Monthly total" />
+                  <Bar dataKey="total" fill="#2563eb" name="Monthly total">
+                    <LabelList
+                      dataKey="total"
+                      fill="#1E293B"
+                      fontSize={12}
+                      formatter={formatPositiveBarValueLabel}
+                      position="top"
+                    />
+                  </Bar>
                 </RechartsBarChart>
               </ResponsiveContainer>
             </Box>
@@ -387,7 +397,7 @@ function YearlyBarChartSection() {
                     <TableRow key={entry.month}>
                       <TableCell>{entry.label}</TableCell>
                       <TableCell align="right">
-                        {formatAmount(entry.total)}
+                        {formatDisplayAmount(entry.total)}
                       </TableCell>
                       <TableCell>{entry.currency}</TableCell>
                     </TableRow>

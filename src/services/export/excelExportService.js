@@ -7,33 +7,176 @@ const SHEET_NAMES = {
   monthlyTotals: "Monthly Totals"
 };
 
+const AMOUNT_FORMAT = "#,##0.######";
+const PERCENTAGE_FORMAT = "0.0%";
+const YEAR_FORMAT = "0";
+
+const COLORS = {
+  primary: "#2563EB",
+  darkText: "#1E293B",
+  secondaryText: "#64748B",
+  lightBackground: "#F8FAFC",
+  border: "#CBD5E1",
+  white: "#FFFFFF"
+};
+
+const HEADER_STYLE = {
+  backgroundColor: COLORS.primary,
+  borderColor: COLORS.border,
+  borderStyle: "thin",
+  fontWeight: "bold",
+  textColor: COLORS.white
+};
+
+const BODY_CELL_STYLE = {
+  borderColor: COLORS.border,
+  borderStyle: "thin",
+  alignVertical: "top"
+};
+
+const COLUMN_WIDTHS = {
+  Category: 22,
+  Currency: 14,
+  Date: 14,
+  Day: 10,
+  Description: 36,
+  Month: 18,
+  Share: 12,
+  Sum: 16,
+  Time: 10,
+  Total: 16
+};
+
 async function loadWriter() {
   const module = await import("write-excel-file/browser");
 
   return module.default;
 }
 
-function createSummarySheet(summaryRows) {
+function titleCell(value, options = {}) {
+  return {
+    value,
+    columnSpan: 2,
+    fontWeight: "bold",
+    textColor: COLORS.darkText,
+    ...options
+  };
+}
+
+function headerCell(value) {
+  return {
+    value,
+    ...HEADER_STYLE
+  };
+}
+
+function metadataLabelCell(value, isEmphasized = false) {
+  return {
+    value,
+    ...BODY_CELL_STYLE,
+    backgroundColor: isEmphasized ? "#DBEAFE" : COLORS.lightBackground,
+    fontWeight: "bold",
+    textColor: COLORS.darkText
+  };
+}
+
+function textCell(value, options = {}) {
+  return {
+    value,
+    ...BODY_CELL_STYLE,
+    textColor: COLORS.darkText,
+    ...options
+  };
+}
+
+function numericCell(value, format = AMOUNT_FORMAT, options = {}) {
+  return {
+    value,
+    type: Number,
+    format,
+    ...BODY_CELL_STYLE,
+    align: "right",
+    textColor: COLORS.darkText,
+    ...options
+  };
+}
+
+function createValueCell(label, value) {
+  const isEmphasized = label === "Total" || label === "Annual Total";
+
+  if (label === "Year" && typeof value === "number") {
+    return numericCell(value, YEAR_FORMAT);
+  }
+
+  if (typeof value === "number") {
+    return numericCell(value, AMOUNT_FORMAT, {
+      backgroundColor: isEmphasized ? "#DBEAFE" : undefined,
+      fontWeight: isEmphasized ? "bold" : undefined
+    });
+  }
+
+  return textCell(value, {
+    backgroundColor: isEmphasized ? "#DBEAFE" : undefined,
+    fontWeight: isEmphasized ? "bold" : undefined
+  });
+}
+
+function createSummarySheet(model) {
   return {
     sheet: SHEET_NAMES.summary,
-    data: [["Field", "Value"], ...summaryRows],
-    columns: [{ width: 24 }, { width: 24 }]
+    data: [
+      [titleCell("COST MANAGER", { fontSize: 18 }), null],
+      [titleCell(model.title, { fontSize: 14, textColor: COLORS.primary }), null],
+      [null, null],
+      [headerCell("Field"), headerCell("Value")],
+      ...model.summary.map(([label, value]) => {
+        const isEmphasized = label === "Total" || label === "Annual Total";
+
+        return [
+          metadataLabelCell(label, isEmphasized),
+          createValueCell(label, value)
+        ];
+      })
+    ],
+    columns: [{ width: 24 }, { width: 32 }]
   };
+}
+
+function createDataCell(column, value) {
+  if (column === "Sum" || column === "Total") {
+    return numericCell(value);
+  }
+
+  if (column === "Share") {
+    return numericCell(value, PERCENTAGE_FORMAT);
+  }
+
+  return textCell(value, {
+    wrap: column === "Description" || column === "Category"
+  });
 }
 
 function createRowsSheet(sheetName, columns, rows) {
   return {
     sheet: sheetName,
-    data: [columns, ...rows.map((row) => Object.values(row))],
+    data: [
+      columns.map((column) => headerCell(column)),
+      ...rows.map((row) =>
+        columns.map((column, index) =>
+          createDataCell(column, Object.values(row)[index])
+        )
+      )
+    ],
     columns: columns.map((column) => ({
-      width: Math.max(14, column.length + 4)
-    }))
+      width: COLUMN_WIDTHS[column] ?? Math.max(14, column.length + 4)
+    })),
+    stickyRowsCount: 1
   };
 }
 
 export function createWorkbookSheets({ model, rowsSheetName }) {
   return [
-    createSummarySheet(model.summary),
+    createSummarySheet(model),
     createRowsSheet(rowsSheetName, model.columns, model.rows)
   ];
 }

@@ -88,12 +88,15 @@ function getTotalsTable() {
   return screen.getByRole("table", { name: "Monthly category totals" });
 }
 
-function expectCategoryTotal({ category, total, currency }) {
+function expectCategoryTotal({ category, total, share, currency }) {
   const table = getTotalsTable();
   const row = within(table).getByRole("row", { name: new RegExp(category) });
 
   expect(within(row).getByText(category)).toBeInTheDocument();
   expect(within(row).getByText(String(total))).toBeInTheDocument();
+  if (share) {
+    expect(within(row).getByText(share)).toBeInTheDocument();
+  }
   expect(within(row).getByText(currency)).toBeInTheDocument();
 }
 
@@ -219,14 +222,19 @@ describe("ChartsPage", () => {
       screen.getByRole("img", { name: "Monthly category pie chart" })
     ).toBeInTheDocument();
     expect(screen.getByText("Chart currency: USD")).toBeInTheDocument();
+    expect(
+      within(getTotalsTable()).getByRole("columnheader", { name: "Share" })
+    ).toBeInTheDocument();
     expectCategoryTotal({
       category: "Food",
       total: 100,
+      share: "80%",
       currency: "USD"
     });
     expectCategoryTotal({
       category: "Travel",
       total: 25,
+      share: "20%",
       currency: "USD"
     });
   });
@@ -259,7 +267,7 @@ describe("ChartsPage", () => {
     await user.click(screen.getAllByRole("button", { name: "Export Excel" })[0]);
 
     expect(excelSpy.mock.calls[0][0].rows).toEqual([
-      { category: "Food", total: 100, currency: "USD" }
+      { category: "Food", total: 100, percentage: 1, currency: "USD" }
     ]);
     expect(excelSpy.mock.calls[0][0].metadata).toMatchObject({
       month: 8,
@@ -274,7 +282,7 @@ describe("ChartsPage", () => {
 
     expect(chartCapture.captureChartSvgAsPngDataUrl).toHaveBeenCalled();
     expect(pdfSpy.mock.calls[0][0].rows).toEqual([
-      { category: "Food", total: 100, currency: "USD" }
+      { category: "Food", total: 100, percentage: 1, currency: "USD" }
     ]);
     expect(pdfSpy.mock.calls[0][1]).toBe("cost-manager-pie-chart-2026-08-usd.pdf");
     expect(pdfSpy.mock.calls[0][2]).toBe("data:image/png;base64,chart");
@@ -380,11 +388,13 @@ describe("ChartsPage", () => {
     expectCategoryTotal({
       category: "Food",
       total: 800,
+      share: "88.9%",
       currency: "ILS"
     });
     expectCategoryTotal({
       category: "Travel",
       total: 100,
+      share: "11.1%",
       currency: "ILS"
     });
     expect(readStoredCosts()).toEqual(storedBefore);
@@ -419,6 +429,7 @@ describe("ChartsPage", () => {
     expectCategoryTotal({
       category: "Food",
       total: 200,
+      share: "100%",
       currency: "USD"
     });
   });
@@ -442,6 +453,7 @@ describe("ChartsPage", () => {
     expectCategoryTotal({
       category: "Food",
       total: 75,
+      share: "100%",
       currency: "USD"
     });
   });
@@ -534,11 +546,13 @@ describe("ChartsPage", () => {
     expectCategoryTotal({
       category: "Food",
       total: 50,
+      share: "66.7%",
       currency: "USD"
     });
     expectCategoryTotal({
       category: "Travel",
       total: 25,
+      share: "33.3%",
       currency: "USD"
     });
   });

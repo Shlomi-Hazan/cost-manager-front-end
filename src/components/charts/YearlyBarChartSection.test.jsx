@@ -9,6 +9,7 @@ import * as excelExportService from "../../services/export/excelExportService.js
 import * as pdfExportService from "../../services/export/pdfExportService.js";
 import theme from "../../theme.js";
 import * as chartCapture from "../../utils/chartCapture.js";
+import { formatPositiveBarValueLabel } from "../../utils/chartPresentation.js";
 import YearlyBarChartSection from "./YearlyBarChartSection.jsx";
 
 const validRates = {
@@ -145,6 +146,14 @@ describe("YearlyBarChartSection", () => {
     expect(
       screen.getByRole("button", { name: "Generate Yearly Chart" })
     ).toBeInTheDocument();
+  });
+
+  it("formats positive bar labels and suppresses zero labels", () => {
+    expect(formatPositiveBarValueLabel(Number("17.352941176470589"))).toBe(
+      "17.352941"
+    );
+    expect(formatPositiveBarValueLabel(20)).toBe("20");
+    expect(formatPositiveBarValueLabel(0)).toBe("");
   });
 
   it("renders a Bar Chart region and exactly 12 calendar-ordered rows", async () => {

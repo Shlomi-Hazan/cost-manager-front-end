@@ -1,4 +1,9 @@
 import { formatDateForDisplay, formatTime } from "../../utils/dateTime.js";
+import {
+  formatDisplayAmount,
+  formatDisplayPercentage
+} from "../../utils/amountFormat.js";
+import { addCategoryShare } from "../../utils/chartPresentation.js";
 
 const MONTH_NAMES = [
   "January",
@@ -19,16 +24,20 @@ export function getMonthName(month) {
   return MONTH_NAMES[month - 1] ?? String(month);
 }
 
-function formatAmount(amount) {
-  return Number.isInteger(amount)
-    ? String(amount)
-    : amount.toLocaleString("en-US", {
-        maximumFractionDigits: 6
-      });
-}
-
 function copyRows(rows) {
   return rows.map((row) => ({ ...row }));
+}
+
+function formatPdfCell(key, value) {
+  if (key === "sum" || key === "total") {
+    return formatDisplayAmount(value);
+  }
+
+  if (key === "percentage") {
+    return formatDisplayPercentage(value);
+  }
+
+  return value;
 }
 
 export function buildMonthlyReportExportModel({ report, costs }) {
@@ -45,19 +54,20 @@ export function buildMonthlyReportExportModel({ report, costs }) {
     type: "monthly-report",
     title: "Monthly Report",
     summary: [
-      ["Report Type", "Monthly Report"],
-      ["Month", getMonthName(report.month)],
-      ["Year", report.year],
-      ["Target Currency", report.total.currency],
-      ["Total", report.total.sum]
+      ["Period", `${getMonthName(report.month)} ${report.year}`],
+      ["Report Currency", report.total.currency],
+      ["Total", report.total.sum],
+      ["Number of Costs", rows.length]
     ],
     metadata: {
       month: report.month,
       monthLabel: getMonthName(report.month),
+      numberOfCosts: rows.length,
+      periodLabel: `${getMonthName(report.month)} ${report.year}`,
       year: report.year,
       currency: report.total.currency,
       total: report.total.sum,
-      totalLabel: `${formatAmount(report.total.sum)} ${report.total.currency}`
+      totalLabel: `${formatDisplayAmount(report.total.sum)} ${report.total.currency}`
     },
     columns: ["Day", "Time", "Description", "Category", "Sum", "Currency"],
     rows
@@ -78,16 +88,17 @@ export function buildYearlyReportExportModel({ report, costs }) {
     type: "yearly-report",
     title: "Yearly Report",
     summary: [
-      ["Report Type", "Yearly Report"],
       ["Year", report.year],
-      ["Target Currency", report.total.currency],
-      ["Total", report.total.sum]
+      ["Report Currency", report.total.currency],
+      ["Total", report.total.sum],
+      ["Number of Costs", rows.length]
     ],
     metadata: {
+      numberOfCosts: rows.length,
       year: report.year,
       currency: report.total.currency,
       total: report.total.sum,
-      totalLabel: `${formatAmount(report.total.sum)} ${report.total.currency}`
+      totalLabel: `${formatDisplayAmount(report.total.sum)} ${report.total.currency}`
     },
     columns: ["Date", "Time", "Description", "Category", "Sum", "Currency"],
     rows
@@ -95,28 +106,34 @@ export function buildYearlyReportExportModel({ report, costs }) {
 }
 
 export function buildPieChartExportModel({ report, chartData }) {
-  const rows = chartData.map((entry) => ({
+  const rows = addCategoryShare(chartData).map((entry) => ({
     category: entry.category,
     total: entry.total,
+    percentage: entry.percentage,
     currency: report.total.currency
   }));
+  const total = chartData.reduce((sum, entry) => sum + entry.total, 0);
 
   return {
     type: "pie-chart",
     title: "Monthly Category Pie Chart",
     summary: [
-      ["Chart Type", "Monthly Category Pie Chart"],
-      ["Month", getMonthName(report.month)],
-      ["Year", report.year],
-      ["Currency", report.total.currency]
+      ["Period", `${getMonthName(report.month)} ${report.year}`],
+      ["Currency", report.total.currency],
+      ["Total", total],
+      ["Number of Categories", rows.length]
     ],
     metadata: {
       month: report.month,
       monthLabel: getMonthName(report.month),
+      categoryCount: rows.length,
+      periodLabel: `${getMonthName(report.month)} ${report.year}`,
       year: report.year,
-      currency: report.total.currency
+      currency: report.total.currency,
+      total,
+      totalLabel: `${formatDisplayAmount(total)} ${report.total.currency}`
     },
-    columns: ["Category", "Total", "Currency"],
+    columns: ["Category", "Total", "Share", "Currency"],
     rows
   };
 }
@@ -127,18 +144,29 @@ export function buildBarChartExportModel({ yearlyResult }) {
     total: entry.total,
     currency: entry.currency
   }));
+  const annualTotal = yearlyResult.monthlyTotals.reduce(
+    (sum, entry) => sum + entry.total,
+    0
+  );
+  const monthsWithCosts = yearlyResult.monthlyTotals.filter(
+    (entry) => entry.total > 0
+  ).length;
 
   return {
     type: "bar-chart",
     title: "Yearly 12-Month Bar Chart",
     summary: [
-      ["Chart Type", "Yearly 12-Month Bar Chart"],
       ["Year", yearlyResult.year],
-      ["Currency", yearlyResult.currency]
+      ["Currency", yearlyResult.currency],
+      ["Annual Total", annualTotal],
+      ["Months With Costs", monthsWithCosts]
     ],
     metadata: {
       year: yearlyResult.year,
-      currency: yearlyResult.currency
+      currency: yearlyResult.currency,
+      annualTotal,
+      annualTotalLabel: `${formatDisplayAmount(annualTotal)} ${yearlyResult.currency}`,
+      monthsWithCosts
     },
     columns: ["Month", "Total", "Currency"],
     rows
@@ -146,5 +174,7 @@ export function buildBarChartExportModel({ yearlyResult }) {
 }
 
 export function getModelRowsForPdf(model) {
-  return copyRows(model.rows).map((row) => Object.values(row));
+  return copyRows(model.rows).map((row) =>
+    Object.entries(row).map(([key, value]) => formatPdfCell(key, value))
+  );
 }
