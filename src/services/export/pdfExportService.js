@@ -41,6 +41,43 @@ function addNoDataMessage(doc, message, y) {
   return y + 20;
 }
 
+export function fitImageWithinBounds({ width, height, maxWidth, maxHeight }) {
+  const scale = Math.min(maxWidth / width, maxHeight / height);
+
+  return {
+    height: height * scale,
+    width: width * scale
+  };
+}
+
+function addChartImage(doc, chartImageDataUrl, y) {
+  const horizontalMargin = 40;
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const maxWidth = pageWidth - horizontalMargin * 2;
+  const maxHeight = 260;
+  const imageProperties = doc.getImageProperties(chartImageDataUrl);
+  const size = fitImageWithinBounds({
+    width: imageProperties.width,
+    height: imageProperties.height,
+    maxWidth,
+    maxHeight
+  });
+  const x = horizontalMargin + (maxWidth - size.width) / 2;
+
+  doc.addImage(
+    chartImageDataUrl,
+    "PNG",
+    x,
+    y,
+    size.width,
+    size.height,
+    undefined,
+    "FAST"
+  );
+
+  return y + size.height + 20;
+}
+
 export async function createReportPdfBuffer(model) {
   const { autoTable, doc } = await createPdfDocument();
 
@@ -83,8 +120,7 @@ export async function createChartPdfBuffer(model, chartImageDataUrl = null) {
   );
 
   if (chartImageDataUrl) {
-    doc.addImage(chartImageDataUrl, "PNG", 40, nextY, 500, 220, undefined, "FAST");
-    nextY += 240;
+    nextY = addChartImage(doc, chartImageDataUrl, nextY);
   } else {
     nextY = addNoDataMessage(doc, "No chart visualization is available for this data.", nextY);
   }

@@ -7,79 +7,79 @@ const SHEET_NAMES = {
   monthlyTotals: "Monthly Totals"
 };
 
-async function createWorkbook() {
-  const ExcelJS = await import("exceljs");
-  const library = ExcelJS.default ?? ExcelJS;
+async function loadWriter() {
+  const module = await import("write-excel-file/browser");
 
-  return new library.Workbook();
+  return module.default;
 }
 
-function addSummarySheet(workbook, summaryRows) {
-  const sheet = workbook.addWorksheet(SHEET_NAMES.summary);
-
-  sheet.addRow(["Field", "Value"]);
-  summaryRows.forEach((row) => sheet.addRow(row));
-  sheet.columns = [{ width: 24 }, { width: 24 }];
+function createSummarySheet(summaryRows) {
+  return {
+    sheet: SHEET_NAMES.summary,
+    data: [["Field", "Value"], ...summaryRows],
+    columns: [{ width: 24 }, { width: 24 }]
+  };
 }
 
-function addRowsSheet(workbook, sheetName, columns, rows) {
-  const sheet = workbook.addWorksheet(sheetName);
-
-  sheet.addRow(columns);
-  rows.forEach((row) => sheet.addRow(Object.values(row)));
-  sheet.columns = columns.map((column) => ({
-    header: column,
-    width: Math.max(14, column.length + 4)
-  }));
+function createRowsSheet(sheetName, columns, rows) {
+  return {
+    sheet: sheetName,
+    data: [columns, ...rows.map((row) => Object.values(row))],
+    columns: columns.map((column) => ({
+      width: Math.max(14, column.length + 4)
+    }))
+  };
 }
 
-async function createWorkbookBuffer({ model, rowsSheetName }) {
-  const workbook = await createWorkbook();
-
-  addSummarySheet(workbook, model.summary);
-  addRowsSheet(workbook, rowsSheetName, model.columns, model.rows);
-
-  return workbook.xlsx.writeBuffer();
+export function createWorkbookSheets({ model, rowsSheetName }) {
+  return [
+    createSummarySheet(model.summary),
+    createRowsSheet(rowsSheetName, model.columns, model.rows)
+  ];
 }
 
-export function createReportWorkbookBuffer(model) {
-  return createWorkbookBuffer({
+async function createWorkbookBlob({ model, rowsSheetName }) {
+  const writeExcelFile = await loadWriter();
+  const sheets = createWorkbookSheets({ model, rowsSheetName });
+
+  return writeExcelFile(sheets).toBlob();
+}
+
+export function createReportWorkbookBlob(model) {
+  return createWorkbookBlob({
     model,
     rowsSheetName: SHEET_NAMES.reportCosts
   });
 }
 
-export function createPieChartWorkbookBuffer(model) {
-  return createWorkbookBuffer({
+export function createPieChartWorkbookBlob(model) {
+  return createWorkbookBlob({
     model,
     rowsSheetName: SHEET_NAMES.categoryTotals
   });
 }
 
-export function createBarChartWorkbookBuffer(model) {
-  return createWorkbookBuffer({
+export function createBarChartWorkbookBlob(model) {
+  return createWorkbookBlob({
     model,
     rowsSheetName: SHEET_NAMES.monthlyTotals
   });
 }
 
-export async function downloadWorkbook(model, filename, createBuffer) {
-  const buffer = await createBuffer(model);
-  const blob = new Blob([buffer], {
-    type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-  });
+export async function downloadWorkbook(model, filename, createBlob) {
+  const blob = await createBlob(model);
 
   downloadBlob(blob, filename);
 }
 
 export function downloadReportWorkbook(model, filename) {
-  return downloadWorkbook(model, filename, createReportWorkbookBuffer);
+  return downloadWorkbook(model, filename, createReportWorkbookBlob);
 }
 
 export function downloadPieChartWorkbook(model, filename) {
-  return downloadWorkbook(model, filename, createPieChartWorkbookBuffer);
+  return downloadWorkbook(model, filename, createPieChartWorkbookBlob);
 }
 
 export function downloadBarChartWorkbook(model, filename) {
-  return downloadWorkbook(model, filename, createBarChartWorkbookBuffer);
+  return downloadWorkbook(model, filename, createBarChartWorkbookBlob);
 }

@@ -6,6 +6,23 @@ function getSvgSize(svg) {
   return { height, width };
 }
 
+export function findChartSvgForCapture(container) {
+  const svgs = [...(container?.querySelectorAll("svg") ?? [])];
+
+  if (svgs.length === 0) {
+    return null;
+  }
+
+  return svgs.reduce((largestSvg, svg) => {
+    const largestSize = getSvgSize(largestSvg);
+    const size = getSvgSize(svg);
+
+    return size.width * size.height > largestSize.width * largestSize.height
+      ? svg
+      : largestSvg;
+  });
+}
+
 function loadImage(url) {
   return new Promise((resolve, reject) => {
     const image = new Image();
@@ -17,7 +34,7 @@ function loadImage(url) {
 }
 
 export async function captureChartSvgAsPngDataUrl(container) {
-  const svg = container?.querySelector("svg");
+  const svg = findChartSvgForCapture(container);
 
   if (!svg) {
     return null;

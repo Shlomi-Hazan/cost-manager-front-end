@@ -1221,10 +1221,12 @@ order. Monthly and Yearly report exports receive the current visible sorted rows
 from the report pages. Pie and Bar chart exports receive the already-generated
 chart data from their chart sections.
 
-Excel exports use `exceljs` to create real OOXML `.xlsx` workbooks. SheetJS
-`xlsx` was considered but not selected because npm reported unfixed high-severity
-advisories for the available package. PDF exports use `jspdf` and
-`jspdf-autotable` for human-readable metadata and multi-page tables.
+Excel exports use `write-excel-file` to create real OOXML `.xlsx` workbooks.
+SheetJS `xlsx` was rejected because npm reported unfixed high-severity
+advisories. ExcelJS was initially implemented, but newly published ExcelJS
+security findings made a narrower browser-focused writer a better fit for this
+write-only export use case. PDF exports use `jspdf` and `jspdf-autotable` for
+human-readable metadata and multi-page tables.
 
 The export libraries are loaded dynamically from the export services so they do
 not become part of the initial application bundle. Chart PDFs serialize the
@@ -1246,9 +1248,9 @@ currency-conversion logic.
 - The database, Vanilla `db.js`, and synchronous `getReport()` contract are
   unchanged.
 - Export tests must verify real workbook/PDF output and visible sorted row order.
-- The selected XLSX dependency currently carries a moderate transitive `uuid`
-  npm audit advisory; the available npm fix downgrades `exceljs` and was not
-  chosen for this browser export milestone.
+- The selected XLSX writer supports the required browser Blob output,
+  multi-sheet workbooks, and numeric spreadsheet cells without adding a
+  production spreadsheet parser.
 
 ---
 

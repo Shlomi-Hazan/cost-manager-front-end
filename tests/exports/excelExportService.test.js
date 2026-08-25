@@ -1,8 +1,9 @@
 import { describe, expect, it } from "vitest";
 import {
-  createBarChartWorkbookBuffer,
-  createPieChartWorkbookBuffer,
-  createReportWorkbookBuffer
+  createBarChartWorkbookBlob,
+  createPieChartWorkbookBlob,
+  createReportWorkbookBlob,
+  createWorkbookSheets
 } from "../../src/services/export/excelExportService.js";
 import {
   buildBarChartExportModel,
@@ -11,14 +12,10 @@ import {
   buildYearlyReportExportModel
 } from "../../src/services/export/exportModels.js";
 
-async function loadWorkbook(buffer) {
-  const ExcelJS = await import("exceljs");
-  const library = ExcelJS.default ?? ExcelJS;
-  const workbook = new library.Workbook();
+async function getBlobSignature(blob) {
+  const bytes = new Uint8Array(await blob.arrayBuffer());
 
-  await workbook.xlsx.load(buffer);
-
-  return workbook;
+  return String.fromCharCode(bytes[0], bytes[1]);
 }
 
 function createCost(description, sum) {
@@ -39,7 +36,7 @@ function createCost(description, sum) {
 }
 
 describe("excelExportService", () => {
-  it("creates a real Monthly XLSX workbook with sorted numeric cost rows", async () => {
+  it("creates a real Monthly XLSX Blob and passes sorted numeric cost rows", async () => {
     const model = buildMonthlyReportExportModel({
       report: {
         month: 8,
@@ -52,21 +49,25 @@ describe("excelExportService", () => {
         createCost("large", 100)
       ]
     });
-    const buffer = await createReportWorkbookBuffer(model);
-    const bytes = new Uint8Array(buffer);
-    const workbook = await loadWorkbook(buffer);
-    const costsSheet = workbook.getWorksheet("Costs");
+    const sheets = createWorkbookSheets({
+      model,
+      rowsSheetName: "Costs"
+    });
+    const blob = await createReportWorkbookBlob(model);
 
-    expect(String.fromCharCode(bytes[0], bytes[1])).toBe("PK");
-    expect(workbook.getWorksheet("Summary")).toBeTruthy();
-    expect(costsSheet).toBeTruthy();
-    expect(costsSheet.getCell("E2").value).toBe(2);
-    expect(costsSheet.getCell("C2").value).toBe("small");
-    expect(costsSheet.getCell("E3").value).toBe(25.5);
-    expect(costsSheet.getCell("E4").value).toBe(100);
+    expect(await getBlobSignature(blob)).toBe("PK");
+    expect(blob.size).toBeGreaterThan(0);
+    expect(sheets.map((sheet) => sheet.sheet)).toEqual(["Summary", "Costs"]);
+    expect(sheets[1].data).toEqual([
+      ["Day", "Time", "Description", "Category", "Sum", "Currency"],
+      [2, "09:05", "small", "Food", 2, "USD"],
+      [2, "09:05", "middle", "Food", 25.5, "USD"],
+      [2, "09:05", "large", "Food", 100, "USD"]
+    ]);
+    expect(typeof sheets[1].data[1][4]).toBe("number");
   });
 
-  it("creates a Yearly XLSX workbook with full Date rows", async () => {
+  it("creates a Yearly XLSX Blob with full Date rows", async () => {
     const model = buildYearlyReportExportModel({
       report: {
         year: 2026,
@@ -74,11 +75,15 @@ describe("excelExportService", () => {
       },
       costs: [createCost("January", 100)]
     });
-    const workbook = await loadWorkbook(await createReportWorkbookBuffer(model));
-    const costsSheet = workbook.getWorksheet("Costs");
+    const sheets = createWorkbookSheets({
+      model,
+      rowsSheetName: "Costs"
+    });
+    const blob = await createReportWorkbookBlob(model);
 
-    expect(costsSheet.getCell("A2").value).toBe("02/08/2026");
-    expect(costsSheet.getCell("E2").value).toBe(100);
+    expect(await getBlobSignature(blob)).toBe("PK");
+    expect(sheets[1].data[1][0]).toBe("02/08/2026");
+    expect(sheets[1].data[1][4]).toBe(100);
   });
 
   it("creates Pie chart XLSX category totals with numeric totals", async () => {
@@ -90,11 +95,16 @@ describe("excelExportService", () => {
       },
       chartData: [{ category: "Food", total: 125 }]
     });
-    const workbook = await loadWorkbook(await createPieChartWorkbookBuffer(model));
-    const sheet = workbook.getWorksheet("Category Totals");
+    const sheets = createWorkbookSheets({
+      model,
+      rowsSheetName: "Category Totals"
+    });
+    const blob = await createPieChartWorkbookBlob(model);
 
-    expect(sheet.getCell("A2").value).toBe("Food");
-    expect(sheet.getCell("B2").value).toBe(125);
+    expect(await getBlobSignature(blob)).toBe("PK");
+    expect(sheets[1].sheet).toBe("Category Totals");
+    expect(sheets[1].data[1]).toEqual(["Food", 125, "USD"]);
+    expect(typeof sheets[1].data[1][1]).toBe("number");
   });
 
   it("creates Bar chart XLSX with all 12 monthly rows including zeros", async () => {
@@ -112,13 +122,16 @@ describe("excelExportService", () => {
         monthlyTotals
       }
     });
-    const workbook = await loadWorkbook(await createBarChartWorkbookBuffer(model));
-    const sheet = workbook.getWorksheet("Monthly Totals");
+    const sheets = createWorkbookSheets({
+      model,
+      rowsSheetName: "Monthly Totals"
+    });
+    const blob = await createBarChartWorkbookBlob(model);
 
-    expect(sheet.rowCount).toBe(13);
-    expect(sheet.getCell("A2").value).toBe("Month 1");
-    expect(sheet.getCell("B2").value).toBe(100);
-    expect(sheet.getCell("B3").value).toBe(0);
-    expect(sheet.getCell("B13").value).toBe(0);
+    expect(await getBlobSignature(blob)).toBe("PK");
+    expect(sheets[1].data).toHaveLength(13);
+    expect(sheets[1].data[1]).toEqual(["Month 1", 100, "USD"]);
+    expect(sheets[1].data[2][1]).toBe(0);
+    expect(sheets[1].data[12][1]).toBe(0);
   });
 });

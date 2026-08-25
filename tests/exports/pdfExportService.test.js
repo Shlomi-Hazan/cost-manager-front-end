@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
   createChartPdfBuffer,
-  createReportPdfBuffer
+  createReportPdfBuffer,
+  fitImageWithinBounds
 } from "../../src/services/export/pdfExportService.js";
 import {
   buildBarChartExportModel,
@@ -32,6 +33,55 @@ function createCost(description, sum) {
 }
 
 describe("pdfExportService", () => {
+  it("fits landscape images within bounds while preserving aspect ratio", () => {
+    const size = fitImageWithinBounds({
+      width: 1000,
+      height: 500,
+      maxWidth: 500,
+      maxHeight: 260
+    });
+
+    expect(size).toEqual({ width: 500, height: 250 });
+  });
+
+  it("fits portrait images within bounds while preserving aspect ratio", () => {
+    const size = fitImageWithinBounds({
+      width: 500,
+      height: 1000,
+      maxWidth: 500,
+      maxHeight: 260
+    });
+
+    expect(size.width).toBe(130);
+    expect(size.height).toBe(260);
+  });
+
+  it("fits square images without exceeding bounds", () => {
+    const size = fitImageWithinBounds({
+      width: 600,
+      height: 600,
+      maxWidth: 500,
+      maxHeight: 260
+    });
+
+    expect(size.width).toBe(260);
+    expect(size.height).toBe(260);
+  });
+
+  it("preserves image aspect ratio when fitting", () => {
+    const sourceRatio = 1200 / 400;
+    const size = fitImageWithinBounds({
+      width: 1200,
+      height: 400,
+      maxWidth: 500,
+      maxHeight: 260
+    });
+
+    expect(size.width).toBeLessThanOrEqual(500);
+    expect(size.height).toBeLessThanOrEqual(260);
+    expect(size.width / size.height).toBeCloseTo(sourceRatio);
+  });
+
   it("creates a Monthly report PDF with title, metadata, total, and rows", async () => {
     const model = buildMonthlyReportExportModel({
       report: {
