@@ -1284,7 +1284,7 @@ date: {
 ## X-007 — Excel Export
 
 - **Type:** Team extension
-- **Status:** `NOT STARTED`
+- **Status:** `VERIFIED`
 - Users should be able to export structured spreadsheet files for:
   - Monthly Report,
   - Yearly Report,
@@ -1295,17 +1295,22 @@ date: {
 
 ### Verification
 
-- [ ] Monthly Report exports to XLSX.
-- [ ] Yearly Report exports to XLSX.
-- [ ] Pie Chart data exports to XLSX.
-- [ ] Bar Chart data exports to XLSX.
+- [x] Monthly Report exports to real XLSX.
+- [x] Yearly Report exports to real XLSX.
+- [x] Pie Chart data exports to XLSX.
+- [x] Bar Chart data exports to XLSX.
+- [x] Meaningful deterministic filenames are used.
+- [x] Selected filters and currency are represented.
+- [x] Report exports preserve visible sorted order.
+- [x] Numeric spreadsheet values remain numeric.
+- [x] Exports consume prepared application data without direct storage re-read.
 
 ---
 
 ## X-008 — PDF Export
 
 - **Type:** Team extension
-- **Status:** `NOT STARTED`
+- **Status:** `VERIFIED`
 - Users should be able to export human-readable PDF files for:
   - Monthly Report,
   - Yearly Report,
@@ -1314,10 +1319,15 @@ date: {
 
 ### Verification
 
-- [ ] Monthly Report exports to PDF.
-- [ ] Yearly Report exports to PDF.
-- [ ] Pie Chart exports visualization/data to PDF.
-- [ ] Bar Chart exports visualization/data to PDF.
+- [x] Monthly Report exports to PDF.
+- [x] Yearly Report exports to PDF.
+- [x] Pie Chart exports visualization/data to PDF.
+- [x] Bar Chart exports visualization/data to PDF.
+- [x] Meaningful deterministic filenames are used.
+- [x] Selected filters and currency are represented.
+- [x] Report PDFs preserve visible sorted order.
+- [x] Multi-page report data is supported by PDF table rendering.
+- [x] Empty-state export is handled.
 
 ---
 

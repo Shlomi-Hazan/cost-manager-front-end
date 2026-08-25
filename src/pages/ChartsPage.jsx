@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   Alert,
   Box,
@@ -31,6 +31,19 @@ import {
 } from "../services/exchangeRatesService.js";
 import { aggregateCostsByCategory } from "../utils/chartAggregation.js";
 import YearlyBarChartSection from "../components/charts/YearlyBarChartSection.jsx";
+import * as excelExportService from "../services/export/excelExportService.js";
+import { buildPieChartExportModel } from "../services/export/exportModels.js";
+import * as pdfExportService from "../services/export/pdfExportService.js";
+import { captureChartSvgAsPngDataUrl } from "../utils/chartCapture.js";
+import {
+  addCategoryShare,
+  shouldShowPieSliceLabel
+} from "../utils/chartPresentation.js";
+import { getPieChartExportFilename } from "../utils/exportFilenames.js";
+import {
+  formatDisplayAmount,
+  formatDisplayPercentage
+} from "../utils/amountFormat.js";
 
 const MONTHS = [
   { value: 1, label: "January" },
@@ -68,14 +81,6 @@ function getCurrentFilters() {
 
 function getMonthLabel(month) {
   return MONTHS.find((option) => option.value === month)?.label ?? String(month);
-}
-
-function formatAmount(amount) {
-  return Number.isInteger(amount)
-    ? String(amount)
-    : amount.toLocaleString("en-US", {
-        maximumFractionDigits: 6
-      });
 }
 
 function validateFilters(filters) {
@@ -118,13 +123,48 @@ function getChartErrorMessage(error) {
   return "Could not generate the monthly category chart. Please try again.";
 }
 
+function renderPieLabel(labelProps) {
+  const payload = labelProps.payload ?? labelProps;
+  const category = payload.category ?? labelProps.name;
+  const percentage = payload.percentage ?? labelProps.percent ?? 0;
+  const { midAngle } = labelProps;
+
+  if (!shouldShowPieSliceLabel({ percentage })) {
+    return null;
+  }
+
+  const radius =
+    labelProps.middleRadius ??
+    (Number(labelProps.innerRadius) + Number(labelProps.outerRadius)) / 2;
+  const radians = (Math.PI / 180) * -midAngle;
+  const x = labelProps.cx + radius * Math.cos(radians);
+  const y = labelProps.cy + radius * Math.sin(radians);
+
+  return (
+    <text
+      dominantBaseline="central"
+      fill="#FFFFFF"
+      fontSize={12}
+      fontWeight="700"
+      textAnchor="middle"
+      x={x}
+      y={y}
+    >
+      {`${category} ${formatDisplayPercentage(percentage)}`}
+    </text>
+  );
+}
+
 function ChartsPage() {
   const [filters, setFilters] = useState(getCurrentFilters);
   const [errors, setErrors] = useState({});
   const [chartResult, setChartResult] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
+  const [exportErrorMessage, setExportErrorMessage] = useState("");
+  const [exportingAction, setExportingAction] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [hasGenerated, setHasGenerated] = useState(false);
+  const chartContainerRef = useRef(null);
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -138,6 +178,7 @@ function ChartsPage() {
       [name]: undefined
     }));
     setErrorMessage("");
+    setExportErrorMessage("");
     setChartResult(null);
     setHasGenerated(false);
   }
@@ -149,6 +190,7 @@ function ChartsPage() {
 
     setErrors(validation.errors);
     setErrorMessage("");
+    setExportErrorMessage("");
     setChartResult(null);
     setHasGenerated(false);
 
@@ -189,7 +231,74 @@ function ChartsPage() {
     }
   }
 
+  function buildCurrentExportModel() {
+    return buildPieChartExportModel({
+      chartData,
+      report: chartResult.report
+    });
+  }
+
+  async function handleExcelExport() {
+    if (!chartResult) {
+      return;
+    }
+
+    setExportErrorMessage("");
+    setExportingAction("excel");
+
+    try {
+      await excelExportService.downloadPieChartWorkbook(
+        buildCurrentExportModel(),
+        getPieChartExportFilename({
+          year: chartResult.report.year,
+          month: chartResult.report.month,
+          currency: chartResult.report.total.currency,
+          extension: "xlsx"
+        })
+      );
+    } catch {
+      setExportErrorMessage("Could not export the Excel file. Please try again.");
+    } finally {
+      setExportingAction(null);
+    }
+  }
+
+  async function handlePdfExport() {
+    if (!chartResult) {
+      return;
+    }
+
+    setExportErrorMessage("");
+    setExportingAction("pdf");
+
+    try {
+      const chartImageDataUrl = hasPositiveChartData
+        ? await captureChartSvgAsPngDataUrl(chartContainerRef.current)
+        : null;
+
+      if (hasPositiveChartData && chartImageDataUrl === null) {
+        throw new Error("Pie chart image capture failed.");
+      }
+
+      await pdfExportService.downloadChartPdf(
+        buildCurrentExportModel(),
+        getPieChartExportFilename({
+          year: chartResult.report.year,
+          month: chartResult.report.month,
+          currency: chartResult.report.total.currency,
+          extension: "pdf"
+        }),
+        chartImageDataUrl
+      );
+    } catch {
+      setExportErrorMessage("Could not export the chart PDF. Please try again.");
+    } finally {
+      setExportingAction(null);
+    }
+  }
+
   const chartData = chartResult?.chartData ?? [];
+  const pieDisplayData = addCategoryShare(chartData);
   const hasChartData = chartData.length > 0;
   const hasPositiveChartData = chartData.some((entry) => entry.total > 0);
 
@@ -312,6 +421,27 @@ function ChartsPage() {
               </Typography>
             </Box>
 
+            {exportErrorMessage ? (
+              <Alert severity="error">{exportErrorMessage}</Alert>
+            ) : null}
+
+            <Stack direction={{ xs: "column", sm: "row" }} spacing={1}>
+              <Button
+                disabled={Boolean(exportingAction)}
+                onClick={handleExcelExport}
+                variant="outlined"
+              >
+                {exportingAction === "excel" ? "Exporting..." : "Export Excel"}
+              </Button>
+              <Button
+                disabled={Boolean(exportingAction)}
+                onClick={handlePdfExport}
+                variant="outlined"
+              >
+                {exportingAction === "pdf" ? "Exporting..." : "Export PDF"}
+              </Button>
+            </Stack>
+
             {!hasChartData ? (
               <Alert severity="info">No costs found for this month.</Alert>
             ) : !hasPositiveChartData ? (
@@ -321,6 +451,7 @@ function ChartsPage() {
             ) : (
               <Box
                 aria-label="Monthly category pie chart"
+                ref={chartContainerRef}
                 role="img"
                 sx={{
                   height: 360,
@@ -330,13 +461,18 @@ function ChartsPage() {
                 <ResponsiveContainer height="100%" width="100%">
                   <PieChart>
                     <Pie
-                      data={chartData}
+                      data={pieDisplayData}
                       dataKey="total"
+                      cx="50%"
+                      cy={150}
                       innerRadius={60}
+                      isAnimationActive={false}
+                      label={renderPieLabel}
+                      labelLine={false}
                       nameKey="category"
                       outerRadius={120}
                     >
-                      {chartData.map((entry, index) => (
+                      {pieDisplayData.map((entry, index) => (
                         <Cell
                           fill={CHART_COLORS[index % CHART_COLORS.length]}
                           key={entry.category}
@@ -345,11 +481,17 @@ function ChartsPage() {
                     </Pie>
                     <Tooltip
                       formatter={(value, name) => [
-                        `${formatAmount(value)} ${chartResult.report.total.currency}`,
+                        `${formatDisplayAmount(value)} ${chartResult.report.total.currency}`,
                         name
                       ]}
                     />
-                    <Legend />
+                    <Legend
+                      formatter={(value, entry) => {
+                        const item = entry.payload;
+
+                        return `${value} - ${formatDisplayAmount(item.total)} ${chartResult.report.total.currency} - ${formatDisplayPercentage(item.percentage)}`;
+                      }}
+                    />
                   </PieChart>
                 </ResponsiveContainer>
               </Box>
@@ -362,15 +504,19 @@ function ChartsPage() {
                     <TableRow>
                       <TableCell>Category</TableCell>
                       <TableCell align="right">Total</TableCell>
+                      <TableCell align="right">Share</TableCell>
                       <TableCell>Currency</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {chartData.map((entry) => (
+                    {pieDisplayData.map((entry) => (
                       <TableRow key={entry.category}>
                         <TableCell>{entry.category}</TableCell>
                         <TableCell align="right">
-                          {formatAmount(entry.total)}
+                          {formatDisplayAmount(entry.total)}
+                        </TableCell>
+                        <TableCell align="right">
+                          {formatDisplayPercentage(entry.percentage)}
                         </TableCell>
                         <TableCell>{chartResult.report.total.currency}</TableCell>
                       </TableRow>

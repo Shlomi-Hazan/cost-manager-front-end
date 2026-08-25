@@ -5,7 +5,11 @@ import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { setCachedExchangeRates } from "../../lib/exchangeRatesCache.js";
 import { costsDatabase } from "../../lib/costsDatabase.js";
+import * as excelExportService from "../../services/export/excelExportService.js";
+import * as pdfExportService from "../../services/export/pdfExportService.js";
 import theme from "../../theme.js";
+import * as chartCapture from "../../utils/chartCapture.js";
+import { formatPositiveBarValueLabel } from "../../utils/chartPresentation.js";
 import YearlyBarChartSection from "./YearlyBarChartSection.jsx";
 
 const validRates = {
@@ -144,6 +148,14 @@ describe("YearlyBarChartSection", () => {
     ).toBeInTheDocument();
   });
 
+  it("formats positive bar labels and suppresses zero labels", () => {
+    expect(formatPositiveBarValueLabel(Number("17.352941176470589"))).toBe(
+      "17.352941"
+    );
+    expect(formatPositiveBarValueLabel(20)).toBe("20");
+    expect(formatPositiveBarValueLabel(0)).toBe("");
+  });
+
   it("renders a Bar Chart region and exactly 12 calendar-ordered rows", async () => {
     const user = setupUser();
     mockSuccessfulRatesFetch();
@@ -168,6 +180,63 @@ describe("YearlyBarChartSection", () => {
     expect(getYearlyTotalRows().map((row) => row.cells[0].textContent)).toEqual(
       monthNames
     );
+  });
+
+  it("exports generated Bar chart data and chart image metadata", async () => {
+    const user = setupUser();
+    const excelSpy = vi
+      .spyOn(excelExportService, "downloadBarChartWorkbook")
+      .mockResolvedValue(undefined);
+    const pdfSpy = vi
+      .spyOn(pdfExportService, "downloadChartPdf")
+      .mockResolvedValue(undefined);
+
+    vi.spyOn(chartCapture, "captureChartSvgAsPngDataUrl").mockResolvedValue(
+      "data:image/png;base64,bar"
+    );
+    mockSuccessfulRatesFetch();
+    addCostOnDate({
+      month: 1,
+      cost: {
+        sum: 100,
+        currency: "USD",
+        category: "Food",
+        description: "January groceries"
+      }
+    });
+
+    renderYearlyBarChartSection();
+    await generateYearlyChart(user);
+    await user.click(screen.getByRole("button", { name: "Export Excel" }));
+
+    expect(excelSpy.mock.calls[0][0].rows).toHaveLength(12);
+    expect(excelSpy.mock.calls[0][0].rows[0]).toEqual({
+      month: "January",
+      total: 100,
+      currency: "USD"
+    });
+    expect(excelSpy.mock.calls[0][1]).toBe("cost-manager-bar-chart-2026-usd.xlsx");
+
+    await user.click(screen.getByRole("button", { name: "Export PDF" }));
+
+    expect(pdfSpy.mock.calls[0][0].rows).toHaveLength(12);
+    expect(pdfSpy.mock.calls[0][1]).toBe("cost-manager-bar-chart-2026-usd.pdf");
+    expect(pdfSpy.mock.calls[0][2]).toBe("data:image/png;base64,bar");
+  });
+
+  it("displays Bar chart export errors", async () => {
+    const user = setupUser();
+
+    vi.spyOn(chartCapture, "captureChartSvgAsPngDataUrl").mockResolvedValue(null);
+    mockSuccessfulRatesFetch();
+
+    renderYearlyBarChartSection();
+    await generateYearlyChart(user);
+    await user.click(screen.getByRole("button", { name: "Export PDF" }));
+
+    expect(
+      await screen.findByText("Could not export the chart PDF. Please try again.")
+    ).toBeInTheDocument();
   });
 
   it("keeps zero months visible with zero totals", async () => {

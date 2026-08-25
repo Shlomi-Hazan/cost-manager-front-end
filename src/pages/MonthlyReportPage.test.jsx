@@ -5,6 +5,8 @@ import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { setCachedExchangeRates } from "../lib/exchangeRatesCache.js";
 import { costsDatabase } from "../lib/costsDatabase.js";
+import * as excelExportService from "../services/export/excelExportService.js";
+import * as pdfExportService from "../services/export/pdfExportService.js";
 import MonthlyReportPage from "./MonthlyReportPage.jsx";
 import theme from "../theme.js";
 
@@ -542,5 +544,87 @@ describe("MonthlyReportPage", () => {
     expect(screen.getByRole("columnheader", { name: "Sum" })).not.toHaveAttribute(
       "aria-sort"
     );
+  });
+
+  it("shows export buttons only after generation and exports the current sorted rows", async () => {
+    const user = setupUser();
+    const excelSpy = vi
+      .spyOn(excelExportService, "downloadReportWorkbook")
+      .mockResolvedValue(undefined);
+    const pdfSpy = vi
+      .spyOn(pdfExportService, "downloadReportPdf")
+      .mockResolvedValue(undefined);
+
+    mockSuccessfulRatesFetch();
+    addSortableMonthlyCosts();
+
+    renderMonthlyReportPage();
+
+    expect(
+      screen.queryByRole("button", { name: "Export Excel" })
+    ).not.toBeInTheDocument();
+
+    await generateReport(user);
+    await sortBy(user, "Sum");
+    await sortBy(user, "Sum");
+    await user.click(screen.getByRole("button", { name: "Export Excel" }));
+
+    expect(excelSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        metadata: expect.objectContaining({
+          month: 8,
+          year: 2026,
+          currency: "USD",
+          total: 127.5
+        }),
+        rows: expect.arrayContaining([
+          expect.objectContaining({ description: "banana", sum: 100 })
+        ])
+      }),
+      "cost-manager-monthly-report-2026-08-usd.xlsx"
+    );
+    expect(excelSpy.mock.calls[0][0].rows.map((row) => row.description)).toEqual([
+      "banana",
+      "car",
+      "Apple"
+    ]);
+
+    await user.click(screen.getByRole("button", { name: "Export PDF" }));
+
+    expect(pdfSpy.mock.calls[0][0].rows.map((row) => row.description)).toEqual([
+      "banana",
+      "car",
+      "Apple"
+    ]);
+    expect(pdfSpy.mock.calls[0][1]).toBe(
+      "cost-manager-monthly-report-2026-08-usd.pdf"
+    );
+  });
+
+  it("displays export errors and disables export buttons while exporting", async () => {
+    const user = setupUser();
+    let rejectExport;
+    const exportPromise = new Promise((_resolve, reject) => {
+      rejectExport = reject;
+    });
+
+    vi.spyOn(excelExportService, "downloadReportWorkbook").mockReturnValue(
+      exportPromise
+    );
+    mockSuccessfulRatesFetch();
+    addSortableMonthlyCosts();
+
+    renderMonthlyReportPage();
+    await generateReport(user);
+    await user.click(screen.getByRole("button", { name: "Export Excel" }));
+
+    expect(screen.getByRole("button", { name: "Exporting..." })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Export PDF" })).toBeDisabled();
+
+    rejectExport(new Error("download failed"));
+
+    expect(
+      await screen.findByText("Could not export the Excel file. Please try again.")
+    ).toBeInTheDocument();
   });
 });

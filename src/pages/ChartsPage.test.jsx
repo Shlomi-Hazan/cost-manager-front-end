@@ -6,6 +6,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { COSTS_DATABASE_NAME } from "../lib/costsDatabase.js";
 import { setCachedExchangeRates } from "../lib/exchangeRatesCache.js";
 import { costsDatabase } from "../lib/costsDatabase.js";
+import * as excelExportService from "../services/export/excelExportService.js";
+import * as pdfExportService from "../services/export/pdfExportService.js";
+import * as chartCapture from "../utils/chartCapture.js";
 import ChartsPage from "./ChartsPage.jsx";
 import theme from "../theme.js";
 
@@ -85,12 +88,15 @@ function getTotalsTable() {
   return screen.getByRole("table", { name: "Monthly category totals" });
 }
 
-function expectCategoryTotal({ category, total, currency }) {
+function expectCategoryTotal({ category, total, share, currency }) {
   const table = getTotalsTable();
   const row = within(table).getByRole("row", { name: new RegExp(category) });
 
   expect(within(row).getByText(category)).toBeInTheDocument();
   expect(within(row).getByText(String(total))).toBeInTheDocument();
+  if (share) {
+    expect(within(row).getByText(share)).toBeInTheDocument();
+  }
   expect(within(row).getByText(currency)).toBeInTheDocument();
 }
 
@@ -216,16 +222,116 @@ describe("ChartsPage", () => {
       screen.getByRole("img", { name: "Monthly category pie chart" })
     ).toBeInTheDocument();
     expect(screen.getByText("Chart currency: USD")).toBeInTheDocument();
+    expect(
+      within(getTotalsTable()).getByRole("columnheader", { name: "Share" })
+    ).toBeInTheDocument();
     expectCategoryTotal({
       category: "Food",
       total: 100,
+      share: "80%",
       currency: "USD"
     });
     expectCategoryTotal({
       category: "Travel",
       total: 25,
+      share: "20%",
       currency: "USD"
     });
+  });
+
+  it("exports generated Pie chart data and chart image metadata", async () => {
+    const user = setupUser();
+    const excelSpy = vi
+      .spyOn(excelExportService, "downloadPieChartWorkbook")
+      .mockResolvedValue(undefined);
+    const pdfSpy = vi
+      .spyOn(pdfExportService, "downloadChartPdf")
+      .mockResolvedValue(undefined);
+    vi.spyOn(chartCapture, "captureChartSvgAsPngDataUrl").mockResolvedValue(
+      "data:image/png;base64,chart"
+    );
+
+    mockSuccessfulRatesFetch();
+    addCostOnDate({
+      day: 12,
+      cost: {
+        sum: 100,
+        currency: "USD",
+        category: "FOOD",
+        description: "Groceries"
+      }
+    });
+
+    renderChartsPage();
+    await generateChart(user);
+    await user.click(screen.getAllByRole("button", { name: "Export Excel" })[0]);
+
+    expect(excelSpy.mock.calls[0][0].rows).toEqual([
+      { category: "Food", total: 100, percentage: 1, currency: "USD" }
+    ]);
+    expect(excelSpy.mock.calls[0][0].metadata).toMatchObject({
+      month: 8,
+      year: 2026,
+      currency: "USD"
+    });
+    expect(excelSpy.mock.calls[0][1]).toBe(
+      "cost-manager-pie-chart-2026-08-usd.xlsx"
+    );
+
+    await user.click(screen.getAllByRole("button", { name: "Export PDF" })[0]);
+
+    expect(chartCapture.captureChartSvgAsPngDataUrl).toHaveBeenCalled();
+    expect(pdfSpy.mock.calls[0][0].rows).toEqual([
+      { category: "Food", total: 100, percentage: 1, currency: "USD" }
+    ]);
+    expect(pdfSpy.mock.calls[0][1]).toBe("cost-manager-pie-chart-2026-08-usd.pdf");
+    expect(pdfSpy.mock.calls[0][2]).toBe("data:image/png;base64,chart");
+  });
+
+  it("exports an empty Pie result without requiring chart capture", async () => {
+    const user = setupUser();
+    const excelSpy = vi
+      .spyOn(excelExportService, "downloadPieChartWorkbook")
+      .mockResolvedValue(undefined);
+    const captureSpy = vi
+      .spyOn(chartCapture, "captureChartSvgAsPngDataUrl")
+      .mockResolvedValue("data:image/png;base64,chart");
+
+    mockSuccessfulRatesFetch();
+
+    renderChartsPage();
+    await chooseMonth(user, "September");
+    await generateChart(user);
+    await user.click(screen.getAllByRole("button", { name: "Export Excel" })[0]);
+
+    expect(excelSpy.mock.calls[0][0].rows).toEqual([]);
+    expect(captureSpy).not.toHaveBeenCalled();
+  });
+
+  it("displays Pie chart export errors", async () => {
+    const user = setupUser();
+
+    vi.spyOn(excelExportService, "downloadPieChartWorkbook").mockRejectedValue(
+      new Error("download failed")
+    );
+    mockSuccessfulRatesFetch();
+    addCostOnDate({
+      day: 12,
+      cost: {
+        sum: 100,
+        currency: "USD",
+        category: "FOOD",
+        description: "Groceries"
+      }
+    });
+
+    renderChartsPage();
+    await generateChart(user);
+    await user.click(screen.getAllByRole("button", { name: "Export Excel" })[0]);
+
+    expect(
+      await screen.findByText("Could not export the Excel file. Please try again.")
+    ).toBeInTheDocument();
   });
 
   it("shows no-data state instead of a chart for an empty month", async () => {
@@ -282,11 +388,13 @@ describe("ChartsPage", () => {
     expectCategoryTotal({
       category: "Food",
       total: 800,
+      share: "88.9%",
       currency: "ILS"
     });
     expectCategoryTotal({
       category: "Travel",
       total: 100,
+      share: "11.1%",
       currency: "ILS"
     });
     expect(readStoredCosts()).toEqual(storedBefore);
@@ -321,6 +429,7 @@ describe("ChartsPage", () => {
     expectCategoryTotal({
       category: "Food",
       total: 200,
+      share: "100%",
       currency: "USD"
     });
   });
@@ -344,6 +453,7 @@ describe("ChartsPage", () => {
     expectCategoryTotal({
       category: "Food",
       total: 75,
+      share: "100%",
       currency: "USD"
     });
   });
@@ -436,11 +546,13 @@ describe("ChartsPage", () => {
     expectCategoryTotal({
       category: "Food",
       total: 50,
+      share: "66.7%",
       currency: "USD"
     });
     expectCategoryTotal({
       category: "Travel",
       total: 25,
+      share: "33.3%",
       currency: "USD"
     });
   });

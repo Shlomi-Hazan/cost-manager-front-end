@@ -5,6 +5,8 @@ import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { setCachedExchangeRates } from "../lib/exchangeRatesCache.js";
 import { costsDatabase } from "../lib/costsDatabase.js";
+import * as excelExportService from "../services/export/excelExportService.js";
+import * as pdfExportService from "../services/export/pdfExportService.js";
 import YearlyReportPage from "./YearlyReportPage.jsx";
 import theme from "../theme.js";
 
@@ -634,5 +636,67 @@ describe("YearlyReportPage", () => {
     expect(screen.getByRole("columnheader", { name: "Date" })).not.toHaveAttribute(
       "aria-sort"
     );
+  });
+
+  it("exports the current visible Yearly sort order", async () => {
+    const user = setupUser();
+    const excelSpy = vi
+      .spyOn(excelExportService, "downloadReportWorkbook")
+      .mockResolvedValue(undefined);
+    const pdfSpy = vi
+      .spyOn(pdfExportService, "downloadReportPdf")
+      .mockResolvedValue(undefined);
+
+    mockSuccessfulRatesFetch();
+    addSortableYearlyCosts();
+
+    renderYearlyReportPage();
+    await generateReport(user);
+    await sortBy(user, "Date");
+    await sortBy(user, "Date");
+    await user.click(screen.getByRole("button", { name: "Export Excel" }));
+
+    expect(excelSpy.mock.calls[0][0].rows.map((row) => row.description)).toEqual([
+      "car",
+      "Apple",
+      "banana"
+    ]);
+    expect(excelSpy.mock.calls[0][0].metadata).toMatchObject({
+      year: 2026,
+      currency: "USD",
+      total: 135.875
+    });
+    expect(excelSpy.mock.calls[0][1]).toBe(
+      "cost-manager-yearly-report-2026-usd.xlsx"
+    );
+
+    await user.click(screen.getByRole("button", { name: "Export PDF" }));
+
+    expect(pdfSpy.mock.calls[0][0].rows.map((row) => row.description)).toEqual([
+      "car",
+      "Apple",
+      "banana"
+    ]);
+    expect(pdfSpy.mock.calls[0][1]).toBe(
+      "cost-manager-yearly-report-2026-usd.pdf"
+    );
+  });
+
+  it("displays Yearly export errors", async () => {
+    const user = setupUser();
+
+    vi.spyOn(pdfExportService, "downloadReportPdf").mockRejectedValue(
+      new Error("download failed")
+    );
+    mockSuccessfulRatesFetch();
+    addSortableYearlyCosts();
+
+    renderYearlyReportPage();
+    await generateReport(user);
+    await user.click(screen.getByRole("button", { name: "Export PDF" }));
+
+    expect(
+      await screen.findByText("Could not export the PDF file. Please try again.")
+    ).toBeInTheDocument();
   });
 });

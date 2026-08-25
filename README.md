@@ -4,7 +4,7 @@ Final project for the **Front-End Development** course.
 
 This repository is intentionally being built from the project requirements outward: requirements, architecture, AI-agent instructions, testing strategy, Git/GitHub workflow, implementation, deployment, audit, and submission.
 
-> **Current status:** Milestone 9.5D — Sortable Reports.
+> **Current status:** Milestone 9.5E — Excel & PDF Export.
 
 ## Project Goal
 
@@ -126,8 +126,8 @@ Public.
 
 ## Current Milestone
 
-### Milestone 9.5D — Sortable Reports
+### Milestone 9.5E — Excel & PDF Export
 
-Monthly and Yearly report table headers are sortable with visible ascending and
-descending indicators, shared chronological/text/numeric sorting semantics, and a
-reusable implementation for future export work.
+Monthly and Yearly reports export to XLSX/PDF while preserving the current
+visible sorted order. Pie and Bar charts export structured XLSX data, and chart
+PDFs include the rendered visualization plus supporting data.
