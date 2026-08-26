@@ -10,7 +10,10 @@ import {
 
 function AppLayout({ activePageId, appTitle, children, navigationItems, onNavigate }) {
   return (
-    <Box sx={{ minHeight: "100vh", bgcolor: "background.default" }}>
+    <Box className="app-shell" sx={{ minHeight: "100vh", bgcolor: "background.default" }}>
+      <Box aria-hidden="true" className="ambient-background">
+        <span />
+      </Box>
       <AppBar position="static" color="inherit" elevation={0}>
         <Toolbar
           sx={{
@@ -41,18 +44,29 @@ function AppLayout({ activePageId, appTitle, children, navigationItems, onNaviga
             sx={{
               minHeight: 48,
               ".MuiTab-root": {
+                gap: 0.75,
                 minHeight: 48
               }
             }}
           >
             {navigationItems.map((item) => (
-              <Tab key={item.id} label={item.label} value={item.id} />
+              <Tab
+                icon={item.icon}
+                iconPosition="start"
+                key={item.id}
+                label={item.label}
+                value={item.id}
+              />
             ))}
           </Tabs>
         </Toolbar>
       </AppBar>
 
-      <Container component="main" maxWidth="lg" sx={{ py: 5 }}>
+      <Container
+        component="main"
+        maxWidth="xl"
+        sx={{ position: "relative", py: 5, zIndex: 1 }}
+      >
         {children}
       </Container>
     </Box>

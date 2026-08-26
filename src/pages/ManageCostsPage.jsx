@@ -1,4 +1,7 @@
 import { useState } from "react";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutlineOutlined";
+import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
+import InboxOutlinedIcon from "@mui/icons-material/InboxOutlined";
 import {
   Alert,
   Autocomplete,
@@ -9,7 +12,6 @@ import {
   DialogContent,
   DialogTitle,
   MenuItem,
-  Paper,
   Stack,
   Table,
   TableBody,
@@ -20,6 +22,8 @@ import {
   TextField,
   Typography
 } from "@mui/material";
+import PageHeader from "../components/common/PageHeader.jsx";
+import SectionCard from "../components/common/SectionCard.jsx";
 import { COMMON_CATEGORIES } from "../constants/categories.js";
 import { SUPPORTED_CURRENCIES } from "../constants/currencies.js";
 import { costsDatabase } from "../lib/costsDatabase.js";
@@ -31,14 +35,7 @@ import {
   parseDateInput,
   parseTimeInput
 } from "../utils/dateTime.js";
-
-function formatAmount(amount) {
-  return Number.isInteger(amount)
-    ? String(amount)
-    : amount.toLocaleString("en-US", {
-        maximumFractionDigits: 6
-      });
-}
+import { formatDisplayAmount } from "../utils/amountFormat.js";
 
 function createEditValues(cost) {
   return {
@@ -266,29 +263,18 @@ function ManageCostsPage() {
 
   return (
     <Stack spacing={3}>
-      <Box>
-        <Typography component="h1" variant="h1">
-          Manage Costs
-        </Typography>
-        <Typography color="text.secondary" variant="body1">
-          Review, edit, or delete your saved expenses.
-        </Typography>
-      </Box>
+      <PageHeader title="Manage Costs">
+        Review, edit, or delete your saved expenses.
+      </PageHeader>
 
       {feedback ? <Alert severity={feedback.severity}>{feedback.message}</Alert> : null}
 
       {costs.length === 0 ? (
-        <Alert severity="info">
+        <Alert icon={<InboxOutlinedIcon aria-hidden="true" />} severity="info">
           No costs have been added yet. Add costs from the Add Cost section.
         </Alert>
       ) : (
-        <Paper
-          elevation={0}
-          sx={{
-            border: "1px solid",
-            borderColor: "divider"
-          }}
-        >
+        <SectionCard sx={{ p: 0 }}>
           <TableContainer>
             <Table aria-label="Saved costs">
               <TableHead>
@@ -309,7 +295,9 @@ function ManageCostsPage() {
                     <TableCell>{formatTime(cost.date)}</TableCell>
                     <TableCell>{cost.description}</TableCell>
                     <TableCell>{cost.category}</TableCell>
-                    <TableCell align="right">{formatAmount(cost.sum)}</TableCell>
+                    <TableCell align="right">
+                      {formatDisplayAmount(cost.sum)}
+                    </TableCell>
                     <TableCell>{cost.currency}</TableCell>
                     <TableCell align="right">
                       <Stack
@@ -317,13 +305,18 @@ function ManageCostsPage() {
                         spacing={1}
                         sx={{ justifyContent: "flex-end" }}
                       >
-                        <Button onClick={() => handleOpenEdit(cost)} size="small">
+                        <Button
+                          onClick={() => handleOpenEdit(cost)}
+                          size="small"
+                          startIcon={<EditOutlinedIcon aria-hidden="true" />}
+                        >
                           Edit
                         </Button>
                         <Button
                           color="error"
                           onClick={() => handleOpenDelete(cost)}
                           size="small"
+                          startIcon={<DeleteOutlineIcon aria-hidden="true" />}
                         >
                           Delete
                         </Button>
@@ -334,7 +327,7 @@ function ManageCostsPage() {
               </TableBody>
             </Table>
           </TableContainer>
-        </Paper>
+        </SectionCard>
       )}
 
       <Dialog
@@ -346,7 +339,7 @@ function ManageCostsPage() {
       >
         <Box component="form" onSubmit={handleSaveEdit}>
           <DialogTitle>Edit Cost</DialogTitle>
-          <DialogContent>
+          <DialogContent dividers>
             {editValues ? (
               <Stack spacing={3} sx={{ pt: 1 }}>
                 {editFeedback ? (
@@ -478,7 +471,7 @@ function ManageCostsPage() {
         transitionDuration={0}
       >
         <DialogTitle>Delete cost?</DialogTitle>
-        <DialogContent>
+        <DialogContent dividers>
           {deleteCost ? (
             <Stack spacing={1}>
               {deleteFeedback ? (
@@ -498,7 +491,7 @@ function ManageCostsPage() {
               <Typography>
                 Sum:{" "}
                 <strong>
-                  {formatAmount(deleteCost.sum)} {deleteCost.currency}
+                  {formatDisplayAmount(deleteCost.sum)} {deleteCost.currency}
                 </strong>
               </Typography>
               <Typography>

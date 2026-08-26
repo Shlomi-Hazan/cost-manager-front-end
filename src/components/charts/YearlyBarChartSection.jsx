@@ -1,10 +1,12 @@
 import { useRef, useState } from "react";
+import BarChartOutlinedIcon from "@mui/icons-material/BarChartOutlined";
+import PictureAsPdfOutlinedIcon from "@mui/icons-material/PictureAsPdfOutlined";
+import TableChartOutlinedIcon from "@mui/icons-material/TableChartOutlined";
 import {
   Alert,
   Box,
   Button,
   MenuItem,
-  Paper,
   Stack,
   Table,
   TableBody,
@@ -25,6 +27,8 @@ import {
   XAxis,
   YAxis
 } from "recharts";
+import LoadingButtonLabel from "../common/LoadingButtonLabel.jsx";
+import SectionCard from "../common/SectionCard.jsx";
 import { SUPPORTED_CURRENCIES } from "../../constants/currencies.js";
 import { costsDatabase } from "../../lib/costsDatabase.js";
 import { refreshExchangeRates } from "../../services/exchangeRatesService.js";
@@ -216,15 +220,9 @@ function YearlyBarChartSection() {
 
   return (
     <Stack spacing={3}>
-      <Paper
+      <SectionCard
         component="form"
-        elevation={0}
         onSubmit={handleSubmit}
-        sx={{
-          border: "1px solid",
-          borderColor: "divider",
-          p: 3
-        }}
       >
         <Stack spacing={3}>
           <Box>
@@ -275,13 +273,25 @@ function YearlyBarChartSection() {
             </TextField>
 
             <Box sx={{ alignSelf: "start", pt: { md: 1 } }}>
-              <Button disabled={isLoading} type="submit" variant="contained">
-                {isLoading ? "Generating..." : "Generate Yearly Chart"}
+              <Button
+                disabled={isLoading}
+                startIcon={
+                  isLoading ? null : <BarChartOutlinedIcon aria-hidden="true" />
+                }
+                type="submit"
+                variant="contained"
+              >
+                <LoadingButtonLabel
+                  isLoading={isLoading}
+                  loadingText="Generating..."
+                >
+                  Generate Yearly Chart
+                </LoadingButtonLabel>
               </Button>
             </Box>
           </Box>
         </Stack>
-      </Paper>
+      </SectionCard>
 
       {!hasGenerated && !errorMessage && !isLoading ? (
         <Alert severity="info">
@@ -290,14 +300,7 @@ function YearlyBarChartSection() {
       ) : null}
 
       {yearlyResult ? (
-        <Paper
-          elevation={0}
-          sx={{
-            border: "1px solid",
-            borderColor: "divider",
-            p: 3
-          }}
-        >
+        <SectionCard>
           <Stack spacing={3}>
             <Box>
               <Typography component="h2" variant="h2">
@@ -316,16 +319,36 @@ function YearlyBarChartSection() {
               <Button
                 disabled={Boolean(exportingAction)}
                 onClick={handleExcelExport}
+                startIcon={
+                  exportingAction === "excel" ? null : (
+                    <TableChartOutlinedIcon aria-hidden="true" />
+                  )
+                }
                 variant="outlined"
               >
-                {exportingAction === "excel" ? "Exporting..." : "Export Excel"}
+                <LoadingButtonLabel
+                  isLoading={exportingAction === "excel"}
+                  loadingText="Exporting..."
+                >
+                  Export Excel
+                </LoadingButtonLabel>
               </Button>
               <Button
                 disabled={Boolean(exportingAction)}
                 onClick={handlePdfExport}
+                startIcon={
+                  exportingAction === "pdf" ? null : (
+                    <PictureAsPdfOutlinedIcon aria-hidden="true" />
+                  )
+                }
                 variant="outlined"
               >
-                {exportingAction === "pdf" ? "Exporting..." : "Export PDF"}
+                <LoadingButtonLabel
+                  isLoading={exportingAction === "pdf"}
+                  loadingText="Exporting..."
+                >
+                  Export PDF
+                </LoadingButtonLabel>
               </Button>
             </Stack>
 
@@ -406,7 +429,7 @@ function YearlyBarChartSection() {
               </Table>
             </TableContainer>
           </Stack>
-        </Paper>
+        </SectionCard>
       ) : null}
     </Stack>
   );

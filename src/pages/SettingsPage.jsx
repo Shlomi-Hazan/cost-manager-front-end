@@ -1,13 +1,19 @@
 import { useState } from "react";
+import LinkOutlinedIcon from "@mui/icons-material/LinkOutlined";
+import PublicOutlinedIcon from "@mui/icons-material/PublicOutlined";
+import RestartAltOutlinedIcon from "@mui/icons-material/RestartAltOutlined";
+import SaveOutlinedIcon from "@mui/icons-material/SaveOutlined";
 import {
   Alert,
   Box,
   Button,
-  Paper,
   Stack,
   TextField,
   Typography
 } from "@mui/material";
+import LoadingButtonLabel from "../components/common/LoadingButtonLabel.jsx";
+import PageHeader from "../components/common/PageHeader.jsx";
+import SectionCard from "../components/common/SectionCard.jsx";
 import { refreshExchangeRates } from "../services/exchangeRatesService.js";
 import {
   DEFAULT_EXCHANGE_RATES_URL,
@@ -121,24 +127,13 @@ function SettingsPage() {
 
   return (
     <Stack spacing={3}>
-      <Box>
-        <Typography component="h1" variant="h1">
-          Settings
-        </Typography>
-        <Typography color="text.secondary" variant="body1">
-          Manage the exchange-rate source used by reports and charts.
-        </Typography>
-      </Box>
+      <PageHeader title="Settings">
+        Manage the exchange-rate source used by reports and charts.
+      </PageHeader>
 
-      <Paper
+      <SectionCard
         component="form"
-        elevation={0}
         onSubmit={handleSaveCustomSource}
-        sx={{
-          border: "1px solid",
-          borderColor: "divider",
-          p: 3
-        }}
       >
         <Stack spacing={3}>
           <Box>
@@ -167,14 +162,33 @@ function SettingsPage() {
             <Typography color="text.secondary" variant="body2">
               Current source type
             </Typography>
-            <Typography>{settingsState.sourceType}</Typography>
+            <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
+              <PublicOutlinedIcon
+                aria-hidden="true"
+                color={settingsState.sourceType === "Default" ? "primary" : "secondary"}
+                fontSize="small"
+              />
+              <Typography>{settingsState.sourceType}</Typography>
+            </Stack>
 
             <Typography color="text.secondary" variant="body2">
               Current effective source
             </Typography>
-            <Typography sx={{ overflowWrap: "anywhere" }}>
-              {settingsState.effectiveUrl}
-            </Typography>
+            <Stack
+              direction="row"
+              spacing={1}
+              sx={{ alignItems: "flex-start", minWidth: 0 }}
+            >
+              <LinkOutlinedIcon
+                aria-hidden="true"
+                color="primary"
+                fontSize="small"
+                sx={{ mt: 0.25 }}
+              />
+              <Typography sx={{ overflowWrap: "anywhere" }}>
+                {settingsState.effectiveUrl}
+              </Typography>
+            </Stack>
 
             <Typography color="text.secondary" variant="body2">
               Default source
@@ -205,7 +219,15 @@ function SettingsPage() {
             }}
           >
             <Button disabled={isBusy} type="submit" variant="contained">
-              {activeAction === "save" ? "Testing..." : "Save & Test Source"}
+              <LoadingButtonLabel
+                isLoading={activeAction === "save"}
+                loadingText="Testing..."
+              >
+                <Stack component="span" direction="row" spacing={1}>
+                  <SaveOutlinedIcon aria-hidden="true" fontSize="small" />
+                  <span>Save & Test Source</span>
+                </Stack>
+              </LoadingButtonLabel>
             </Button>
             <Button
               disabled={isBusy}
@@ -213,11 +235,19 @@ function SettingsPage() {
               type="button"
               variant="outlined"
             >
-              {activeAction === "default" ? "Restoring..." : "Use Default Source"}
+              <LoadingButtonLabel
+                isLoading={activeAction === "default"}
+                loadingText="Restoring..."
+              >
+                <Stack component="span" direction="row" spacing={1}>
+                  <RestartAltOutlinedIcon aria-hidden="true" fontSize="small" />
+                  <span>Use Default Source</span>
+                </Stack>
+              </LoadingButtonLabel>
             </Button>
           </Box>
         </Stack>
-      </Paper>
+      </SectionCard>
     </Stack>
   );
 }

@@ -1,15 +1,16 @@
 import { useState } from "react";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutlineOutlined";
 import {
   Alert,
   Autocomplete,
   Box,
   Button,
   MenuItem,
-  Paper,
   Stack,
   TextField,
-  Typography
 } from "@mui/material";
+import PageHeader from "../components/common/PageHeader.jsx";
+import SectionCard from "../components/common/SectionCard.jsx";
 import { COMMON_CATEGORIES } from "../constants/categories.js";
 import { SUPPORTED_CURRENCIES } from "../constants/currencies.js";
 import { costsDatabase } from "../lib/costsDatabase.js";
@@ -135,22 +136,15 @@ function AddCostPage() {
 
   return (
     <Stack spacing={3}>
-      <Typography component="h1" variant="h1">
-        Add Cost
-      </Typography>
-      <Typography color="text.secondary" variant="body1">
+      <PageHeader title="Add Cost">
         Enter a cost item and save it to your Cost Manager database.
-      </Typography>
+      </PageHeader>
 
-      <Paper
+      <SectionCard
         component="form"
-        elevation={0}
         onSubmit={handleSubmit}
         sx={{
-          border: "1px solid",
-          borderColor: "divider",
-          maxWidth: 720,
-          p: 3
+          maxWidth: 760
         }}
       >
         <Stack spacing={3}>
@@ -224,12 +218,16 @@ function AddCostPage() {
           />
 
           <Box>
-            <Button type="submit" variant="contained">
+            <Button
+              startIcon={<AddCircleOutlineIcon aria-hidden="true" />}
+              type="submit"
+              variant="contained"
+            >
               Add Cost
             </Button>
           </Box>
         </Stack>
-      </Paper>
+      </SectionCard>
     </Stack>
   );
 }

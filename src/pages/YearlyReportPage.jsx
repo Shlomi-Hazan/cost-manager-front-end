@@ -1,14 +1,19 @@
 import { useState } from "react";
+import AssessmentOutlinedIcon from "@mui/icons-material/AssessmentOutlined";
+import PictureAsPdfOutlinedIcon from "@mui/icons-material/PictureAsPdfOutlined";
+import TableChartOutlinedIcon from "@mui/icons-material/TableChartOutlined";
 import {
   Alert,
   Box,
   Button,
   MenuItem,
-  Paper,
   Stack,
   TextField,
   Typography
 } from "@mui/material";
+import LoadingButtonLabel from "../components/common/LoadingButtonLabel.jsx";
+import PageHeader from "../components/common/PageHeader.jsx";
+import SectionCard from "../components/common/SectionCard.jsx";
 import SortableReportTable from "../components/reports/SortableReportTable.jsx";
 import { SUPPORTED_CURRENCIES } from "../constants/currencies.js";
 import { useReportSorting } from "../hooks/useReportSorting.js";
@@ -23,20 +28,13 @@ import * as pdfExportService from "../services/export/pdfExportService.js";
 import {
   getYearlyReportExportFilename
 } from "../utils/exportFilenames.js";
+import { formatDisplayAmount } from "../utils/amountFormat.js";
 
 function getCurrentFilters() {
   return {
     year: String(new Date().getFullYear()),
     currency: "USD"
   };
-}
-
-function formatAmount(amount) {
-  return Number.isInteger(amount)
-    ? String(amount)
-    : amount.toLocaleString("en-US", {
-        maximumFractionDigits: 6
-      });
 }
 
 function validateFilters(filters) {
@@ -73,7 +71,7 @@ function getReportErrorMessage(error) {
   return "Could not generate the yearly report. Please try again.";
 }
 
-function YearlyReportPage() {
+function YearlyReportPage({ headingComponent = "h1" }) {
   const [filters, setFilters] = useState(getCurrentFilters);
   const [errors, setErrors] = useState({});
   const [report, setReport] = useState(null);
@@ -205,24 +203,13 @@ function YearlyReportPage() {
 
   return (
     <Stack spacing={3}>
-      <Box>
-        <Typography component="h1" variant="h1">
-          Yearly Report
-        </Typography>
-        <Typography color="text.secondary" variant="body1">
-          Select a year and currency to review all cost entries for that year.
-        </Typography>
-      </Box>
+      <PageHeader component={headingComponent} title="Yearly Report">
+        Select a year and currency to review all cost entries for that year.
+      </PageHeader>
 
-      <Paper
+      <SectionCard
         component="form"
-        elevation={0}
         onSubmit={handleSubmit}
-        sx={{
-          border: "1px solid",
-          borderColor: "divider",
-          p: 3
-        }}
       >
         <Stack spacing={3}>
           {errorMessage ? <Alert severity="error">{errorMessage}</Alert> : null}
@@ -264,13 +251,25 @@ function YearlyReportPage() {
             </TextField>
 
             <Box sx={{ alignSelf: "start", pt: { md: 1 } }}>
-              <Button disabled={isLoading} type="submit" variant="contained">
-                {isLoading ? "Generating..." : "Generate Yearly Report"}
+              <Button
+                disabled={isLoading}
+                startIcon={
+                  isLoading ? null : <AssessmentOutlinedIcon aria-hidden="true" />
+                }
+                type="submit"
+                variant="contained"
+              >
+                <LoadingButtonLabel
+                  isLoading={isLoading}
+                  loadingText="Generating..."
+                >
+                  Generate Yearly Report
+                </LoadingButtonLabel>
               </Button>
             </Box>
           </Box>
         </Stack>
-      </Paper>
+      </SectionCard>
 
       {!hasGenerated && !errorMessage && !isLoading ? (
         <Alert severity="info">
@@ -279,14 +278,7 @@ function YearlyReportPage() {
       ) : null}
 
       {report ? (
-        <Paper
-          elevation={0}
-          sx={{
-            border: "1px solid",
-            borderColor: "divider",
-            p: 3
-          }}
-        >
+        <SectionCard>
           <Stack spacing={3}>
             <Box>
               <Typography component="h2" variant="h2">
@@ -296,7 +288,8 @@ function YearlyReportPage() {
                 Report currency: {report.total.currency}
               </Typography>
               <Typography fontWeight={700} variant="body1">
-                Total: {formatAmount(report.total.sum)} {report.total.currency}
+                Total: {formatDisplayAmount(report.total.sum)}{" "}
+                {report.total.currency}
               </Typography>
             </Box>
 
@@ -308,16 +301,36 @@ function YearlyReportPage() {
               <Button
                 disabled={Boolean(exportingAction)}
                 onClick={handleExcelExport}
+                startIcon={
+                  exportingAction === "excel" ? null : (
+                    <TableChartOutlinedIcon aria-hidden="true" />
+                  )
+                }
                 variant="outlined"
               >
-                {exportingAction === "excel" ? "Exporting..." : "Export Excel"}
+                <LoadingButtonLabel
+                  isLoading={exportingAction === "excel"}
+                  loadingText="Exporting..."
+                >
+                  Export Excel
+                </LoadingButtonLabel>
               </Button>
               <Button
                 disabled={Boolean(exportingAction)}
                 onClick={handlePdfExport}
+                startIcon={
+                  exportingAction === "pdf" ? null : (
+                    <PictureAsPdfOutlinedIcon aria-hidden="true" />
+                  )
+                }
                 variant="outlined"
               >
-                {exportingAction === "pdf" ? "Exporting..." : "Export PDF"}
+                <LoadingButtonLabel
+                  isLoading={exportingAction === "pdf"}
+                  loadingText="Exporting..."
+                >
+                  Export PDF
+                </LoadingButtonLabel>
               </Button>
             </Stack>
 
@@ -333,7 +346,7 @@ function YearlyReportPage() {
               />
             )}
           </Stack>
-        </Paper>
+        </SectionCard>
       ) : null}
     </Stack>
   );
