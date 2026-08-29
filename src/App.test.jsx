@@ -6,6 +6,8 @@ import { CssBaseline } from "@mui/material";
 import App from "./App.jsx";
 import theme from "./theme.js";
 
+// Smoke test: confirms the app shell (navigation + default page) renders
+// and that switching pages via the nav tabs actually swaps content.
 function renderApp() {
   return render(
     <ThemeProvider theme={theme}>

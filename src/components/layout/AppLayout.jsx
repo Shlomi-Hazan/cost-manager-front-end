@@ -8,6 +8,13 @@ import {
   Typography
 } from "@mui/material";
 
+/*
+ * The application shell: top navigation bar plus a content area that
+ * renders whichever page App.jsx has selected as `children`. This
+ * component has no knowledge of what a "page" actually does — it only
+ * renders the tab bar from `navigationItems` and reports clicks back via
+ * `onNavigate`, keeping page-switching logic in one place (App.jsx).
+ */
 function AppLayout({ activePageId, appTitle, children, navigationItems, onNavigate }) {
   return (
     <Box

@@ -12,6 +12,13 @@ import * as chartCapture from "../utils/chartCapture.js";
 import ChartsPage from "./ChartsPage.jsx";
 import theme from "../theme.js";
 
+/*
+ * Course requirement (R-070/R-071): drives the real Pie Chart page (filter
+ * selection, generation, rendering) against real stored costs. Export
+ * functions are mocked (excelExportService/pdfExportService/chartCapture)
+ * only to avoid exercising real file generation in a UI test — their own
+ * behavior is protected separately in tests/exports/.
+ */
 const validRates = {
   USD: 1,
   GBP: 0.5,

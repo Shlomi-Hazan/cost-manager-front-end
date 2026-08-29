@@ -1,3 +1,10 @@
+/*
+ * TEAM EXTENSION: deterministic, descriptive filenames for exported
+ * report/chart files, so a filename alone tells the user which period and
+ * currency the file covers (e.g. cost-manager-monthly-report-2026-08-usd.xlsx)
+ * without needing to open it.
+ */
+
 function padMonth(month) {
   return String(month).padStart(2, "0");
 }

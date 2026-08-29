@@ -23,6 +23,14 @@ import {
   setCustomExchangeRatesUrl
 } from "../services/settingsService.js";
 
+/*
+ * Course requirement: lets the user configure a custom exchange-rate URL,
+ * with a working default when none is set (R-092/R-093). "Save & Test"
+ * deliberately fetches the candidate URL BEFORE persisting it, so an
+ * invalid/unreachable custom source is rejected without ever overwriting a
+ * previously working source or the app's cached rates.
+ */
+
 function getInitialState() {
   const customUrl = getCustomExchangeRatesUrl();
 
@@ -82,6 +90,10 @@ function SettingsPage() {
     setActiveAction("save");
 
     try {
+      // Validate-then-persist: only fetch + validate succeeding causes the
+      // candidate URL to be saved as the active custom source below. If
+      // this throws, the catch block runs and the previous custom/default
+      // source (and its cache) is left completely untouched.
       await refreshExchangeRates(candidateUrl);
       const savedUrl = setCustomExchangeRatesUrl(candidateUrl);
 
@@ -101,6 +113,9 @@ function SettingsPage() {
     }
   }
 
+  // Explicitly re-validates the default URL too, so "restore default" can
+  // never silently leave the app pointed at a source that turns out to be
+  // unreachable — the same fetch-before-persist guarantee as Save & Test.
   async function handleUseDefaultSource() {
     setInputError("");
     setFeedback(null);

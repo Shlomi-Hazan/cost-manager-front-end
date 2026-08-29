@@ -7,6 +7,12 @@ import {
   parseTimeInput
 } from "../../src/utils/dateTime.js";
 
+/*
+ * Protects the display formatting and HTML <input> parsing/round-tripping
+ * for the { day, month, year, hour, minute } date shape db.js stores —
+ * including that invalid input (bad format, out-of-range values) returns
+ * null rather than throwing or silently producing a wrong date.
+ */
 describe("dateTime utilities", () => {
   it("formats dates for display with zero-padded day and month", () => {
     expect(

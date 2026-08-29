@@ -17,6 +17,12 @@ import {
 import theme from "../theme.js";
 import SettingsPage from "./SettingsPage.jsx";
 
+/*
+ * Course requirement (R-092/R-093): drives the real Settings UI (save/test
+ * custom source, restore default) against real localStorage settings and
+ * a mocked fetch, protecting the validate-before-persist guarantee: a
+ * failing custom URL must never overwrite a previously working source.
+ */
 const validRates = {
   USD: 1,
   GBP: 0.5,

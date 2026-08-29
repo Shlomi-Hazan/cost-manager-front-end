@@ -3,6 +3,9 @@ import { describe, expect, it } from "vitest";
 import { useReportSorting } from "./useReportSorting.js";
 import { REPORT_SORT_KEYS } from "../utils/reportSorting.js";
 
+// TEAM EXTENSION test (X-006): protects the hook's own state machine
+// (which column is active, which direction, reset behavior) independently
+// of any specific report page that consumes it.
 function createCost(id, overrides) {
   return {
     id,

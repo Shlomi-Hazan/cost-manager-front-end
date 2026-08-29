@@ -37,6 +37,17 @@ import {
 } from "../utils/dateTime.js";
 import { formatDisplayAmount } from "../utils/amountFormat.js";
 
+/*
+ * TEAM EXTENSION (X-002/X-003): lets the user view, edit, and delete
+ * existing costs, none of which the official specification requires — it
+ * only requires that costs can be added. This screen relies entirely on
+ * db.js's id-based getAllCosts/updateCost/deleteCost extensions (see
+ * src/lib/db.js); it never touches localStorage directly, and never edits
+ * the auto-generated id.
+ */
+
+// Converts a stored cost's raw fields into the shape the edit dialog's form
+// controls expect (all-string sum, HTML date/time input formats).
 function createEditValues(cost) {
   return {
     sum: String(cost.sum),
@@ -187,6 +198,8 @@ function ManageCostsPage() {
     }
 
     try {
+      // updateCost() preserves editCost.id — this can only ever change the
+      // sum/currency/category/description/date of that specific row.
       const updatedCost = costsDatabase.updateCost(editCost.id, {
         sum: validation.numericSum,
         currency: editValues.currency,
@@ -200,6 +213,10 @@ function ManageCostsPage() {
 
       loadCosts();
 
+      // A null result means the id no longer exists (e.g. deleted from
+      // another tab) — not a validation failure, so this refreshes the
+      // list and tells the user what happened rather than showing a form
+      // error.
       if (updatedCost === null) {
         handleCloseEdit();
         setFeedback({

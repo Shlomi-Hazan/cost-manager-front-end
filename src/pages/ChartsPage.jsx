@@ -50,6 +50,15 @@ import {
   formatDisplayPercentage
 } from "../utils/amountFormat.js";
 
+/*
+ * Course requirement: the monthly category Pie Chart (R-070/R-071). Renders
+ * the Yearly Bar Chart section (R-080/R-081) underneath as a separate
+ * component (YearlyBarChartSection) since the two charts have independent
+ * filters and are only grouped on one page as a layout choice, not because
+ * the specification requires them combined. Excel/PDF chart export is a
+ * TEAM EXTENSION.
+ */
+
 const MONTHS = [
   { value: 1, label: "January" },
   { value: 2, label: "February" },
@@ -128,6 +137,10 @@ function getChartErrorMessage(error) {
   return "Could not generate the monthly category chart. Please try again.";
 }
 
+// Recharts calls this per slice with the slice's geometry (angle/radius) and
+// the category's aggregated payload; it computes the label's on-chart
+// position from that geometry and hides the label entirely for very thin
+// slices (see shouldShowPieSliceLabel) where text would just overlap.
 function renderPieLabel(labelProps) {
   const payload = labelProps.payload ?? labelProps;
   const category = payload.category ?? labelProps.name;
@@ -172,6 +185,9 @@ function ChartsPage() {
   const [exportingAction, setExportingAction] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [hasGenerated, setHasGenerated] = useState(false);
+  // Points at the chart's DOM container so a PDF export can rasterize the
+  // rendered SVG into an image (see chartCapture.js) — this is the only
+  // reason a ref is needed here.
   const chartContainerRef = useRef(null);
 
   function handleChange(event) {
@@ -216,6 +232,9 @@ function ChartsPage() {
         // Same-currency charts and valid cached rates can still work after refresh failure.
       }
 
+      // Reuses the required getReport() to fetch the month's costs (rather
+      // than reading storage directly), then aggregates those rows by
+      // category client-side for the chart — see chartAggregation.js.
       const report = costsDatabase.getReport(
         filters.currency,
         validation.chartYear,
@@ -280,6 +299,9 @@ function ChartsPage() {
     setExportingAction("pdf");
 
     try {
+      // Only attempt to rasterize the chart when it actually rendered a
+      // pie (hasPositiveChartData) — an empty/all-zero month shows a
+      // no-data message instead of an SVG, so there is nothing to capture.
       const chartImageDataUrl = hasPositiveChartData
         ? await captureChartSvgAsPngDataUrl(chartContainerRef.current)
         : null;

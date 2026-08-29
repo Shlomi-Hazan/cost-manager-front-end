@@ -7,6 +7,11 @@ import {
   setCustomExchangeRatesUrl
 } from "../../src/services/settingsService.js";
 
+/*
+ * Course requirement (R-092/R-093): protects that a custom exchange-rate
+ * URL, once set, always takes priority over the default, and that clearing
+ * it correctly falls back to the true default rather than a stale copy.
+ */
 describe("settingsService", () => {
   beforeEach(() => {
     localStorage.clear();

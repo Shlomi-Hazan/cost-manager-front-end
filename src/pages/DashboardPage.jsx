@@ -13,6 +13,12 @@ import {
 } from "@mui/material";
 import PageHeader from "../components/common/PageHeader.jsx";
 
+/*
+ * The application's landing page: a set of clickable cards that jump to
+ * each main section via `onNavigate` (the same navigation function App.jsx
+ * passes to AppLayout's tab bar), so there are two equivalent ways to
+ * switch pages. Purely presentational — no data/business logic lives here.
+ */
 const dashboardCards = [
   {
     description: "Record a new expense with amount, currency, category, and notes.",

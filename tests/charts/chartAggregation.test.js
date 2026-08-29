@@ -1,6 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { aggregateCostsByCategory } from "../../src/utils/chartAggregation.js";
 
+/*
+ * Course requirement (R-070/R-071): protects Pie Chart category grouping
+ * and currency conversion — multiple categories, repeated category values
+ * summed, mixed currencies converted, and an empty month producing a
+ * clean empty/no-data result rather than an error.
+ */
 const validRates = {
   USD: 1,
   GBP: 0.5,

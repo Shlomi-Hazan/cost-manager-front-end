@@ -41,6 +41,14 @@ import { buildYearlyMonthlyTotals } from "../../utils/yearlyAggregation.js";
 import { formatDisplayAmount } from "../../utils/amountFormat.js";
 import { formatPositiveBarValueLabel } from "../../utils/chartPresentation.js";
 
+/*
+ * Course requirement: the yearly 12-month Bar Chart (R-080/R-081) — always
+ * shows all twelve months for the selected year/currency, with months that
+ * have no costs displayed as zero rather than omitted. Rendered as its own
+ * component (used from ChartsPage) since it has its own independent
+ * filters. Excel/PDF export is a TEAM EXTENSION.
+ */
+
 function getCurrentFilters() {
   return {
     year: String(new Date().getFullYear()),
@@ -133,6 +141,10 @@ function YearlyBarChartSection() {
         // Same-currency yearly charts and valid cached rates can still work.
       }
 
+      // buildYearlyMonthlyTotals() calls the required getReport() once per
+      // calendar month, guaranteeing exactly 12 entries — see
+      // yearlyAggregation.js for why empty months still return a valid
+      // zero-total report rather than being skipped.
       const monthlyTotals = buildYearlyMonthlyTotals(
         (currency, year, month) => costsDatabase.getReport(currency, year, month),
         filters.currency,

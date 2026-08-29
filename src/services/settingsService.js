@@ -1,9 +1,20 @@
+/*
+ * Course requirement: the app must work with a built-in default exchange-rate
+ * source (R-092) and must also let the user configure a custom one in
+ * Settings (R-093). This module owns that "custom URL overrides default"
+ * decision and persists the user's choice in localStorage; it does not
+ * perform the actual Fetch itself (see exchangeRatesService.js for that).
+ */
+
 // Built from Vite's BASE_URL rather than a hard-coded leading slash so this
 // still resolves correctly when the app is served from a subpath, such as a
 // GitHub Pages project site (https://<user>.github.io/cost-manager-front-end/).
 export const DEFAULT_EXCHANGE_RATES_URL = `${import.meta.env.BASE_URL}exchange-rates.json`;
 export const SETTINGS_STORAGE_KEY = "cost-manager:settings";
 
+// Settings are stored as a single small object under one key rather than one
+// key per setting, since there is currently only one setting to persist and
+// this keeps room to add more without a storage-key migration.
 function readSettings() {
   const storedValue = localStorage.getItem(SETTINGS_STORAGE_KEY);
 
@@ -26,6 +37,9 @@ function writeSettings(settings) {
   localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(settings));
 }
 
+// Returns null (not an empty string) when no custom URL is configured, so
+// callers can use `??` to fall back to the default URL (see
+// getExchangeRatesUrl() below) instead of having to check for "".
 export function getCustomExchangeRatesUrl() {
   const { exchangeRatesUrl } = readSettings();
 
@@ -50,6 +64,10 @@ export function setCustomExchangeRatesUrl(url) {
   return trimmedUrl;
 }
 
+// This is the "Use Default Source" behavior in Settings: it removes the
+// custom URL entirely (rather than writing back the default URL string), so
+// getExchangeRatesUrl() below naturally falls through to the true default
+// again, including any future change to DEFAULT_EXCHANGE_RATES_URL itself.
 export function clearCustomExchangeRatesUrl() {
   const settings = readSettings();
 
@@ -57,6 +75,8 @@ export function clearCustomExchangeRatesUrl() {
   writeSettings(settings);
 }
 
+// The single place the rest of the app should ask "what URL should exchange
+// rates come from right now?" — custom always wins when one is configured.
 export function getExchangeRatesUrl() {
   return getCustomExchangeRatesUrl() ?? DEFAULT_EXCHANGE_RATES_URL;
 }

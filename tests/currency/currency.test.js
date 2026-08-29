@@ -1,6 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { convertCurrency, validateExchangeRates } from "../../src/utils/currency.js";
 
+/*
+ * Protects the official rate model and the conversion formula
+ * (amount / rates[source] * rates[target]) against regressions such as an
+ * inverted formula or accidental EUR/EURO confusion, independent of any
+ * report/chart UI that happens to call this function.
+ */
 const rates = {
   USD: 1,
   GBP: 0.5,

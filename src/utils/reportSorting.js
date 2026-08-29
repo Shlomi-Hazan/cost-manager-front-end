@@ -1,3 +1,11 @@
+/*
+ * TEAM EXTENSION (X-006): sortable Monthly/Yearly report tables. Sorting
+ * never mutates the source cost array or affects the report's calculated
+ * total — it only changes the on-screen row order. A stable sort (see the
+ * `index` tie-breaker below) keeps equal-valued rows in their original
+ * order instead of shuffling them on every sort request.
+ */
+
 export const REPORT_SORT_DIRECTIONS = {
   asc: "asc",
   desc: "desc"
@@ -20,6 +28,9 @@ function compareNumbers(left, right) {
   return left - right;
 }
 
+// Encodes year/month/day into one comparable integer (e.g. 2026-08-29 ->
+// 20260829) so chronological order is just numeric order, without needing
+// a full Date object or timezone handling.
 function getDateValue(cost) {
   return cost.date.year * 10000 + cost.date.month * 100 + cost.date.day;
 }
@@ -51,6 +62,9 @@ function compareByKey(leftCost, rightCost, sortKey) {
   }
 }
 
+// Returns a NEW sorted array; `costs` itself is never reordered in place.
+// No sortKey means "no sorting requested yet" and returns a shallow copy in
+// original (insertion) order.
 export function sortReportCosts(costs, { sortKey = null, sortDirection = "asc" } = {}) {
   if (sortKey === null) {
     return [...costs];
@@ -63,6 +77,9 @@ export function sortReportCosts(costs, { sortKey = null, sortDirection = "asc" }
   const directionFactor =
     sortDirection === REPORT_SORT_DIRECTIONS.asc ? 1 : -1;
 
+  // Pairing each cost with its original index lets ties fall back to
+  // insertion order (left.index - right.index) instead of an unspecified
+  // order, which is what makes this sort stable.
   return costs
     .map((cost, index) => ({ cost, index }))
     .sort((left, right) => {

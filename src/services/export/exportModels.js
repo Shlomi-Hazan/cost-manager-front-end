@@ -1,3 +1,10 @@
+/*
+ * TEAM EXTENSION: builds one shared, presentation-ready "export model" per
+ * report/chart type, consumed by BOTH excelExportService.js and
+ * pdfExportService.js. This keeps the two export formats consistent (same
+ * rows, same formatted values) without either exporter needing to know how
+ * a report/chart's raw data is shaped.
+ */
 import { formatDateForDisplay, formatTime } from "../../utils/dateTime.js";
 import {
   formatDisplayAmount,

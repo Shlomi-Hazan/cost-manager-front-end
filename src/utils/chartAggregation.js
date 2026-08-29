@@ -1,3 +1,10 @@
+/*
+ * Course requirement: the monthly Pie Chart groups a month's costs by
+ * category and shows each category's total in a single selected currency
+ * (R-070/R-071). This module contains only the aggregation math — no React,
+ * no chart-library code — so it can be unit tested independently and reused
+ * by both the on-screen chart and its Excel/PDF export.
+ */
 import { isSupportedCurrency, convertCurrency } from "./currency.js";
 import { getCategoryDisplayName, getCategoryKey } from "./category.js";
 
@@ -19,6 +26,12 @@ function validateCostForAggregation(cost) {
   }
 }
 
+// Sums `costs` into one total per category, converting each cost's amount
+// into targetCurrency along the way (the chart only ever displays converted
+// totals, unlike report rows which keep their original currency). Category
+// names are grouped case-insensitively via getCategoryKey() so "Food" and
+// "food" contribute to the same slice (see category.js), while the category
+// label shown to the user is its normalized display form.
 export function aggregateCostsByCategory(costs, targetCurrency, rates) {
   if (!Array.isArray(costs)) {
     throw new TypeError("costs must be an array.");
@@ -33,6 +46,8 @@ export function aggregateCostsByCategory(costs, targetCurrency, rates) {
   costs.forEach((cost) => {
     validateCostForAggregation(cost);
 
+    // Rates are only required once a cost actually needs converting; a
+    // same-currency month can still be charted with no rates cache at all.
     if (cost.currency !== targetCurrency && rates == null) {
       throw new Error(
         "Exchange rates are required for mixed-currency chart aggregation."
