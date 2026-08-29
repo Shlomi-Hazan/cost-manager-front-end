@@ -43,6 +43,23 @@ describe("App", () => {
     expect(container.querySelector(".ambient-background")).toBeInTheDocument();
   });
 
+  it("marks the active page context for ambient background intensity", async () => {
+    const user = userEvent.setup();
+    const { container } = renderApp();
+
+    expect(container.querySelector(".app-shell")).toHaveAttribute(
+      "data-page",
+      "dashboard"
+    );
+
+    await user.click(screen.getByRole("tab", { name: "Manage Costs" }));
+
+    expect(container.querySelector(".app-shell")).toHaveAttribute(
+      "data-page",
+      "manage-costs"
+    );
+  });
+
   it("switches to the Manage Costs view without reloading", async () => {
     const user = userEvent.setup();
     renderApp();

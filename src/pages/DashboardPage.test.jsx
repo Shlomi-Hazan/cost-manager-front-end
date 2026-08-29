@@ -50,4 +50,33 @@ describe("DashboardPage", () => {
 
     expect(onNavigate).toHaveBeenCalledWith("manage-costs");
   });
+
+  it("activates dashboard shortcut cards with Enter", async () => {
+    const user = userEvent.setup();
+    const { onNavigate } = renderDashboardPage();
+
+    await user.tab();
+    await user.tab();
+
+    expect(
+      screen.getByRole("button", { name: /Manage Costs/i })
+    ).toHaveFocus();
+
+    await user.keyboard("{Enter}");
+
+    expect(onNavigate).toHaveBeenCalledWith("manage-costs");
+  });
+
+  it("activates dashboard shortcut cards with Space", async () => {
+    const user = userEvent.setup();
+    const { onNavigate } = renderDashboardPage();
+
+    await user.tab();
+
+    expect(screen.getByRole("button", { name: /Add Cost/i })).toHaveFocus();
+
+    await user.keyboard(" ");
+
+    expect(onNavigate).toHaveBeenCalledWith("add-cost");
+  });
 });

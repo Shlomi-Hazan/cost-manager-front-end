@@ -11,9 +11,17 @@ body {
 }
 
 .app-shell {
+  --ambient-duration: 40s;
+  --ambient-opacity: 0.04;
+
   isolation: isolate;
   overflow-x: clip;
   position: relative;
+}
+
+.app-shell[data-page="dashboard"] {
+  --ambient-duration: 34s;
+  --ambient-opacity: 0.065;
 }
 
 .ambient-background {
@@ -27,12 +35,12 @@ body {
 .ambient-background::before,
 .ambient-background::after,
 .ambient-background span {
-  animation: ambient-drift 34s ease-in-out infinite alternate;
+  animation: ambient-drift var(--ambient-duration) ease-in-out infinite alternate;
   border-radius: 999px;
   content: "";
   filter: blur(72px);
   height: 34rem;
-  opacity: 0.06;
+  opacity: var(--ambient-opacity);
   position: absolute;
   width: 34rem;
 }

@@ -10,7 +10,11 @@ import {
 
 function AppLayout({ activePageId, appTitle, children, navigationItems, onNavigate }) {
   return (
-    <Box className="app-shell" sx={{ minHeight: "100vh", bgcolor: "background.default" }}>
+    <Box
+      className="app-shell"
+      data-page={activePageId}
+      sx={{ minHeight: "100vh", bgcolor: "background.default" }}
+    >
       <Box aria-hidden="true" className="ambient-background">
         <span />
       </Box>
