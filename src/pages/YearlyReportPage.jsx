@@ -30,6 +30,14 @@ import {
 } from "../utils/exportFilenames.js";
 import { formatDisplayAmount } from "../utils/amountFormat.js";
 
+/*
+ * TEAM EXTENSION (X-005): a full-year detail report, in addition to the
+ * course-required Monthly Report. Follows the same filter/generate/export
+ * pattern as MonthlyReportPage.jsx by design, so the two report screens
+ * behave predictably the same way; see that file for the more detailed
+ * comments on the shared pattern (rate refresh, sortable table, exports).
+ */
+
 function getCurrentFilters() {
   return {
     year: String(new Date().getFullYear()),

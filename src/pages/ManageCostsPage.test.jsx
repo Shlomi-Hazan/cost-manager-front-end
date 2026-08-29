@@ -7,6 +7,13 @@ import { costsDatabase } from "../lib/costsDatabase.js";
 import ManageCostsPage from "./ManageCostsPage.jsx";
 import theme from "../theme.js";
 
+/*
+ * TEAM EXTENSION tests (X-002/X-003): drives the real Manage Costs UI
+ * (edit dialog, delete confirmation) against real stored costs, protecting
+ * that editing/deleting through the UI has the same effect as calling
+ * db.js's updateCost/deleteCost directly and that the stable id is never
+ * disturbed by an edit.
+ */
 function renderManageCostsPage() {
   return render(
     <ThemeProvider theme={theme}>

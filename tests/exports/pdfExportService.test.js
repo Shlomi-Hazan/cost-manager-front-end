@@ -11,6 +11,11 @@ import {
   buildYearlyReportExportModel
 } from "../../src/services/export/exportModels.js";
 
+/*
+ * TEAM EXTENSION tests: decodes the raw PDF byte buffer back to text so
+ * assertions can check for real PDF structure/content (e.g. the "%PDF-"
+ * header, embedded text) rather than only checking that some bytes exist.
+ */
 function decodePdf(buffer) {
   return new TextDecoder().decode(new Uint8Array(buffer));
 }

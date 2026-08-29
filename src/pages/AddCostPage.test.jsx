@@ -7,6 +7,13 @@ import { costsDatabase } from "../lib/costsDatabase.js";
 import AddCostPage from "./AddCostPage.jsx";
 import theme from "../theme.js";
 
+/*
+ * Course requirement (R-030 to R-036): drives the real Add Cost form
+ * through Testing Library (typing, selecting, submitting) and asserts
+ * against costsDatabase's real localStorage-backed state, rather than
+ * mocking db.js — so these tests protect the actual UI-to-storage
+ * integration, not just isolated form logic.
+ */
 function renderAddCostPage() {
   return render(
     <ThemeProvider theme={theme}>

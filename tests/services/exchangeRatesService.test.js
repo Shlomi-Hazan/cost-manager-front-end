@@ -14,6 +14,13 @@ import {
   setCustomExchangeRatesUrl
 } from "../../src/services/settingsService.js";
 
+/*
+ * Course requirement (R-090 to R-094): protects the Fetch -> validate ->
+ * cache pipeline that lets db.js's synchronous getReport() consume
+ * asynchronously-fetched rates (see src/lib/exchangeRatesCache.js for the
+ * full rationale) — including that a failed/invalid fetch does not corrupt
+ * a previously good cache.
+ */
 const validRates = {
   USD: 1,
   GBP: 0.5,

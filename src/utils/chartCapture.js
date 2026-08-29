@@ -1,3 +1,11 @@
+/*
+ * TEAM EXTENSION: turns a Recharts-rendered SVG chart into a PNG data URL so
+ * it can be embedded as an image in an exported PDF (jsPDF has no native
+ * SVG support). This never modifies the on-screen chart — it clones the SVG
+ * node, serializes the clone, draws it onto an off-screen canvas, and reads
+ * the canvas back out as a PNG.
+ */
+
 function getSvgSize(svg) {
   const rect = svg.getBoundingClientRect();
   const width = rect.width || Number(svg.getAttribute("width")) || 800;
@@ -6,6 +14,8 @@ function getSvgSize(svg) {
   return { height, width };
 }
 
+// A chart container can contain more than one <svg> (e.g. small icons); the
+// largest one by rendered area is assumed to be the actual chart.
 export function findChartSvgForCapture(container) {
   const svgs = [...(container?.querySelectorAll("svg") ?? [])];
 

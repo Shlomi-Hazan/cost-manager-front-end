@@ -1,3 +1,10 @@
+/*
+ * The single shared database handle the React application uses. Every page
+ * that needs to add/read/update/delete costs or generate a report imports
+ * `costsDatabase` from here instead of calling db.openCostsDB() itself, so
+ * the whole app is guaranteed to be reading and writing the same
+ * localStorage-backed database (same name + version = same storage key).
+ */
 import { db } from "./db.js";
 
 export const COSTS_DATABASE_NAME = "costsdb";

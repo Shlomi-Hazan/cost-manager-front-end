@@ -3,6 +3,13 @@ import globals from "globals";
 import reactHooks from "eslint-plugin-react-hooks";
 import reactRefresh from "eslint-plugin-react-refresh";
 
+/*
+ * Project lint configuration, run in CI on every Pull Request (see
+ * .github/workflows/ci.yml). react-hooks rules catch incorrect hook usage
+ * (missing dependencies, hooks called conditionally); react-refresh's rule
+ * is set to a warning (not an error) since a few files intentionally
+ * export a constant alongside a component.
+ */
 export default [
   {
     ignores: ["dist", "coverage"]

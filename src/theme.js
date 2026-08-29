@@ -1,5 +1,8 @@
 import { createTheme } from "@mui/material/styles";
 
+// The application's single MUI theme (colors, shape, typography), applied
+// once in main.jsx via ThemeProvider. Centralizing it here means no
+// component needs its own hard-coded colors/fonts.
 const theme = createTheme({
   customShadows: {
     card: "0 16px 40px rgba(15, 23, 42, 0.08)",

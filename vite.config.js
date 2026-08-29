@@ -11,6 +11,9 @@ import react from "@vitejs/plugin-react";
 export default defineConfig(({ command, isPreview }) => ({
   base: command === "build" || isPreview ? "/cost-manager-front-end/" : "/",
   plugins: [react()],
+  // jsdom simulates a browser DOM for Vitest so component tests can render
+  // React components and touch localStorage without a real browser;
+  // setupFiles wires up @testing-library/jest-dom's extra assertions.
   test: {
     environment: "jsdom",
     globals: true,

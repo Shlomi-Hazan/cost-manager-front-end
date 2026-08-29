@@ -1,3 +1,11 @@
+/*
+ * TEAM EXTENSION (X-007): generates real .xlsx workbooks (via
+ * write-excel-file, not a renamed CSV) for the Monthly/Yearly reports and
+ * Pie/Bar charts. All styling constants below only affect how the exported
+ * spreadsheet looks — numeric cells are still written as real numbers (see
+ * AMOUNT_FORMAT), so the exported file remains usable for further
+ * calculation, not just visual inspection.
+ */
 import { downloadBlob } from "./downloadService.js";
 
 const SHEET_NAMES = {
@@ -47,6 +55,9 @@ const COLUMN_WIDTHS = {
   Total: 16
 };
 
+// Dynamically imported so the (fairly large) write-excel-file library is
+// only downloaded when a user actually exports something, not as part of
+// the app's initial bundle.
 async function loadWriter() {
   const module = await import("write-excel-file/browser");
 

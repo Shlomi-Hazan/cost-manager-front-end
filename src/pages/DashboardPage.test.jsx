@@ -6,6 +6,8 @@ import { describe, expect, it, vi } from "vitest";
 import theme from "../theme.js";
 import DashboardPage from "./DashboardPage.jsx";
 
+// Confirms each dashboard card navigates to its target page via the
+// onNavigate callback — the same navigation mechanism the top nav bar uses.
 function renderDashboardPage(onNavigate = vi.fn()) {
   return {
     onNavigate,

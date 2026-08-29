@@ -4,6 +4,12 @@ import {
   buildDetailedYearlyReport
 } from "../../src/services/detailedReportsService.js";
 
+/*
+ * TEAM EXTENSION tests: protects that the app's own full-detail Monthly/
+ * Yearly report building (X-005) correctly reuses the required
+ * getReport() for totals while adding full date/time detail rows on top —
+ * without altering what getReport() itself returns.
+ */
 function createCost(overrides) {
   const { date: dateOverrides = {}, ...costOverrides } = overrides;
 

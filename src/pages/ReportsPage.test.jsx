@@ -6,6 +6,9 @@ import { describe, expect, it } from "vitest";
 import ReportsPage from "./ReportsPage.jsx";
 import theme from "../theme.js";
 
+// TEAM EXTENSION test (X-009): confirms the Reports tab group defaults to
+// Monthly and correctly switches to Yearly, without re-testing either
+// report's own internal behavior (covered separately).
 function renderReportsPage() {
   return render(
     <ThemeProvider theme={theme}>

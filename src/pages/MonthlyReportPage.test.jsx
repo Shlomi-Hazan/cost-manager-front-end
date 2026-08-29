@@ -10,6 +10,12 @@ import * as pdfExportService from "../services/export/pdfExportService.js";
 import MonthlyReportPage from "./MonthlyReportPage.jsx";
 import theme from "../theme.js";
 
+/*
+ * Course requirement (R-050 to R-053): drives the real Monthly Report page
+ * end to end (filters -> generate -> displayed rows/total) against real
+ * stored costs and a real (mocked-fetch) exchange-rate flow, protecting
+ * that the UI's numbers genuinely match what getReport() calculates.
+ */
 const validRates = {
   USD: 1,
   GBP: 0.5,

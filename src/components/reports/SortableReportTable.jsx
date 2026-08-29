@@ -7,6 +7,14 @@ import {
   TableRow,
   TableSortLabel
 } from "@mui/material";
+/*
+ * TEAM EXTENSION: the shared sortable table used by both the Monthly and
+ * Yearly report pages. `dateMode` is the only thing that differs between
+ * them — "monthly" shows just the day (matching the required report-item
+ * date shape), "yearly" shows the full date since rows can span 12 months.
+ * All sorting logic itself lives in reportSorting.js / useReportSorting.js;
+ * this component only renders columns and forwards header clicks.
+ */
 import { formatDateForDisplay, formatTime } from "../../utils/dateTime.js";
 import { REPORT_SORT_KEYS } from "../../utils/reportSorting.js";
 

@@ -1,5 +1,9 @@
 import { CircularProgress, Stack } from "@mui/material";
 
+// Small shared UI component: swaps a button's normal label for a spinner +
+// status text while an async action (report/chart generation, export,
+// Settings save) is in flight, so every busy button in the app looks and
+// behaves the same way.
 function LoadingButtonLabel({ children, isLoading, loadingText }) {
   return (
     <Stack

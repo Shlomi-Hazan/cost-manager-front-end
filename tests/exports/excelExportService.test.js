@@ -12,6 +12,12 @@ import {
   buildYearlyReportExportModel
 } from "../../src/services/export/exportModels.js";
 
+/*
+ * TEAM EXTENSION tests: an .xlsx file is a real ZIP archive under the hood
+ * ("PK" magic bytes) — checking the actual file signature (below) is
+ * stronger evidence of a genuine spreadsheet than just checking the Blob's
+ * declared MIME type, which a renamed CSV could fake.
+ */
 async function getBlobSignature(blob) {
   const bytes = new Uint8Array(await blob.arrayBuffer());
 

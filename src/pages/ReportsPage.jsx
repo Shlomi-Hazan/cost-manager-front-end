@@ -7,6 +7,12 @@ import SectionCard from "../components/common/SectionCard.jsx";
 import MonthlyReportPage from "./MonthlyReportPage.jsx";
 import YearlyReportPage from "./YearlyReportPage.jsx";
 
+/*
+ * TEAM EXTENSION (X-009): a top-level "Reports" navigation group hosting the
+ * required Monthly Report (R-050 to R-053) alongside the team's own
+ * additional Yearly Report, as two tabs rather than two separate top-level
+ * nav items.
+ */
 const REPORT_TABS = {
   monthly: "monthly",
   yearly: "yearly"

@@ -3,6 +3,21 @@ import path from "node:path";
 import { cwd } from "node:process";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+/*
+ * Contract tests for the standalone Vanilla version of db.js
+ * (vanilla/db.js) — the exact file that will be submitted separately for
+ * grading. This suite is intentionally structured to mirror
+ * tests/db/db.test.js so both db.js versions are checked against
+ * equivalent cases (see docs/TEST_PLAN.md §15, module/Vanilla parity).
+ *
+ * Crucially, this does NOT import vanilla/db.js as an ES module (which
+ * would prove nothing about standalone <script> compatibility, since the
+ * file has no import/export statements to import in the first place).
+ * Instead it reads the file's raw source text and evaluates it directly
+ * (see loadVanillaDb() below), the same way a browser would after
+ * <script src="db.js"></script> — so a passing suite here is real evidence
+ * that the file works standalone, not just that its logic is correct.
+ */
 const vanillaDbSource = readFileSync(
   path.join(cwd(), "vanilla", "db.js"),
   "utf8"
@@ -24,6 +39,8 @@ function readStoredCosts(databaseName = "costsdb", databaseVersion = 1) {
   return JSON.parse(localStorage.getItem(getStorageKey(databaseName, databaseVersion)) ?? "[]");
 }
 
+// Clears any previous global `db` first so each test starts from a fresh
+// load, exactly like opening a new page that includes the script tag.
 function loadVanillaDb() {
   delete window.db;
   delete globalThis.db;
@@ -74,6 +91,8 @@ describe("standalone Vanilla db.js", () => {
     delete globalThis.db;
   });
 
+  // --- Standalone-file guarantees: no module syntax, real global exposure ---
+
   it("has no executable import or export module declarations", () => {
     expect(vanillaDbSource).not.toMatch(/^\s*import\s/m);
     expect(vanillaDbSource).not.toMatch(/^\s*export\s/m);
@@ -88,6 +107,8 @@ describe("standalone Vanilla db.js", () => {
       openCostsDB: expect.any(Function)
     });
   });
+
+  // --- Required contract: same coverage as tests/db/db.test.js ---
 
   it("opens a database object with addCost and getReport methods", () => {
     const vanillaDb = loadVanillaDb();

@@ -5,6 +5,12 @@ import {
   normalizeCategoryInput
 } from "../../src/utils/category.js";
 
+/*
+ * Protects the case-insensitive category grouping used by the Pie Chart
+ * (e.g. "food"/"FOOD"/"Food" must aggregate together) without ever
+ * rejecting a free-text category db.js would otherwise accept — see
+ * OQ-004 in docs/REQUIREMENTS.md for why no fixed category list exists.
+ */
 describe("category utilities", () => {
   it("trims category whitespace", () => {
     expect(normalizeCategoryInput(" Food ")).toBe("Food");
