@@ -4,7 +4,7 @@ Final project for the **Front-End Development** course.
 
 This repository is intentionally being built from the project requirements outward: requirements, architecture, AI-agent instructions, testing strategy, Git/GitHub workflow, implementation, deployment, audit, and submission.
 
-> **Current status:** Milestone 9.5E — Excel & PDF Export.
+> **Current status:** Milestone 10 — UI/UX Polish.
 
 ## Project Goal
 
@@ -126,8 +126,8 @@ Public.
 
 ## Current Milestone
 
-### Milestone 9.5E — Excel & PDF Export
+### Milestone 10 — UI/UX Polish
 
-Monthly and Yearly reports export to XLSX/PDF while preserving the current
-visible sorted order. Pie and Bar charts export structured XLSX data, and chart
-PDFs include the rendered visualization plus supporting data.
+The application now applies cross-page visual consistency, a polished Dashboard,
+cleaner forms, tables, feedback states, chart readability, and desktop Chrome
+usability refinements.

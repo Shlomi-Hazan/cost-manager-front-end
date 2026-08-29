@@ -1,14 +1,19 @@
 import { useState } from "react";
+import AssessmentOutlinedIcon from "@mui/icons-material/AssessmentOutlined";
+import PictureAsPdfOutlinedIcon from "@mui/icons-material/PictureAsPdfOutlined";
+import TableChartOutlinedIcon from "@mui/icons-material/TableChartOutlined";
 import {
   Alert,
   Box,
   Button,
   MenuItem,
-  Paper,
   Stack,
   TextField,
   Typography
 } from "@mui/material";
+import LoadingButtonLabel from "../components/common/LoadingButtonLabel.jsx";
+import PageHeader from "../components/common/PageHeader.jsx";
+import SectionCard from "../components/common/SectionCard.jsx";
 import SortableReportTable from "../components/reports/SortableReportTable.jsx";
 import { SUPPORTED_CURRENCIES } from "../constants/currencies.js";
 import { useReportSorting } from "../hooks/useReportSorting.js";
@@ -23,6 +28,7 @@ import * as pdfExportService from "../services/export/pdfExportService.js";
 import {
   getMonthlyReportExportFilename
 } from "../utils/exportFilenames.js";
+import { formatDisplayAmount } from "../utils/amountFormat.js";
 
 const MONTHS = [
   { value: 1, label: "January" },
@@ -51,14 +57,6 @@ function getCurrentFilters() {
 
 function getMonthLabel(month) {
   return MONTHS.find((option) => option.value === month)?.label ?? String(month);
-}
-
-function formatAmount(amount) {
-  return Number.isInteger(amount)
-    ? String(amount)
-    : amount.toLocaleString("en-US", {
-        maximumFractionDigits: 6
-      });
 }
 
 function validateFilters(filters) {
@@ -104,7 +102,7 @@ function getReportErrorMessage(error) {
   return "Could not generate the monthly report. Please try again.";
 }
 
-function MonthlyReportPage() {
+function MonthlyReportPage({ headingComponent = "h1" }) {
   const [filters, setFilters] = useState(getCurrentFilters);
   const [errors, setErrors] = useState({});
   const [report, setReport] = useState(null);
@@ -239,24 +237,13 @@ function MonthlyReportPage() {
 
   return (
     <Stack spacing={3}>
-      <Box>
-        <Typography component="h1" variant="h1">
-          Monthly Report
-        </Typography>
-        <Typography color="text.secondary" variant="body1">
-          Select a month, year, and currency to review detailed cost entries.
-        </Typography>
-      </Box>
+      <PageHeader component={headingComponent} title="Monthly Report">
+        Select a month, year, and currency to review detailed cost entries.
+      </PageHeader>
 
-      <Paper
+      <SectionCard
         component="form"
-        elevation={0}
         onSubmit={handleSubmit}
-        sx={{
-          border: "1px solid",
-          borderColor: "divider",
-          p: 3
-        }}
       >
         <Stack spacing={3}>
           {errorMessage ? <Alert severity="error">{errorMessage}</Alert> : null}
@@ -314,13 +301,25 @@ function MonthlyReportPage() {
             </TextField>
 
             <Box sx={{ alignSelf: "start", pt: { md: 1 } }}>
-              <Button disabled={isLoading} type="submit" variant="contained">
-                {isLoading ? "Generating..." : "Generate Report"}
+              <Button
+                disabled={isLoading}
+                startIcon={
+                  isLoading ? null : <AssessmentOutlinedIcon aria-hidden="true" />
+                }
+                type="submit"
+                variant="contained"
+              >
+                <LoadingButtonLabel
+                  isLoading={isLoading}
+                  loadingText="Generating..."
+                >
+                  Generate Report
+                </LoadingButtonLabel>
               </Button>
             </Box>
           </Box>
         </Stack>
-      </Paper>
+      </SectionCard>
 
       {!hasGenerated && !errorMessage && !isLoading ? (
         <Alert severity="info">
@@ -329,14 +328,7 @@ function MonthlyReportPage() {
       ) : null}
 
       {report ? (
-        <Paper
-          elevation={0}
-          sx={{
-            border: "1px solid",
-            borderColor: "divider",
-            p: 3
-          }}
-        >
+        <SectionCard>
           <Stack spacing={3}>
             <Box>
               <Typography component="h2" variant="h2">
@@ -346,7 +338,8 @@ function MonthlyReportPage() {
                 Report currency: {report.total.currency}
               </Typography>
               <Typography fontWeight={700} variant="body1">
-                Total: {formatAmount(report.total.sum)} {report.total.currency}
+                Total: {formatDisplayAmount(report.total.sum)}{" "}
+                {report.total.currency}
               </Typography>
             </Box>
 
@@ -358,16 +351,36 @@ function MonthlyReportPage() {
               <Button
                 disabled={Boolean(exportingAction)}
                 onClick={handleExcelExport}
+                startIcon={
+                  exportingAction === "excel" ? null : (
+                    <TableChartOutlinedIcon aria-hidden="true" />
+                  )
+                }
                 variant="outlined"
               >
-                {exportingAction === "excel" ? "Exporting..." : "Export Excel"}
+                <LoadingButtonLabel
+                  isLoading={exportingAction === "excel"}
+                  loadingText="Exporting..."
+                >
+                  Export Excel
+                </LoadingButtonLabel>
               </Button>
               <Button
                 disabled={Boolean(exportingAction)}
                 onClick={handlePdfExport}
+                startIcon={
+                  exportingAction === "pdf" ? null : (
+                    <PictureAsPdfOutlinedIcon aria-hidden="true" />
+                  )
+                }
                 variant="outlined"
               >
-                {exportingAction === "pdf" ? "Exporting..." : "Export PDF"}
+                <LoadingButtonLabel
+                  isLoading={exportingAction === "pdf"}
+                  loadingText="Exporting..."
+                >
+                  Export PDF
+                </LoadingButtonLabel>
               </Button>
             </Stack>
 
@@ -383,7 +396,7 @@ function MonthlyReportPage() {
               />
             )}
           </Stack>
-        </Paper>
+        </SectionCard>
       ) : null}
     </Stack>
   );

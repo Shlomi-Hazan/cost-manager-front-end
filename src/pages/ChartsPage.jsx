@@ -1,10 +1,12 @@
 import { useRef, useState } from "react";
+import DonutLargeOutlinedIcon from "@mui/icons-material/DonutLargeOutlined";
+import PictureAsPdfOutlinedIcon from "@mui/icons-material/PictureAsPdfOutlined";
+import TableChartOutlinedIcon from "@mui/icons-material/TableChartOutlined";
 import {
   Alert,
   Box,
   Button,
   MenuItem,
-  Paper,
   Stack,
   Table,
   TableBody,
@@ -23,6 +25,9 @@ import {
   ResponsiveContainer,
   Tooltip
 } from "recharts";
+import LoadingButtonLabel from "../components/common/LoadingButtonLabel.jsx";
+import PageHeader from "../components/common/PageHeader.jsx";
+import SectionCard from "../components/common/SectionCard.jsx";
 import { SUPPORTED_CURRENCIES } from "../constants/currencies.js";
 import { costsDatabase } from "../lib/costsDatabase.js";
 import {
@@ -146,6 +151,9 @@ function renderPieLabel(labelProps) {
       fill="#FFFFFF"
       fontSize={12}
       fontWeight="700"
+      paintOrder="stroke"
+      stroke="rgba(23, 32, 51, 0.68)"
+      strokeWidth={3}
       textAnchor="middle"
       x={x}
       y={y}
@@ -304,24 +312,13 @@ function ChartsPage() {
 
   return (
     <Stack spacing={3}>
-      <Box>
-        <Typography component="h1" variant="h1">
-          Charts
-        </Typography>
-        <Typography color="text.secondary" variant="body1">
-          Visualize monthly cost categories in a selected currency.
-        </Typography>
-      </Box>
+      <PageHeader title="Charts">
+        Visualize monthly cost categories in a selected currency.
+      </PageHeader>
 
-      <Paper
+      <SectionCard
         component="form"
-        elevation={0}
         onSubmit={handleSubmit}
-        sx={{
-          border: "1px solid",
-          borderColor: "divider",
-          p: 3
-        }}
       >
         <Stack spacing={3}>
           <Box>
@@ -388,13 +385,25 @@ function ChartsPage() {
             </TextField>
 
             <Box sx={{ alignSelf: "start", pt: { md: 1 } }}>
-              <Button disabled={isLoading} type="submit" variant="contained">
-                {isLoading ? "Generating..." : "Generate Chart"}
+              <Button
+                disabled={isLoading}
+                startIcon={
+                  isLoading ? null : <DonutLargeOutlinedIcon aria-hidden="true" />
+                }
+                type="submit"
+                variant="contained"
+              >
+                <LoadingButtonLabel
+                  isLoading={isLoading}
+                  loadingText="Generating..."
+                >
+                  Generate Chart
+                </LoadingButtonLabel>
               </Button>
             </Box>
           </Box>
         </Stack>
-      </Paper>
+      </SectionCard>
 
       {!hasGenerated && !errorMessage && !isLoading ? (
         <Alert severity="info">
@@ -403,14 +412,7 @@ function ChartsPage() {
       ) : null}
 
       {chartResult ? (
-        <Paper
-          elevation={0}
-          sx={{
-            border: "1px solid",
-            borderColor: "divider",
-            p: 3
-          }}
-        >
+        <SectionCard>
           <Stack spacing={3}>
             <Box>
               <Typography component="h2" variant="h2">
@@ -429,16 +431,36 @@ function ChartsPage() {
               <Button
                 disabled={Boolean(exportingAction)}
                 onClick={handleExcelExport}
+                startIcon={
+                  exportingAction === "excel" ? null : (
+                    <TableChartOutlinedIcon aria-hidden="true" />
+                  )
+                }
                 variant="outlined"
               >
-                {exportingAction === "excel" ? "Exporting..." : "Export Excel"}
+                <LoadingButtonLabel
+                  isLoading={exportingAction === "excel"}
+                  loadingText="Exporting..."
+                >
+                  Export Excel
+                </LoadingButtonLabel>
               </Button>
               <Button
                 disabled={Boolean(exportingAction)}
                 onClick={handlePdfExport}
+                startIcon={
+                  exportingAction === "pdf" ? null : (
+                    <PictureAsPdfOutlinedIcon aria-hidden="true" />
+                  )
+                }
                 variant="outlined"
               >
-                {exportingAction === "pdf" ? "Exporting..." : "Export PDF"}
+                <LoadingButtonLabel
+                  isLoading={exportingAction === "pdf"}
+                  loadingText="Exporting..."
+                >
+                  Export PDF
+                </LoadingButtonLabel>
               </Button>
             </Stack>
 
@@ -526,7 +548,7 @@ function ChartsPage() {
               </TableContainer>
             ) : null}
           </Stack>
-        </Paper>
+        </SectionCard>
       ) : null}
 
       <YearlyBarChartSection />

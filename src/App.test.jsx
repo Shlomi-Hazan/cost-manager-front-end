@@ -20,7 +20,9 @@ describe("App", () => {
     renderApp();
 
     expect(screen.getByText("Cost Manager")).toBeInTheDocument();
-    expect(screen.getAllByRole("tab").map((tab) => tab.textContent)).toEqual([
+    expect(
+      screen.getAllByRole("tab").map((tab) => tab.textContent.trim())
+    ).toEqual([
       "Dashboard",
       "Add Cost",
       "Manage Costs",
@@ -32,6 +34,30 @@ describe("App", () => {
     expect(
       screen.getByText("Track, review, and visualize your expenses.")
     ).toBeInTheDocument();
+  });
+
+  it("renders the ambient shell layer behind the application content", () => {
+    const { container } = renderApp();
+
+    expect(container.querySelector(".app-shell")).toBeInTheDocument();
+    expect(container.querySelector(".ambient-background")).toBeInTheDocument();
+  });
+
+  it("marks the active page context for ambient background intensity", async () => {
+    const user = userEvent.setup();
+    const { container } = renderApp();
+
+    expect(container.querySelector(".app-shell")).toHaveAttribute(
+      "data-page",
+      "dashboard"
+    );
+
+    await user.click(screen.getByRole("tab", { name: "Manage Costs" }));
+
+    expect(container.querySelector(".app-shell")).toHaveAttribute(
+      "data-page",
+      "manage-costs"
+    );
   });
 
   it("switches to the Manage Costs view without reloading", async () => {

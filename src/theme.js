@@ -1,6 +1,11 @@
 import { createTheme } from "@mui/material/styles";
 
 const theme = createTheme({
+  customShadows: {
+    card: "0 16px 40px rgba(15, 23, 42, 0.08)",
+    cardHover: "0 22px 52px rgba(15, 23, 42, 0.12)",
+    focus: "0 0 0 3px rgba(37, 99, 235, 0.22)"
+  },
   palette: {
     mode: "light",
     primary: {
@@ -26,11 +31,18 @@ const theme = createTheme({
       '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
     h1: {
       fontSize: "2.25rem",
-      fontWeight: 700
+      fontWeight: 700,
+      lineHeight: 1.18
     },
     h2: {
       fontSize: "1.5rem",
-      fontWeight: 700
+      fontWeight: 700,
+      lineHeight: 1.25
+    },
+    h3: {
+      fontSize: "1.125rem",
+      fontWeight: 700,
+      lineHeight: 1.35
     },
     button: {
       fontWeight: 700,
@@ -38,10 +50,70 @@ const theme = createTheme({
     }
   },
   components: {
+    MuiAlert: {
+      styleOverrides: {
+        root: {
+          borderRadius: 8
+        }
+      }
+    },
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          minHeight: 40
+        }
+      }
+    },
     MuiCard: {
       styleOverrides: {
         root: {
           borderRadius: 8
+        }
+      }
+    },
+    MuiDialogActions: {
+      styleOverrides: {
+        root: {
+          gap: 8,
+          padding: "16px 24px 24px"
+        }
+      }
+    },
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          backgroundImage: "none"
+        }
+      }
+    },
+    MuiTab: {
+      styleOverrides: {
+        root: {
+          minHeight: 48,
+          "&.Mui-focusVisible": {
+            backgroundColor: "rgba(37, 99, 235, 0.08)"
+          }
+        }
+      }
+    },
+    MuiTableCell: {
+      styleOverrides: {
+        head: {
+          backgroundColor: "rgba(37, 99, 235, 0.07)",
+          color: "#172033",
+          fontWeight: 700
+        }
+      }
+    },
+    MuiTableRow: {
+      styleOverrides: {
+        root: {
+          "&:last-child td": {
+            borderBottom: 0
+          },
+          "tbody &:hover": {
+            backgroundColor: "rgba(15, 118, 110, 0.04)"
+          }
         }
       }
     }

@@ -1,5 +1,9 @@
 import { useState } from "react";
-import { Box, Paper, Stack, Tab, Tabs, Typography } from "@mui/material";
+import CalendarMonthOutlinedIcon from "@mui/icons-material/CalendarMonthOutlined";
+import DateRangeOutlinedIcon from "@mui/icons-material/DateRangeOutlined";
+import { Stack, Tab, Tabs } from "@mui/material";
+import PageHeader from "../components/common/PageHeader.jsx";
+import SectionCard from "../components/common/SectionCard.jsx";
 import MonthlyReportPage from "./MonthlyReportPage.jsx";
 import YearlyReportPage from "./YearlyReportPage.jsx";
 
@@ -13,36 +17,39 @@ function ReportsPage() {
 
   return (
     <Stack spacing={3}>
-      <Box>
-        <Typography component="h1" variant="h1">
-          Reports
-        </Typography>
-        <Typography color="text.secondary" variant="body1">
-          Review detailed monthly and yearly cost reports.
-        </Typography>
-      </Box>
+      <PageHeader title="Reports">
+        Review detailed monthly and yearly cost reports.
+      </PageHeader>
 
-      <Paper
-        elevation={0}
-        sx={{
-          border: "1px solid",
-          borderColor: "divider"
-        }}
-      >
+      <SectionCard sx={{ p: 0 }}>
         <Tabs
           aria-label="Reports navigation"
           onChange={(_event, nextReport) => setActiveReport(nextReport)}
           value={activeReport}
           sx={{ px: 2, pt: 1 }}
         >
-          <Tab label="Monthly" value={REPORT_TABS.monthly} />
-          <Tab label="Yearly" value={REPORT_TABS.yearly} />
+          <Tab
+            icon={<CalendarMonthOutlinedIcon aria-hidden="true" fontSize="small" />}
+            iconPosition="start"
+            label="Monthly"
+            value={REPORT_TABS.monthly}
+          />
+          <Tab
+            icon={<DateRangeOutlinedIcon aria-hidden="true" fontSize="small" />}
+            iconPosition="start"
+            label="Yearly"
+            value={REPORT_TABS.yearly}
+          />
         </Tabs>
-      </Paper>
+      </SectionCard>
 
-      {activeReport === REPORT_TABS.monthly ? <MonthlyReportPage /> : null}
+      {activeReport === REPORT_TABS.monthly ? (
+        <MonthlyReportPage headingComponent="h2" />
+      ) : null}
 
-      {activeReport === REPORT_TABS.yearly ? <YearlyReportPage /> : null}
+      {activeReport === REPORT_TABS.yearly ? (
+        <YearlyReportPage headingComponent="h2" />
+      ) : null}
     </Stack>
   );
 }
