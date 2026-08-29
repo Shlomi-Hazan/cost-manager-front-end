@@ -1,7 +1,26 @@
+/*
+ * Bridges the required asynchronous Fetch API with the required synchronous
+ * getReport() call shown in the official db.js sample. The course requires
+ * exchange rates to come from Fetch, but the grader's sample calls
+ * ob.getReport("USD") and reads data.total.sum on the very next line, with
+ * no await — so getReport() cannot itself perform a network request.
+ *
+ * The resolution used throughout this project: the application fetches and
+ * validates rates elsewhere (see exchangeRatesService.js), then stores the
+ * already-validated result here in localStorage. db.js (both the module and
+ * Vanilla versions) reads this cache synchronously whenever a report needs
+ * to convert between currencies, so getReport() itself never awaits
+ * anything. This is a project design decision, not an official requirement,
+ * because the official document does not explicitly resolve this tension
+ * (tracked as OQ-003 in docs/REQUIREMENTS.md).
+ */
 import { validateExchangeRates } from "../utils/currency.js";
 
 export const EXCHANGE_RATES_CACHE_KEY = "cost-manager:exchange-rates-cache";
 
+// Returns null (rather than throwing) for "no cache yet" AND for corrupted/
+// invalid cached data, since both cases mean the same thing to a caller:
+// there are no rates it can safely convert with right now.
 export function getCachedExchangeRates() {
   const storedValue = localStorage.getItem(EXCHANGE_RATES_CACHE_KEY);
 
@@ -16,6 +35,9 @@ export function getCachedExchangeRates() {
   }
 }
 
+// Only ever stores rates that have already passed validateExchangeRates(),
+// so anything later read back out of localStorage is guaranteed well-formed
+// (barring external tampering, which getCachedExchangeRates() tolerates).
 export function setCachedExchangeRates(rates) {
   const validatedRates = validateExchangeRates(rates);
 

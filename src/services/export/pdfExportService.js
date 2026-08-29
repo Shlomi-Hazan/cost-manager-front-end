@@ -1,6 +1,15 @@
+/*
+ * TEAM EXTENSION (X-008): generates human-readable PDFs (via jsPDF +
+ * jspdf-autotable) for the Monthly/Yearly reports and Pie/Bar charts,
+ * including an embedded chart image for the chart PDFs (see
+ * chartCapture.js). Never reads storage directly — everything printed here
+ * comes from an already-built export model (see exportModels.js).
+ */
 import { getModelRowsForPdf } from "./exportModels.js";
 import { downloadBlob } from "./downloadService.js";
 
+// jsPDF/jspdf-autotable are dynamically imported so they only load into the
+// bundle when a PDF export is actually requested.
 async function createPdfDocument() {
   const [{ jsPDF }, autoTableModule] = await Promise.all([
     import("jspdf"),

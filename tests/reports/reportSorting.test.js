@@ -5,6 +5,13 @@ import {
   sortReportCosts
 } from "../../src/utils/reportSorting.js";
 
+/*
+ * TEAM EXTENSION tests (X-006): protects that sorting is correct per
+ * column type (chronological for date/time, numeric for sum, alphabetical
+ * for text), stable for equal values (preserves original order on ties),
+ * and never mutates the input array — since report totals must remain
+ * correct regardless of how rows are currently sorted on screen.
+ */
 function createCost(id, overrides) {
   const { date: dateOverrides = {}, ...costOverrides } = overrides;
 

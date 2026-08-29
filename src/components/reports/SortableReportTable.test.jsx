@@ -6,6 +6,9 @@ import { describe, expect, it, vi } from "vitest";
 import SortableReportTable from "./SortableReportTable.jsx";
 import theme from "../../theme.js";
 
+// TEAM EXTENSION test (X-006): protects sort-header click behavior
+// (ascending/descending toggle, active-column indicator) shared by both
+// Monthly and Yearly reports through this one component.
 const costs = [
   {
     id: "cost-1",

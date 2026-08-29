@@ -10,6 +10,12 @@ import * as pdfExportService from "../services/export/pdfExportService.js";
 import YearlyReportPage from "./YearlyReportPage.jsx";
 import theme from "../theme.js";
 
+/*
+ * TEAM EXTENSION tests (X-005): drives the real Yearly Report page end to
+ * end, following the same pattern as MonthlyReportPage.test.jsx, to
+ * protect that the app's own full-year report stays consistent with the
+ * required per-month getReport() totals it is built from.
+ */
 const validRates = {
   USD: 1,
   GBP: 0.5,

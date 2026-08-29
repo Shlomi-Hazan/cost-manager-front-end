@@ -16,6 +16,15 @@ import { SUPPORTED_CURRENCIES } from "../constants/currencies.js";
 import { costsDatabase } from "../lib/costsDatabase.js";
 import { normalizeCategoryInput } from "../utils/category.js";
 
+/*
+ * Course requirement: lets the user add a new cost with sum, currency,
+ * category, and description (R-030 to R-034). The automatic date and
+ * original-currency preservation (R-035/R-036) are handled entirely by
+ * db.js's addCost() — this page only collects and validates the four
+ * required input fields and hands them to costsDatabase, it does not touch
+ * localStorage or assign a date itself.
+ */
+
 const initialFormValues = {
   sum: "",
   currency: "USD",
@@ -23,6 +32,11 @@ const initialFormValues = {
   description: ""
 };
 
+// UI-level validation only (non-empty description/category, numeric sum,
+// supported currency). This is intentionally stricter than db.js's own
+// validateCost() in places (e.g. rejecting an empty description), since
+// UI-only rules are free to be stricter without affecting grader
+// compatibility — see docs/REQUIREMENTS.md OQ-005.
 function validateForm(values) {
   const nextErrors = {};
   const trimmedSum = values.sum.trim();
@@ -56,6 +70,9 @@ function validateForm(values) {
 }
 
 function AddCostPage() {
+  // Raw form input, field-level validation errors, and a one-shot success/
+  // error banner. All local state — this page does not need to share its
+  // in-progress form with any other page.
   const [formValues, setFormValues] = useState(initialFormValues);
   const [errors, setErrors] = useState({});
   const [feedback, setFeedback] = useState(null);
@@ -114,6 +131,10 @@ function AddCostPage() {
     }
 
     try {
+      // The only place this page touches storage: db.js's addCost() applies
+      // the automatic date and generates the cost's stable id (see
+      // src/lib/db.js) — this component never writes to localStorage
+      // directly, keeping persistence rules centralized in one place.
       costsDatabase.addCost({
         sum: validation.numericSum,
         currency: formValues.currency,

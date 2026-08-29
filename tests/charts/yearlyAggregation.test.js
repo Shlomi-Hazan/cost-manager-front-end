@@ -4,6 +4,13 @@ import {
   buildYearlyMonthlyTotals
 } from "../../src/utils/yearlyAggregation.js";
 
+/*
+ * Course requirement (R-080/R-081): protects the yearly Bar Chart's most
+ * important structural guarantee — ALWAYS exactly 12 entries, in
+ * January-December order, with zero-total months included rather than
+ * omitted, using a fake report function so this stays independent of
+ * db.js/localStorage.
+ */
 function createReport(total, currency = "USD") {
   return {
     year: 2026,

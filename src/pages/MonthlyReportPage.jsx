@@ -30,6 +30,14 @@ import {
 } from "../utils/exportFilenames.js";
 import { formatDisplayAmount } from "../utils/amountFormat.js";
 
+/*
+ * Course requirement: the detailed monthly report (R-050 to R-053) — pick a
+ * month/year/currency, generate a report through db.js, and display its
+ * rows and total. Row-level sorting and Excel/PDF export are TEAM
+ * EXTENSIONS layered on top of the same generated report data; they do not
+ * change what getReport() returns or how it is calculated.
+ */
+
 const MONTHS = [
   { value: 1, label: "January" },
   { value: 2, label: "February" },
@@ -45,6 +53,9 @@ const MONTHS = [
   { value: 12, label: "December" }
 ];
 
+// R-052: the report defaults to the current month/year on first render,
+// mirroring db.js's own "omit year/month" default so the UI and the
+// required getReport() behavior agree on what "current" means.
 function getCurrentFilters() {
   const now = new Date();
 
@@ -91,6 +102,11 @@ function validateFilters(filters) {
   };
 }
 
+// db.js throws a specific diagnostic error when a report needs currency
+// conversion but no exchange-rate cache is populated yet (see
+// src/lib/exchangeRatesCache.js). This is expected/recoverable behavior —
+// not an application bug — so it is translated into a friendly retry
+// message rather than a generic failure.
 function getReportErrorMessage(error) {
   if (
     error instanceof Error &&
@@ -103,6 +119,10 @@ function getReportErrorMessage(error) {
 }
 
 function MonthlyReportPage({ headingComponent = "h1" }) {
+  // Filter form state (month/year/currency + validation errors), the last
+  // generated report (or null before/while generating), and separate error
+  // banners for report generation vs. export, since both can fail
+  // independently without invalidating each other.
   const [filters, setFilters] = useState(getCurrentFilters);
   const [errors, setErrors] = useState({});
   const [report, setReport] = useState(null);
@@ -156,12 +176,19 @@ function MonthlyReportPage({ headingComponent = "h1" }) {
     setIsLoading(true);
 
     try {
+      // Opportunistically refresh rates before generating the report so a
+      // cross-currency total uses the freshest cache available. A failed
+      // refresh is swallowed here rather than shown as a report error: an
+      // older cached rate (or a same-currency report needing no rates at
+      // all) can still legitimately succeed below.
       try {
         await refreshExchangeRates();
       } catch {
         // A failed refresh should not block same-currency reports or valid cached rates.
       }
 
+      // Delegates to db.js's getReport() (see detailedReportsService.js);
+      // this component never reads/filters localStorage itself.
       const nextReport = buildDetailedMonthlyReport(
         costsDatabase,
         filters.currency,
@@ -178,6 +205,9 @@ function MonthlyReportPage({ headingComponent = "h1" }) {
     }
   }
 
+  // TEAM EXTENSION: Excel/PDF export. Exports whatever is currently visible
+  // (sortedCosts, in the user's chosen sort order) rather than re-reading
+  // storage, so the exported file always matches what is on screen.
   function buildCurrentExportModel() {
     return buildMonthlyReportExportModel({
       costs: sortedCosts,

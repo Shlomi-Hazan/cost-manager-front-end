@@ -13,6 +13,13 @@ import ChartsPage from "./pages/ChartsPage.jsx";
 import SettingsPage from "./pages/SettingsPage.jsx";
 import AppLayout from "./components/layout/AppLayout.jsx";
 
+/*
+ * The application is a small single-page app with no URL-based routing
+ * (a deliberate architecture decision — see docs/ARCHITECTURE.md §6):
+ * `activePageId` state below simply selects which page component to render
+ * inside the shared AppLayout shell. Each entry pairs a navigation
+ * label/icon with the page component it activates.
+ */
 const pages = [
   {
     id: "dashboard",

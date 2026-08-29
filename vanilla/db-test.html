@@ -43,7 +43,17 @@
 
     <script src="db.js"></script>
     <script>
+      /*
+       * Official Vanilla db.js compatibility harness, using the same
+       * database calls and same expected total (200 + 400 = 600) as the
+       * course document's sample. Loading db.js via a plain <script> tag
+       * above (no bundler, no imports) is itself part of what this proves:
+       * that global `db` really exists after a normal classic-script load.
+       */
       (function runCompatibilityTest() {
+        // A dedicated database name (distinct from the app's own
+        // "costsdb") and explicit removeItem calls below keep this test
+        // isolated from any other data that might exist in localStorage.
         var databaseName = "cost-manager-grader-test";
         var databaseVersion = 1;
         var storageKey =

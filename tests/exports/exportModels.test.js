@@ -6,6 +6,12 @@ import {
   buildYearlyReportExportModel
 } from "../../src/services/export/exportModels.js";
 
+/*
+ * TEAM EXTENSION tests: protects that the shared export model (consumed by
+ * BOTH Excel and PDF exporters) preserves the currently visible sort order
+ * and formatted values, so the two export formats never silently diverge
+ * from each other or from what is on screen.
+ */
 function createCost(description, overrides = {}) {
   return {
     id: description,

@@ -4,6 +4,9 @@ import {
   sortReportCosts
 } from "../utils/reportSorting.js";
 
+// TEAM EXTENSION: React state wrapper around sortReportCosts() shared by
+// the Monthly and Yearly report pages, so both get identical column-header
+// click behavior "for free" instead of reimplementing it twice.
 export function useReportSorting(costs) {
   const [sortKey, setSortKey] = useState(null);
   const [sortDirection, setSortDirection] = useState(REPORT_SORT_DIRECTIONS.asc);
@@ -12,6 +15,9 @@ export function useReportSorting(costs) {
     return sortReportCosts(costs, { sortKey, sortDirection });
   }, [costs, sortDirection, sortKey]);
 
+  // Clicking a new column starts it at ascending; clicking the SAME column
+  // again toggles between ascending/descending — the standard sortable-
+  // table interaction pattern.
   function requestSort(nextSortKey) {
     if (sortKey !== nextSortKey) {
       setSortKey(nextSortKey);

@@ -6,6 +6,8 @@ import {
   getYearlyReportExportFilename
 } from "../../src/utils/exportFilenames.js";
 
+// TEAM EXTENSION test: filenames must be deterministic (same inputs always
+// produce the same name) and encode the period/currency they cover.
 describe("exportFilenames", () => {
   it("builds all required deterministic export filenames", () => {
     expect(

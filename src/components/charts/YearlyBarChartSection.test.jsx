@@ -12,6 +12,13 @@ import * as chartCapture from "../../utils/chartCapture.js";
 import { formatPositiveBarValueLabel } from "../../utils/chartPresentation.js";
 import YearlyBarChartSection from "./YearlyBarChartSection.jsx";
 
+/*
+ * Course requirement (R-080/R-081): drives the real yearly Bar Chart end
+ * to end, protecting that the on-screen chart always represents exactly
+ * 12 months with correct zero-filling for empty ones — the same structural
+ * guarantee tests/charts/yearlyAggregation.test.js checks at the pure-
+ * function level, verified here through the actual rendered component.
+ */
 const validRates = {
   USD: 1,
   GBP: 0.5,

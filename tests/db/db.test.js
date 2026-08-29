@@ -7,6 +7,19 @@ import {
 } from "../../src/lib/costsDatabase.js";
 import { db } from "../../src/lib/db.js";
 
+/*
+ * Contract tests for the module version of db.js (src/lib/db.js). Per
+ * R-131, the official grader may use different test code than the sample
+ * shown in the course document, so these tests deliberately go beyond the
+ * exact sample values (200/400/600) to protect the underlying CONTRACT:
+ * openCostsDB/addCost/getReport's required shape and behavior, original-
+ * currency preservation, current-month/year defaults, and the team's CRUD
+ * extensions. See tests/db/vanilla-db.test.js for the equivalent suite
+ * against the standalone Vanilla file — the two are intentionally kept
+ * structurally parallel so a behavioral difference between the two db.js
+ * versions would show up as one suite passing and the other failing.
+ */
+
 function setLocalDate(year, month, day, hour = 12, minute = 0) {
   vi.setSystemTime(new Date(year, month - 1, day, hour, minute, 0));
 }
@@ -56,6 +69,8 @@ describe("module db contract", () => {
     vi.useRealTimers();
     localStorage.clear();
   });
+
+  // --- Required contract: openCostsDB / addCost shape ---
 
   it("opens a database object with addCost and getReport methods", () => {
     const ob = db.openCostsDB("costsdb", 1);
@@ -159,6 +174,8 @@ describe("module db contract", () => {
     expect(otherName.getReport("USD", 2026, 8).total.sum).toBe(75);
     expect(otherVersion.getReport("USD", 2026, 8).total.sum).toBe(100);
   });
+
+  // --- Required contract: getReport() filtering, defaults, and shape ---
 
   it("filters explicit reports by requested year and month", () => {
     const ob = db.openCostsDB("costsdb", 1);
@@ -358,6 +375,11 @@ describe("module db contract", () => {
     expect(readStoredCosts(COSTS_DATABASE_NAME, 2)).toHaveLength(1);
     expect(costsDatabase.getReport("USD", 2026, 8).total.sum).toBe(10);
   });
+
+  // --- Team extensions: stable IDs, full CRUD (getAllCosts/getCostById/
+  // updateCost/deleteCost) — see X-001/X-002/X-003 in
+  // docs/REQUIREMENTS.md. These must never break the required addCost/
+  // getReport contract above. ---
 
   it("generates stable unique IDs for identical new costs", () => {
     const ob = db.openCostsDB("costsdb", 1);
@@ -710,6 +732,8 @@ describe("module db contract", () => {
     expect(base.getCostById(added.id)).toMatchObject({ id: added.id });
   });
 
+  // --- Currency conversion / cache requirement (R-036, OQ-003) ---
+
   it("converts cross-currency report totals from cached rates while preserving original cost values", () => {
     setCachedExchangeRates({
       USD: 1,
@@ -772,6 +796,9 @@ describe("module db contract", () => {
       "Cross-currency report totals require cached exchange rates."
     );
   });
+
+  // --- Malformed-storage resilience: corrupted/hand-edited localStorage
+  // must degrade gracefully instead of crashing the app or the grader. ---
 
   it("treats malformed stored cost data as an empty list instead of throwing", () => {
     localStorage.setItem(
