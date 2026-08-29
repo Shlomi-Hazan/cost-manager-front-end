@@ -4,7 +4,7 @@ Final project for the **Front-End Development** course.
 
 This repository is intentionally being built from the project requirements outward: requirements, architecture, AI-agent instructions, testing strategy, Git/GitHub workflow, implementation, deployment, audit, and submission.
 
-> **Current status:** Milestone 12 — GitHub Actions CI.
+> **Current status:** Milestone 13 — Production Deployment (in progress).
 
 ## Project Goal
 
@@ -126,21 +126,17 @@ Public.
 
 ## Current Milestone
 
-### Milestone 12 — GitHub Actions CI
+### Milestone 13 — Production Deployment
 
-Pull requests into `main` are now validated automatically using GitHub
-Actions. Each pull request runs:
+Pull requests into `main` continue to be validated automatically using the
+`CI` GitHub Actions workflow (`npm ci`, lint, test, build) before merge.
 
-```bash
-npm ci
-npm run lint
-npm test
-npm run build
-```
+A separate `Deploy` workflow now builds and publishes the application to
+GitHub Pages on every push to `main`. The production build is served from a
+repository subpath (`/cost-manager-front-end/`), so both the build's asset
+base path and the default exchange-rate URL are resolved from Vite's
+`BASE_URL` rather than a hard-coded root path.
 
-as separate, individually visible steps. A pull request should have a
-successful CI check before it is merged. This pipeline does not deploy the
-application and does not replace the manual Vanilla `db.js` Chrome
-compatibility test or manual QA described in `docs/TEST_PLAN.md`.
-
-Production deployment is a later milestone.
+The public production URL will be added here once the deployment workflow
+has run from `main` and the resulting Pages site has been verified with a
+real production smoke test.

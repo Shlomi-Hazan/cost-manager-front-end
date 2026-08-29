@@ -1,4 +1,7 @@
-export const DEFAULT_EXCHANGE_RATES_URL = "/exchange-rates.json";
+// Built from Vite's BASE_URL rather than a hard-coded leading slash so this
+// still resolves correctly when the app is served from a subpath, such as a
+// GitHub Pages project site (https://<user>.github.io/cost-manager-front-end/).
+export const DEFAULT_EXCHANGE_RATES_URL = `${import.meta.env.BASE_URL}exchange-rates.json`;
 export const SETTINGS_STORAGE_KEY = "cost-manager:settings";
 
 function readSettings() {
