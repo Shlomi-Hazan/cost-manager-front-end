@@ -113,8 +113,8 @@ Codex is planned as the primary coding agent. Claude Code is planned mainly for 
 
 ## Team
 
-- Repository owner / team manager: `@Shlomi-Hazan`
-- Team member: `@eldadsimanian`
+- `@Shlomi-Hazan` — Co-developer / Equal Contributor
+- `@eldadsimanian` — Co-developer / Equal Contributor
 
 ## Repository Name
 
