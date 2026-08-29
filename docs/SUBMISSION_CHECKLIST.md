@@ -40,13 +40,13 @@ Final manual verification
 
 Before packaging anything:
 
-- [ ] Review the latest official project specification.
-- [ ] Review relevant lecturer/course-forum clarifications.
-- [ ] Update `docs/REQUIREMENTS.md` if needed.
-- [ ] Verify every mandatory requirement.
+- [x] Review the latest official project specification. — The updated official course PDF supplied by the team was independently reviewed; the August 18 and August 26 changes were confirmed (see `docs/REQUIREMENTS.md` §18.1).
+- [x] Review relevant lecturer/course-forum clarifications. — Collaborative Tools (GitHub+Discord), OQ-002 (`{ day }` shape), and same-course-group status are resolved. OQ-001/003/004/005 and the addCost() extra-return-property question remain unanswered. A final pre-submission course-forum/newest-clarification re-check is still outstanding — see R-002.
+- [x] Update `docs/REQUIREMENTS.md` if needed.
+- [x] Verify every mandatory requirement. — 41/56 mandatory requirements VERIFIED, 15 BLOCKED (0 of those are `NOT SATISFIED` compliance defects — see `docs/REQUIREMENTS.md`; each BLOCKED entry's Readiness note distinguishes PENDING FINAL ARTIFACT from PENDING EXTERNAL VERIFICATION). R-161 (same course group) is no longer part of the current mandatory denominator — see its entry.
 - [ ] Complete the requirement traceability table.
-- [ ] Resolve or explicitly document remaining ambiguities.
-- [ ] Confirm no required behavior was replaced by a project preference.
+- [x] Resolve or explicitly document remaining ambiguities.
+- [x] Confirm no required behavior was replaced by a project preference.
 
 ---
 
@@ -54,14 +54,14 @@ Before packaging anything:
 
 Before creating submission artifacts:
 
-- [ ] `main` contains the final reviewed version.
-- [ ] All required Pull Requests are merged.
-- [ ] No required work remains only on feature branches.
-- [ ] `git status` is clean.
-- [ ] No uncommitted code changes remain.
-- [ ] No secrets are present.
-- [ ] No personal tokens/keys are committed.
-- [ ] Documentation reflects the final implementation.
+- [ ] `main` contains the final reviewed version. — **Not yet**: this very audit (PR #40) is still open on `docs/final-requirements-audit` and has not merged into `main`.
+- [ ] All required Pull Requests are merged. — PR #41 (comment hardening) is merged; **PR #40 (this audit) is still open** and is itself a required PR before this box can be checked.
+- [x] No required work remains only on feature branches, other than PR #40 itself (in review).
+- [x] `git status` is clean.
+- [x] No uncommitted code changes remain.
+- [x] No secrets are present. (Repository-wide grep audit, 2026-08-29 — none found.)
+- [x] No personal tokens/keys are committed.
+- [x] Documentation reflects the final implementation.
 - [ ] Final tag/release may be created if the team chooses to use one.
 
 Recommended final repository checkpoint:
@@ -93,10 +93,10 @@ npm run build
 
 Verify:
 
-- [ ] installation succeeds.
-- [ ] lint succeeds.
-- [ ] automated tests succeed.
-- [ ] production build succeeds.
+- [x] installation succeeds.
+- [x] lint succeeds.
+- [x] automated tests succeed. (28 test files, 334 tests, 2026-08-29.)
+- [x] production build succeeds.
 
 If the project uses:
 
@@ -105,6 +105,8 @@ npm ci
 ```
 
 for CI, verify it also works from the committed lockfile.
+
+- [x] `npm ci` verified from the committed lockfile (2026-08-29): 339 packages, 0 vulnerabilities.
 
 ---
 
@@ -116,28 +118,33 @@ The separately submitted file must be the **Vanilla** version.
 
 Verify:
 
-- [ ] file is standalone.
-- [ ] no `import` statements remain.
-- [ ] no React dependency.
-- [ ] no Vite runtime dependency.
-- [ ] normal script loading works:
+- [x] file is standalone. (`vanilla/db.js` is a single IIFE, no imports.)
+- [x] no `import` statements remain.
+- [x] no React dependency.
+- [x] no Vite runtime dependency.
+- [x] normal script loading works:
 
 ```html
 <script src="db.js"></script>
 ```
 
-- [ ] global `db` exists.
-- [ ] required call works:
+- [x] global `db` exists.
+- [x] required call works:
 
 ```javascript
 const ob = db.openCostsDB("costsdb", 1);
 ```
 
-- [ ] `ob.addCost(...)` works.
-- [ ] `ob.getReport(...)` works.
-- [ ] `ob.getReport("USD")` works with default current month/year behavior.
-- [ ] `data.total.sum` is accessible.
-- [ ] no JavaScript exception is thrown.
+- [x] `ob.addCost(...)` works.
+- [x] `ob.getReport(...)` works.
+- [x] `ob.getReport("USD")` works with default current month/year behavior.
+- [x] `data.total.sum` is accessible.
+- [x] no JavaScript exception is thrown.
+
+Verified 2026-08-29 against the current `vanilla/db.js` source candidate (served
+over local HTTP so `localStorage` behaves as it would in production) — this is
+the **source candidate**, not yet the exact file copy that will be uploaded to
+Moodle. Re-run this check in Stage B against that exact copy per §15 below.
 
 ---
 
@@ -147,13 +154,16 @@ Open the final official compatibility test in the latest Google Chrome.
 
 Verify:
 
-- [ ] `db.js` loads.
-- [ ] database object is created.
-- [ ] first cost item is added.
-- [ ] second cost item is added.
-- [ ] report is generated.
-- [ ] total sum is accessible.
-- [ ] Console contains no blocking errors.
+- [x] `db.js` loads.
+- [x] database object is created.
+- [x] first cost item is added.
+- [x] second cost item is added.
+- [x] report is generated.
+- [x] total sum is accessible. (`data.total.sum === 600`, matching 200+400.)
+- [x] Console contains no blocking errors.
+
+Verified 2026-08-29 against `vanilla/db-test.html` + the current `vanilla/db.js`
+source candidate. Same caveat as §5: re-run against the exact Moodle copy.
 
 Do not submit immediately after copying/rebuilding `db.js`.
 
@@ -189,26 +199,28 @@ Test exchange-rate retrieval
 
 Verify:
 
-- [ ] production URL is public and reachable.
-- [ ] application loads in latest Google Chrome.
-- [ ] user-facing UI is in English.
-- [ ] cost can be added.
-- [ ] localStorage persists after refresh.
-- [ ] USD works.
-- [ ] ILS works.
-- [ ] GBP works.
-- [ ] EURO works.
-- [ ] original cost currencies remain preserved.
-- [ ] monthly report works.
-- [ ] Pie Chart works.
-- [ ] Bar Chart works for all 12 months.
-- [ ] Settings works.
-- [ ] default exchange-rate URL works.
-- [ ] custom exchange-rate URL works.
-- [ ] Fetch succeeds in production.
-- [ ] no blocking Console errors.
-- [ ] no failed required assets.
-- [ ] no broken layout in desktop Chrome.
+- [x] production URL is public and reachable. (https://shlomi-hazan.github.io/cost-manager-front-end/)
+- [x] application loads in latest Google Chrome. (Human QA by team member Shlomi, reported complete; supplemented by Chromium-engine evidence in Issue #12.)
+- [x] user-facing UI is in English.
+- [x] cost can be added.
+- [x] localStorage persists after refresh.
+- [x] USD works.
+- [x] ILS works.
+- [x] GBP works.
+- [x] EURO works.
+- [x] original cost currencies remain preserved.
+- [x] monthly report works.
+- [x] Pie Chart works.
+- [x] Bar Chart works for all 12 months.
+- [x] Settings works.
+- [x] default exchange-rate URL works.
+- [x] custom exchange-rate URL works.
+- [x] Fetch succeeds in production.
+- [x] no blocking Console errors.
+- [x] no failed required assets.
+- [x] no broken layout in desktop Chrome. (1440×900 and 1280×800 checked.)
+
+Full Stage-B evidence recorded in [Issue #12](https://github.com/Shlomi-Hazan/cost-manager-front-end/issues/12).
 
 ---
 
@@ -216,12 +228,12 @@ Verify:
 
 Before submission:
 
-- [ ] default rate URL is still online.
-- [ ] URL is accessible without authentication.
-- [ ] Fetch works from the production origin.
-- [ ] CORS behavior is compatible.
-- [ ] JSON is valid.
-- [ ] required fields exist:
+- [x] default rate URL is still online. (Re-checked 2026-08-29.)
+- [x] URL is accessible without authentication.
+- [x] Fetch works from the production origin.
+- [x] CORS behavior is compatible. (`access-control-allow-origin: *`.)
+- [x] JSON is valid.
+- [x] required fields exist:
 
 ```json
 {
@@ -232,9 +244,9 @@ Before submission:
 }
 ```
 
-- [ ] no accidental `EUR` substitution.
-- [ ] values are valid numbers.
-- [ ] source is expected to remain online during grading.
+- [x] no accidental `EUR` substitution. (`{"USD":1,"GBP":0.6,"EURO":0.7,"ILS":3.4}`.)
+- [x] values are valid numbers.
+- [x] source is expected to remain online during grading. (Served as a static asset from the same GitHub Pages deployment as the app.)
 
 ---
 
@@ -278,27 +290,35 @@ The exact timing is a recommendation, not an official requirement.
 
 At the beginning of the PDF include:
 
+**Metadata input status (2026-08-29): all required personal/team metadata has
+been supplied by the team for both students.** Actual values (names, ID,
+mobile number, email) are intentionally NOT recorded in this repository
+document for privacy — they go directly into the PDF front matter when that
+artifact is produced. The checkboxes below track the PDF artifact itself,
+not whether the input data exists.
+
 ## Team Manager
 
-- [ ] first name.
-- [ ] last name.
+- [ ] first name. (Input available; not yet placed in a PDF.)
+- [ ] last name. (Input available; not yet placed in a PDF.)
 
 ## Every Team Member
 
-- [ ] first name.
-- [ ] last name.
-- [ ] ID.
-- [ ] mobile number.
-- [ ] email address.
+- [ ] first name. (Input available for both members.)
+- [ ] last name. (Input available for both members.)
+- [ ] ID. (Input available for both members.)
+- [ ] mobile number. (Input available for both members.)
+- [ ] email address. (Input available for both members.)
 
 ## Video
 
-- [ ] clickable link to YouTube demo.
+- [ ] clickable link to YouTube demo. (Video not yet created — see §9.)
 
 ## Collaborative Tools
 
-- [ ] summary describes at least two collaborative tools.
-- [ ] summary is no more than 100 words.
+- [x] summary describes at least two collaborative tools. (GitHub + Discord — drafted, see §11.)
+- [x] summary is no more than 100 words. (74 words.)
+- [ ] summary inserted into the actual PDF. (PDF does not exist yet.)
 
 ## Optional
 
@@ -312,22 +332,63 @@ The project should preserve evidence throughout development.
 
 Before writing the ≤100-word final summary, collect examples from:
 
-- [ ] GitHub Issues.
-- [ ] Pull Requests.
-- [ ] reviews.
-- [ ] comments.
-- [ ] branches.
-- [ ] commits.
-- [ ] assignments/project board if used.
-- [ ] second collaborative tool approved/presented in the course.
+- [x] GitHub Issues. (19 issues, opened by Shlomi to scope and coordinate project work.)
+- [x] Pull Requests. (21 PRs total: 15 by Shlomi (#14–#35 range), 6 by Eldad (#36–#41).)
+- [x] reviews. (Shlomi reviewed/approved the merged PRs opened by Eldad, including PR #41. PR #40 — this audit — is still open and has not yet received a human review.)
+- [ ] comments. (Not separately inventoried this session.)
+- [x] branches. (Feature/task branch workflow used throughout — confirmed via PR head branches.)
+- [x] commits. (Both team members contributed real, verifiable commit history.)
+- [ ] assignments/project board if used. (No project board evidence found.)
+- [x] second collaborative tool approved/presented in the course. (Discord, team-reported lecturer approval — see `docs/REQUIREMENTS.md` §18.1.)
 
 Do not fabricate collaboration history at submission time.
+
+**Team-supplied factual usage (2026-08-29):**
+
+- GitHub: Issues, feature branches, commits, Pull Requests, reviewer
+  requests, reviews, approvals, merges, CI validation, repository
+  collaboration.
+- Discord: voice calls, task planning and division, feature planning,
+  technical decisions, progress updates, bug discussions, collaborative
+  debugging, sharing code snippets/screenshots/links, and coordinating PR
+  review/approval/merge.
+
+**Drafted ≤100-word paragraph (74 words) — content PREPARED, not yet
+inserted into a PDF:**
+
+> We collaborated as equal partners using GitHub and Discord throughout the
+> project. GitHub was used for feature branches, commits, pull requests,
+> code reviews, approvals, merges, issue tracking, and CI validation. Discord
+> supported our day-to-day coordination through voice calls and messages for
+> task planning and division, feature design, technical decisions, progress
+> updates, debugging, bug discussions, sharing code snippets, screenshots and
+> links, and coordinating pull-request reviews and merges. Both team members
+> contributed throughout development and decision-making.
 
 ---
 
 # 12. Source-Code PDF — Code Section
 
-The PDF must contain all code files coded by the team.
+**Scope:** the updated official PDF states the code section must contain
+**"all code files (JavaScript only) that you coded."** `.jsx` is JavaScript
+source and counts. This EXCLUDES from the code section: HTML, CSS, Markdown,
+YAML, JSON, `package-lock.json`, generated files, `node_modules`, `dist`, and
+third-party/dependency code.
+
+**Further team-reported submission clarification:** the code section should
+contain the JavaScript/JSX implementing the **course-required** functionality
+— not JavaScript whose purpose exists only to implement team extensions
+beyond the official requirements (e.g. Excel export, PDF export, chart-image
+capture, optional Manage Costs CRUD, optional sorting, optional detailed
+Yearly Report). This is recorded as a team-reported clarification of practical
+submission scope; it does not contradict or rewrite the literal PDF wording
+above, which the team says still applies to files that support required
+functionality.
+
+A full per-file requirement-driven inventory (Include / Exclude / Mixed /
+Needs Review, with comment-readiness) was produced during the Stage-A audit
+— see the audit's Pull Request and `docs/REQUIREMENTS.md` for the current
+state; it is not duplicated here to avoid drift between two copies.
 
 For every included code file:
 
@@ -481,18 +542,25 @@ The official document instructs students to treat the Moodle deadline as if it w
 
 Checklist:
 
-- [ ] record official deadline.
-- [ ] subtract at least 30 minutes for internal deadline.
-- [ ] target completion earlier than the minimum buffer.
+- [x] record official deadline **date**. (05.09.2026 — team-confirmed.)
+- [ ] record official deadline **clock time**. (Not yet supplied — do not invent 23:59/00:00/or any other time.)
+- [ ] subtract at least 30 minutes for internal deadline. (Cannot be numerically calculated until the exact clock time is known.)
+- [x] target completion earlier than the minimum buffer. (Internal target is several days ahead of the official date — see below.)
 - [ ] do not leave video upload/PDF generation/ZIP creation to the final minutes.
 
 Internal submission target:
 
 ```text
-Official Moodle deadline: __________________
-Internal latest submission time: __________
-Preferred team target: _____________________
+Official Moodle deadline date:  05.09.2026
+Official Moodle deadline time:  PENDING (not yet supplied)
+Internal latest submission time: cannot be computed until the exact clock time is known
+Team internal planned target:   02.09.2026, approximately 21:00
 ```
+
+**Remaining input needed:** only the exact Moodle deadline **clock time** on
+05.09.2026. This is a final submission-timing input, not a code/audit
+blocker — the team's internal target already provides a multi-day safety
+margin ahead of the official date regardless.
 
 ---
 
