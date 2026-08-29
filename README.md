@@ -4,7 +4,7 @@ Final project for the **Front-End Development** course.
 
 This repository is intentionally being built from the project requirements outward: requirements, architecture, AI-agent instructions, testing strategy, Git/GitHub workflow, implementation, deployment, audit, and submission.
 
-> **Current status:** Milestone 14 — Final Requirements Audit (Issue #13, Stage A: in progress, not submission-ready).
+> **Current status:** Milestone 15 — Final Requirements Audit (Issue #13, Stage A: audit complete, artifact generation not yet started, not submission-ready).
 
 ## Project Goal
 
@@ -126,17 +126,32 @@ Public.
 
 ## Current Milestone
 
-### Milestone 14 — Final Requirements Audit (Issue #13, Stage A)
+### Milestone 15 — Final Requirements Audit (Issue #13, Stage A)
 
-A requirement-by-requirement audit of `docs/REQUIREMENTS.md` has been
-completed against available sources: 41 of 57 mandatory requirements are
-`VERIFIED` with concrete evidence (automated tests, CI, and production QA);
-16 are `BLOCKED` — mostly final submission artifacts that intentionally do
-not exist yet (video, source-code PDF, ZIP, separately-copied Vanilla
-`db.js`), plus a handful of missing inputs (official document
-re-verification, personal submission metadata, the exact Moodle deadline).
-See `docs/REQUIREMENTS.md` §18.1 and this audit's Pull Request for full
-detail. **This milestone does not mean the project is ready to submit.**
+A requirement-by-requirement audit of `docs/REQUIREMENTS.md` is complete
+against the updated official course document (team-reported content,
+including the August 18 `ob.getReport()` correction and the August 26
+JavaScript-only PDF-scope rule): 43 of 57 mandatory requirements are
+`VERIFIED` with concrete evidence (automated tests, CI, production QA, and
+PR review); the remaining 14 are not compliance defects — 12 are final
+submission artifacts that intentionally do not exist yet (video, source-code
+PDF, ZIP, separately-copied Vanilla `db.js`, PDF front matter/summary
+insertion), and 2 are pending external verification (the Professional
+JavaScript Guide's own content, and the exact Moodle deadline clock time).
+See `docs/REQUIREMENTS.md` §18.1/§18.2 and this audit's Pull Request for full
+detail. **Completing this audit does not mean the project is ready to
+submit** — Milestone 16 (final artifact generation) has not started.
+
+### Milestone 14 — Documentation & Teamwork Evidence
+
+Comprehensive explanatory code comments were added across the codebase in
+response to a lecturer grading clarification on comments (R-121 — see
+[PR #41](https://github.com/Shlomi-Hazan/cost-manager-front-end/pull/41)).
+GitHub collaboration evidence (Issues, branches, commits, PRs, reviews,
+merges, CI) and Discord usage (voice calls, planning, technical decisions,
+debugging, PR coordination) are documented, with a drafted ≤100-word
+collaborative-tools summary ready for the final PDF. The project was
+developed jointly by Eldad Simanian and Shlomi Hazan as equal contributors.
 
 ### Milestone 13 — Production Deployment
 

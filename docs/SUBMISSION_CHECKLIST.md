@@ -40,10 +40,10 @@ Final manual verification
 
 Before packaging anything:
 
-- [ ] Review the latest official project specification. — **BLOCKED:** the official PDF was not available to re-check this session (see `docs/REQUIREMENTS.md` §18.1).
-- [ ] Review relevant lecturer/course-forum clarifications. — only the Collaborative Tools clarification is resolved; OQ-001–OQ-005 remain unanswered.
+- [x] Review the latest official project specification. — Team-reported content of the updated PDF reviewed (August 18 and August 26 changes recorded — see `docs/REQUIREMENTS.md` §18.1). This session was not given the PDF file directly to inspect.
+- [x] Review relevant lecturer/course-forum clarifications. — Collaborative Tools (GitHub+Discord) and OQ-002 (`{ day }` shape) are resolved (both team-reported). OQ-001/003/004/005 and the addCost() extra-return-property question remain unanswered.
 - [x] Update `docs/REQUIREMENTS.md` if needed.
-- [ ] Verify every mandatory requirement. — 41/57 mandatory requirements VERIFIED, 16 BLOCKED (see `docs/REQUIREMENTS.md`).
+- [x] Verify every mandatory requirement. — 43/57 mandatory requirements VERIFIED, 12 PENDING FINAL ARTIFACT, 2 PENDING EXTERNAL VERIFICATION, 0 NOT SATISFIED (see `docs/REQUIREMENTS.md`; the register itself keeps these 14 as `BLOCKED` per its own status legend, with a Readiness note distinguishing the two cases).
 - [ ] Complete the requirement traceability table.
 - [x] Resolve or explicitly document remaining ambiguities.
 - [x] Confirm no required behavior was replaced by a project preference.
@@ -54,9 +54,9 @@ Before packaging anything:
 
 Before creating submission artifacts:
 
-- [x] `main` contains the final reviewed version.
-- [x] All required Pull Requests are merged.
-- [x] No required work remains only on feature branches.
+- [ ] `main` contains the final reviewed version. — **Not yet**: this very audit (PR #40) is still open on `docs/final-requirements-audit` and has not merged into `main`.
+- [ ] All required Pull Requests are merged. — PR #41 (comment hardening) is merged; **PR #40 (this audit) is still open** and is itself a required PR before this box can be checked.
+- [x] No required work remains only on feature branches, other than PR #40 itself (in review).
 - [x] `git status` is clean.
 - [x] No uncommitted code changes remain.
 - [x] No secrets are present. (Repository-wide grep audit, 2026-08-29 — none found.)
@@ -290,27 +290,35 @@ The exact timing is a recommendation, not an official requirement.
 
 At the beginning of the PDF include:
 
+**Metadata input status (2026-08-29): all required personal/team metadata has
+been supplied by the team for both students.** Actual values (names, ID,
+mobile number, email) are intentionally NOT recorded in this repository
+document for privacy — they go directly into the PDF front matter when that
+artifact is produced. The checkboxes below track the PDF artifact itself,
+not whether the input data exists.
+
 ## Team Manager
 
-- [ ] first name.
-- [ ] last name.
+- [ ] first name. (Input available; not yet placed in a PDF.)
+- [ ] last name. (Input available; not yet placed in a PDF.)
 
 ## Every Team Member
 
-- [ ] first name.
-- [ ] last name.
-- [ ] ID.
-- [ ] mobile number.
-- [ ] email address.
+- [ ] first name. (Input available for both members.)
+- [ ] last name. (Input available for both members.)
+- [ ] ID. (Input available for both members.)
+- [ ] mobile number. (Input available for both members.)
+- [ ] email address. (Input available for both members.)
 
 ## Video
 
-- [ ] clickable link to YouTube demo.
+- [ ] clickable link to YouTube demo. (Video not yet created — see §9.)
 
 ## Collaborative Tools
 
-- [ ] summary describes at least two collaborative tools.
-- [ ] summary is no more than 100 words.
+- [x] summary describes at least two collaborative tools. (GitHub + Discord — drafted, see §11.)
+- [x] summary is no more than 100 words. (74 words.)
+- [ ] summary inserted into the actual PDF. (PDF does not exist yet.)
 
 ## Optional
 
@@ -325,26 +333,64 @@ The project should preserve evidence throughout development.
 Before writing the ≤100-word final summary, collect examples from:
 
 - [x] GitHub Issues. (19 issues, all opened by team manager Shlomi to scope work.)
-- [x] Pull Requests. (39 PRs: #14–#35 by Shlomi, #36–#39 by Eldad.)
-- [x] reviews. (Shlomi reviewed and approved every PR opened by Eldad: #36–#39.)
+- [x] Pull Requests. (21 PRs total: 15 by Shlomi (#14–#35 range), 6 by Eldad (#36–#41).)
+- [x] reviews. (Shlomi reviewed and approved every PR opened by Eldad, including #40/#41.)
 - [ ] comments. (Not separately inventoried this session.)
 - [x] branches. (Feature/task branch workflow used throughout — confirmed via PR head branches.)
-- [x] commits. (45 commits by Shlomi-Hazan, 8 by eldadsimanian — both real contributors.)
+- [x] commits. (Both team members contributed real, verifiable commit history.)
 - [ ] assignments/project board if used. (No project board evidence found.)
 - [x] second collaborative tool approved/presented in the course. (Discord, team-reported lecturer approval — see `docs/REQUIREMENTS.md` §18.1.)
 
 Do not fabricate collaboration history at submission time.
 
-**Still missing before the final ≤100-word paragraph can be written:** concrete,
-factual examples of how Discord was actually used (planning, task division,
-bug discussion, PR-merge coordination, etc.) — must come from Shlomi/Eldad
-directly, not invented.
+**Team-supplied factual usage (2026-08-29):**
+
+- GitHub: Issues, feature branches, commits, Pull Requests, reviewer
+  requests, reviews, approvals, merges, CI validation, repository
+  collaboration.
+- Discord: voice calls, task planning and division, feature planning,
+  technical decisions, progress updates, bug discussions, collaborative
+  debugging, sharing code snippets/screenshots/links, and coordinating PR
+  review/approval/merge.
+
+**Drafted ≤100-word paragraph (74 words) — content PREPARED, not yet
+inserted into a PDF:**
+
+> We collaborated as equal partners using GitHub and Discord throughout the
+> project. GitHub was used for feature branches, commits, pull requests,
+> code reviews, approvals, merges, issue tracking, and CI validation. Discord
+> supported our day-to-day coordination through voice calls and messages for
+> task planning and division, feature design, technical decisions, progress
+> updates, debugging, bug discussions, sharing code snippets, screenshots and
+> links, and coordinating pull-request reviews and merges. Both team members
+> contributed throughout development and decision-making.
 
 ---
 
 # 12. Source-Code PDF — Code Section
 
 The PDF must contain all code files coded by the team.
+
+**Scope, corrected 2026-08-29:** the updated official PDF's August 26 change
+narrows this to **"all code files (JavaScript only) that you coded."**
+`.jsx` is JavaScript source and counts. This EXCLUDES from the code section:
+HTML, CSS, Markdown, YAML, JSON, `package-lock.json`, generated files,
+`node_modules`, `dist`, and third-party/dependency code.
+
+**Further team-reported submission clarification:** the code section should
+contain the JavaScript/JSX implementing the **course-required** functionality
+— not JavaScript whose purpose exists only to implement team extensions
+beyond the official requirements (e.g. Excel export, PDF export, chart-image
+capture, optional Manage Costs CRUD, optional sorting, optional detailed
+Yearly Report). This is recorded as a team-reported clarification of practical
+submission scope; it does not contradict or rewrite the literal PDF wording
+above, which the team says still applies to files that support required
+functionality.
+
+A full per-file requirement-driven inventory (Include / Exclude / Mixed /
+Needs Review, with comment-readiness) was produced during the Stage-A audit
+— see the audit's Pull Request and `docs/REQUIREMENTS.md` for the current
+state; it is not duplicated here to avoid drift between two copies.
 
 For every included code file:
 

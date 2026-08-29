@@ -40,14 +40,23 @@
 ## R-002 — Monitor Official Clarifications
 
 - **Type:** Mandatory process requirement
-- **Status:** `BLOCKED`
+- **Status:** `VERIFIED`
 - The official specification may receive clarifications before the deadline.
 - Changes are expected to be listed at the bottom of the official document.
 - The course forum should be followed to verify interpretations and clarifications.
+- **Evidence (2026-08-29):** the team reports the updated official course PDF
+  has been reviewed and reports two relevant changes: (1) August 18 —
+  `db.getReport("USD")` corrected to `ob.getReport("USD")`, already reflected
+  in R-066; (2) August 26 — the source-code PDF scope narrowed from "all code
+  files that you coded" to "all code files (JavaScript only) that you coded"
+  (see §18.1 and the PDF-scope inventory). This session was not given the PDF
+  file directly to inspect; these changes are recorded as team-reported
+  content, consistent with how the Collaborative Tools clarification below is
+  handled.
 
 ### Verification
 
-- [ ] Latest version of the specification checked before final audit.
+- [x] Latest version of the specification checked before final audit. (Team-reported, 2026-08-29.)
 - [ ] Relevant course-forum clarifications reviewed before submission.
 
 ---
@@ -376,6 +385,11 @@ The example is preserved here as given by the course specification. Ambiguities 
 
 - **Type:** Mandatory
 - **Status:** `BLOCKED`
+- **Readiness: PENDING FINAL ARTIFACT.** The source candidate (`vanilla/db.js`
+  on `main`, post PR #41 comments) is fully verified — see R-062 to R-066 and
+  the official Vanilla sample test. The exact file copy that will be
+  uploaded to Moodle does not exist yet and must be re-tested once produced,
+  per §15 of `docs/SUBMISSION_CHECKLIST.md`.
 - The `db.js` file submitted **separately from the ZIP** must be the **Vanilla JavaScript version**.
 
 ### Verification
@@ -757,10 +771,22 @@ The project architecture may choose React/MUI, but this is a **project decision*
 - **Type:** Mandatory
 - **Status:** `BLOCKED`
 - JavaScript code must follow the guidelines listed in the course-referenced **Professional JavaScript Guide**.
+- **Readiness (2026-08-29): PENDING EXTERNAL VERIFICATION — non-blocking for
+  Stage B.** The Professional JavaScript Guide document's own content has
+  not been supplied to this audit, so a clause-by-clause check against it
+  has not been performed and is not claimed. Available positive evidence:
+  `npm run lint` passes cleanly, `npm test`/`npm run build` pass,
+  comprehensive explanatory comments now exist (R-121, PR #41), no JSDoc is
+  used (R-122), and no known style-guide defect has been identified during
+  extensive manual code reading this audit. Because there is no known
+  defect and no code change is indicated by any evidence actually available,
+  this is classified as a residual external-verification item rather than a
+  blocker to starting final-artifact preparation — it does not, by itself,
+  justify withholding Stage B.
 
 ### Verification
 
-- [ ] Code review performed against the applicable course style guidelines.
+- [ ] Code review performed against the applicable course style guidelines. (Guide document not supplied; no known defect from available evidence.)
 
 ---
 
@@ -769,10 +795,27 @@ The project architecture may choose React/MUI, but this is a **project decision*
 - **Type:** Mandatory
 - **Status:** `VERIFIED`
 - Comments must be added to the code where appropriate.
+- The team additionally reports a verbal lecturer clarification from the last
+  lesson: comments are a major grading consideration, and the lecturer
+  expects to understand substantial parts of the implementation from the
+  comments themselves.
+- **Remediation history:** an earlier pass of this audit marked this
+  requirement VERIFIED prematurely, before a comprehensive comment pass had
+  actually been done — most source files had little or no explanatory
+  commenting at that time. This was corrected: [PR #41](https://github.com/Shlomi-Hazan/cost-manager-front-end/pull/41)
+  ("docs: add comprehensive explanatory code comments" + a follow-up
+  "docs: correct explanatory comment claims") added file-level and
+  function-level explanatory comments across all 73 team-authored
+  JS/JSX/HTML files, explicitly distinguishing official course requirements
+  from TEAM EXTENSIONS, with the highest priority given to `src/lib/db.js`
+  and `vanilla/db.js`. It changed zero executable code (verified
+  programmatically — every diff line was blank or a comment) and passed
+  lint/tests/build and the official Vanilla 600 USD sample. Merged into
+  `main` at commit `cd49db6b293f96ce7a93b27e75299ccac6229969`.
 
 ### Verification
 
-- [x] Required explanatory comments exist.
+- [x] Required explanatory comments exist, verified present on current `main` after PR #41.
 
 ---
 
@@ -861,6 +904,8 @@ console.log(data.total.sum);
 
 - **Type:** Mandatory
 - **Status:** `BLOCKED`
+- **Readiness: PENDING FINAL ARTIFACT** — not a defect; the video is
+  intentionally not created at this audit stage.
 - Create a short video showing how the project runs.
 - The document says to try to keep it up to approximately **60 seconds**.
 - Upload it to YouTube as **Unlisted**.
@@ -877,6 +922,8 @@ console.log(data.total.sum);
 
 - **Type:** Mandatory
 - **Status:** `BLOCKED`
+- **Readiness: PENDING FINAL ARTIFACT** — none of the three files exist yet;
+  this is expected at this stage, not a defect.
 - The submission must consist of **three files**:
 
 ```text
@@ -897,6 +944,9 @@ console.log(data.total.sum);
 
 - **Type:** Mandatory
 - **Status:** `BLOCKED`
+- **Readiness: PENDING FINAL ARTIFACT** — the ZIP does not exist yet; the
+  exclusion plan is already confirmed against `.gitignore` (`node_modules`,
+  `dist`, caches, OS/IDE files are all excluded from version control).
 - `node_modules` must be deleted/excluded before creating the project ZIP.
 
 ### Verification
@@ -909,6 +959,13 @@ console.log(data.total.sum);
 
 - **Type:** Mandatory
 - **Status:** `BLOCKED`
+- **Readiness: PENDING FINAL ARTIFACT** — not created yet in this audit, as
+  instructed. Preconditions are now in place: comprehensive comments exist
+  (R-121, PR #41) and must be preserved in the PDF (not stripped/minified);
+  the August 26 official scope change ("all code files (JavaScript only)
+  that you coded") and a team-reported clarification narrowing this further
+  to JavaScript/JSX implementing required course functionality are both
+  recorded — see the PDF-scope inventory in this audit's report.
 - Create a PDF containing all code files coded by the team.
 - The name of each file must appear next to its code.
 - Code lines must not be broken in a way that harms review.
@@ -926,6 +983,9 @@ console.log(data.total.sum);
 
 - **Type:** Mandatory
 - **Status:** `BLOCKED`
+- **Readiness: PENDING FINAL ARTIFACT.** Required metadata input has been
+  supplied by the team (see R-145/R-146) — the filename itself is only
+  finalized when the PDF is actually generated.
 - PDF filename must contain the team manager's first and last name:
   - lowercase only
   - `_` between names
@@ -946,6 +1006,11 @@ haim_michael.pdf
 
 - **Type:** Mandatory
 - **Status:** `BLOCKED`
+- **Readiness: PENDING FINAL ARTIFACT — metadata input available.** The team
+  has supplied the required team-manager name to the team directly. Per
+  privacy practice, the actual value is not published in this public
+  repository/audit documentation; it belongs only in the final PDF front
+  matter, produced in a later artifact-generation stage.
 - At the beginning of the PDF, include the first and last name of the development team manager.
 
 ---
@@ -954,6 +1019,12 @@ haim_michael.pdf
 
 - **Type:** Mandatory
 - **Status:** `BLOCKED`
+- **Readiness: PENDING FINAL ARTIFACT — metadata input available.** The team
+  has supplied first/last name, ID, mobile number, and email address for
+  both team members. Per privacy practice, none of these values are
+  published in this public repository/audit documentation; they belong only
+  in the final PDF front matter, produced in a later artifact-generation
+  stage.
 - For every team member include:
   - First Name
   - Last Name
@@ -967,6 +1038,8 @@ haim_michael.pdf
 
 - **Type:** Mandatory
 - **Status:** `BLOCKED`
+- **Readiness: PENDING FINAL ARTIFACT** — depends on R-140 (video not yet
+  created) and R-143 (PDF not yet created).
 - The PDF must include a clickable link to the demo video.
 
 ---
@@ -983,13 +1056,34 @@ haim_michael.pdf
 
 - **Type:** Mandatory
 - **Status:** `BLOCKED`
+- **Readiness: PENDING FINAL ARTIFACT — content PREPARED, not yet inserted
+  into a PDF (which does not exist yet).** The two lecturer-approved
+  collaborative tools are GitHub and Discord (Discord team-reported as
+  verbally approved in place of Slack — see §18.1). The team supplied
+  factual usage details for both, and the following 74-word draft paragraph
+  has been prepared from that input:
+
+  > We collaborated as equal partners using GitHub and Discord throughout
+  > the project. GitHub was used for feature branches, commits, pull
+  > requests, code reviews, approvals, merges, issue tracking, and CI
+  > validation. Discord supported our day-to-day coordination through voice
+  > calls and messages for task planning and division, feature design,
+  > technical decisions, progress updates, debugging, bug discussions,
+  > sharing code snippets, screenshots and links, and coordinating
+  > pull-request reviews and merges. Both team members contributed
+  > throughout development and decision-making.
+
+  Word count verified: 74 words (≤ 100). This paragraph is ready to paste
+  into the final PDF once that artifact is produced; it is not itself the
+  PDF.
 - The PDF must include a summary of the use of **at least two collaborative tools**.
 - The summary must be **no more than 100 words**.
 
 ### Verification
 
-- [ ] At least two collaborative tools covered.
-- [ ] Summary ≤ 100 words.
+- [x] At least two collaborative tools covered. (GitHub + Discord.)
+- [x] Summary ≤ 100 words. (74 words.)
+- [ ] Summary actually inserted into the final PDF. (PDF does not exist yet.)
 
 ---
 
@@ -997,6 +1091,9 @@ haim_michael.pdf
 
 - **Type:** Mandatory
 - **Status:** `BLOCKED`
+- **Readiness: PENDING FINAL ARTIFACT / future action** — this is a
+  submission-time action (Shlomi, as team manager, submits), not something
+  verifiable before the final files exist.
 - Only the team manager should submit the project to the Moodle assignment box.
 
 ---
@@ -1005,6 +1102,14 @@ haim_michael.pdf
 
 - **Type:** Mandatory submission precaution stated by course
 - **Status:** `BLOCKED`
+- **Readiness: PENDING EXTERNAL VERIFICATION.** Official deadline **date**
+  confirmed by the team: **05.09.2026**. Official deadline **clock time on
+  that date is not yet known** — do not treat this as invented (no time such
+  as 23:59/00:00 has been assumed). Team's internal planned submission
+  target: **02.09.2026, ~21:00**, several days ahead of the official date.
+  The required 30-minute safety buffer cannot be numerically calculated
+  until the exact Moodle clock time is supplied; this is a final
+  submission-timing input, not a code/audit blocker.
 - Because of possible server-time differences, the deadline should be treated as if it were **30 minutes earlier** than the time shown in Moodle.
 
 ---
@@ -1022,8 +1127,12 @@ haim_michael.pdf
 ## R-161 — Same Course Group
 
 - **Type:** Mandatory
-- **Status:** `BLOCKED`
+- **Status:** `VERIFIED`
 - Team members must be students from the same group.
+- **Evidence (2026-08-29):** the team confirms Eldad Simanian and Shlomi Hazan
+  are in the same course group. If the updated official document no longer
+  states this requirement explicitly, that does not matter here — the team
+  satisfies the condition regardless.
 
 ---
 
@@ -1031,12 +1140,22 @@ haim_michael.pdf
 
 - **Type:** Mandatory grading requirement
 - **Status:** `BLOCKED`
+- **Readiness: PENDING FINAL ARTIFACT.** The project was developed jointly
+  by Eldad Simanian and Shlomi Hazan as **equal contributors/co-developers**
+  — not as a main/secondary or senior/subordinate relationship. GitHub
+  administrative roles (repository ownership, who requests/approves/merges
+  PRs) and the formal "team manager" submission role (R-150) are
+  administrative/course-submission mechanics only and must not be read as
+  reflecting unequal contribution. Collaboration evidence (GitHub + Discord,
+  see §18.1) is preserved and the ≤100-word summary is drafted (R-149); only
+  its insertion into the not-yet-created final PDF remains.
 - The project includes a **10% teamwork assessment** using collaborative tools presented during the course.
 
 ### Verification
 
 - [x] Collaboration evidence preserved during development.
-- [x] Required collaborative-tool summary prepared for final PDF.
+- [x] Required collaborative-tool summary prepared for final PDF. (Drafted, 74 words — see R-149.)
+- [ ] Summary actually inserted into the final PDF.
 
 ---
 
@@ -1074,7 +1193,16 @@ The example appears to preserve original item currency/value while converting th
 
 ---
 
-## OQ-002 — Exact Stored/Returned Date Shape
+## OQ-002 — Exact Stored/Returned Date Shape — **RESOLVED**
+
+**Status (2026-08-29): RESOLVED — lecturer confirmation reported directly by
+the team.** The team reports that the lecturer has confirmed the public
+`getReport()` report-item date shape `date: { day: ... }` is correct. This is
+recorded as a team-reported lecturer confirmation (not a written
+forum/document citation supplied to this audit). The implementation is
+unchanged — it already returns exactly `{ day }` from `getReport()` (see
+`toReportCost()` in `src/lib/db.js` and `vanilla/db.js`) — so no code change
+was required or made.
 
 The specification requires every cost item to receive the date on which it was added.
 
@@ -1084,13 +1212,16 @@ The report example shows:
 date: { day: 12 }
 ```
 
-but does not fully define the internal/stored date schema.
+Internally, the stored date carries additional fields (day/month/year/hour/
+minute) to support month/year filtering and the team's own detailed reports;
+only `{ day }` is exposed through the required `getReport()` report-item
+shape, which the lecturer has now confirmed is correct.
 
 ### Action
 
-- [ ] Decide an internal representation that supports required month/year filtering.
-- [ ] Preserve compatibility with the official report shape.
-- [ ] Ask for clarification if exact returned date structure matters.
+- [x] Decide an internal representation that supports required month/year filtering.
+- [x] Preserve compatibility with the official report shape.
+- [x] Ask for clarification if exact returned date structure matters. (Lecturer confirmed `{ day }` is correct — team-reported, 2026-08-29.)
 
 ---
 
@@ -1133,41 +1264,133 @@ The official specification gives input types but does not define detailed UI val
 
 ---
 
-## 18.1 Final Audit Status (Issue #13, Stage A — 2026-08-29)
+## 18.1 Final Audit Status (Issue #13, Stage A)
 
-**OQ-001 through OQ-005 remain formally OPEN.** No official lecturer/course-forum
-answer has been received for any of them as of this audit. A clarification
-document with ready-to-post forum text for OQ-001–OQ-005 (plus two
-submission-scope questions) exists but has not yet been sent/answered. Do not
-treat this audit as having resolved them — the implementation's current
-interpretation of each (documented above and in `docs/ARCHITECTURE.md` §15)
-remains an interpretation, not a confirmed requirement.
+### Update — 2026-08-29 (second pass, after PR #41 merged)
 
-**Authoritative source availability:** This audit could not re-fetch or
-re-verify `fed_hit_final_project_202607.pdf` (the official course document)
-directly — it was available only as a chat attachment in an earlier session and
-is not present in this repository or environment. This audit's requirement
-statuses below are therefore based on the already-derived content of this file
-plus repository/CI/production evidence, **not** on a fresh re-read of the
-official PDF or a fresh check for newer official corrections/clarifications.
-Per `docs/SUBMISSION_CHECKLIST.md` §2, the latest official document and
-relevant forum clarifications must still be (re)checked by the team before
-final submission. R-002 is marked `BLOCKED` for exactly this reason.
+This section supersedes the first-pass notes below where they conflict.
+
+**Authoritative source, corrected:** the team has since supplied the updated
+official course PDF's relevant content and reports two changes: (1)
+**August 18** — `db.getReport("USD")` corrected to `ob.getReport("USD")`,
+already reflected in R-066; (2) **August 26** — the source-code PDF scope
+narrowed from "all code files that you coded" to **"all code files
+(JavaScript only) that you coded."** This session was not itself given the
+PDF file to open and inspect directly; the above is recorded as **team-reported
+document content**, the same standard already applied to the Collaborative
+Tools clarification. The prior "PDF unavailable" blocker on R-002 no longer
+applies and has been updated (R-002 is now `VERIFIED`).
+
+**OQ-002 is now RESOLVED.** The team reports the lecturer has confirmed the
+public `getReport()` date shape `date: { day: ... }` is correct
+(**lecturer confirmation reported directly by the team**, not a written
+citation). See the dedicated OQ-002 entry above. The implementation was not
+changed — it already returned exactly this shape.
+
+**OQ-001, OQ-003, OQ-004, OQ-005 remain formally OPEN.** No official answer
+has been received for any of these, nor for the separate question of whether
+`addCost()` may return extra generated properties (id/date) beyond the four
+documented ones (see the `addCost()` comment in `src/lib/db.js`/`vanilla/db.js`
+after PR #41's corrections). Do not treat any of these as resolved.
+
+**Team contribution:** the project was developed jointly by Eldad Simanian
+and Shlomi Hazan as **equal contributors/co-developers**. GitHub repository
+ownership, the "team manager" Moodle-submission role (R-150), and who
+reviews/merges PRs are administrative/course-submission mechanics only and
+must not be read as reflecting a main/secondary or senior/subordinate
+development relationship.
+
+**Team metadata:** required final-submission personal metadata (names, ID,
+mobile number, email) has been **supplied by the team for both students**.
+Per privacy practice, no actual values are recorded in this public
+repository/audit documentation — they belong only in the final PDF front
+matter (R-145/R-146), produced in a later artifact-generation stage.
+
+**Same course group (R-161):** the team confirms Eldad Simanian and Shlomi
+Hazan are in the same course group; now `VERIFIED`.
+
+**Submission deadline:** official date confirmed as **05.09.2026**; the exact
+clock time on that date has not been supplied (not invented, not assumed as
+23:59/00:00/etc.). Internal team target: **02.09.2026, ~21:00**. See R-151.
+
+### First-pass notes (2026-08-29, superseded above where noted)
 
 **Collaborative Tools — RESOLVED.** The team has confirmed the two
 collaborative tools for the R-149 submission summary are **GitHub** and
 **Discord**, with Discord explicitly lecturer-approved as a substitute for
 Slack. This approval is **team-reported as verbal**; no written
 lecturer/forum confirmation of it has been supplied to this audit. This is
-resolved and should not be reopened as "which second tool?" — see
-`docs/SUBMISSION_CHECKLIST.md` §11 for the evidence still needed (concrete
-Discord usage examples) before the final ≤100-word paragraph can be written.
+resolved and should not be reopened as "which second tool?" The team has since
+supplied concrete Discord usage examples and a drafted ≤100-word paragraph —
+see R-149.
 
 **AI coding-assistant disclosure** remains a separate, still-open question
 (see clarification question 8 in the team's draft forum-questions document).
 No official course requirement for AI-tool disclosure has been found in
 `docs/REQUIREMENTS.md`'s source material available to this audit. Do not
 conflate it with the (resolved) collaborative-tools requirement.
+
+## 18.2 Source-Code PDF Scope Inventory (JavaScript/JSX, required-course code only)
+
+Per the August 26 official change ("all code files (JavaScript only) that you
+coded") plus the team-reported clarification narrowing this to JavaScript/JSX
+implementing **required course functionality** (see
+`docs/SUBMISSION_CHECKLIST.md` §12). Test — would this file, or this code
+path, need to exist to satisfy the official course requirements? Production
+code is not modified for packaging purposes; MIXED files are reproduced whole
+in the future PDF, not split.
+
+| File | Requirement relevance | Status | Comment-ready? |
+|---|---|---|---|
+| `src/lib/db.js` | Required contract (`openCostsDB`/`addCost`/`getReport`) + CRUD extension methods in one file | MIXED | Yes (PR #41) |
+| `vanilla/db.js` | Same as above, standalone version | MIXED | Yes |
+| `src/lib/costsDatabase.js` | Wires the required db.js instance for the app | INCLUDE | Yes |
+| `src/lib/exchangeRatesCache.js` | R-090–094 Fetch/sync bridge | INCLUDE | Yes |
+| `src/services/exchangeRatesService.js` | R-090–094 | INCLUDE | Yes |
+| `src/services/settingsService.js` | R-092/093 default/custom source | INCLUDE | Yes |
+| `src/utils/currency.js` | R-040/090/094 conversion + validation | INCLUDE | Yes |
+| `src/constants/currencies.js` | R-040 identifiers | INCLUDE | Yes |
+| `src/utils/category.js` | Supports required Pie Chart category grouping (R-070) | INCLUDE | Yes |
+| `src/constants/categories.js` | UI suggestion list only; free text already satisfies R-033 without it | EXCLUDE | Yes |
+| `src/utils/amountFormat.js` | Formats required report/chart totals for display | INCLUDE | Yes |
+| `src/utils/chartPresentation.js` | Presentation for required Pie/Bar charts | INCLUDE | Yes |
+| `src/utils/chartAggregation.js` | R-070/071 Pie aggregation | INCLUDE | Yes |
+| `src/utils/yearlyAggregation.js` | R-080/081 Bar aggregation | INCLUDE | Yes |
+| `src/utils/dateTime.js` | Formats required Monthly Report date/time display + heavily used by extension edit forms | MIXED | Yes |
+| `src/pages/AddCostPage.jsx` | R-030–036 | INCLUDE | Yes |
+| `src/pages/MonthlyReportPage.jsx` | R-050–053 required report + export-button/sorting extensions in the same file | MIXED | Yes |
+| `src/pages/ChartsPage.jsx` | R-070/071 required Pie Chart + export-button extension in the same file | MIXED | Yes |
+| `src/components/charts/YearlyBarChartSection.jsx` | R-080/081 required Bar Chart + export-button extension in the same file | MIXED | Yes |
+| `src/components/reports/SortableReportTable.jsx` | Renders required Monthly Report rows + sorting extension (X-006) in the same file | MIXED | Yes |
+| `src/pages/SettingsPage.jsx` | R-092/093 | INCLUDE | Yes |
+| `src/pages/ReportsPage.jsx` | Hosts required Monthly tab + extension Yearly tab | MIXED | Yes |
+| `src/App.jsx` | Core navigation reaching required features + wires extension pages | MIXED | Yes |
+| `src/main.jsx` | App bootstrap, required for anything to render | INCLUDE | Yes |
+| `src/components/layout/AppLayout.jsx` | Navigation shell reaching required features | INCLUDE | Yes |
+| `src/components/common/PageHeader.jsx` / `SectionCard.jsx` / `LoadingButtonLabel.jsx` | Shared UI used by required-feature pages | INCLUDE | Yes |
+| `src/theme.js` | Global theme needed for the app (incl. required pages) to render | INCLUDE | Yes |
+| `src/pages/DashboardPage.jsx` | Convenience landing page; required features are already reachable via `AppLayout`'s nav without it | EXCLUDE | Yes |
+| `src/services/detailedReportsService.js` | `buildDetailedMonthlyReport` augments required-report display with extension date/time detail; `buildDetailedYearlyReport` is pure extension | MIXED | Yes |
+| `src/pages/ManageCostsPage.jsx` | Entirely X-002/X-003 — editing/deleting is not required | EXCLUDE | Yes |
+| `src/pages/YearlyReportPage.jsx` | Entirely X-005 — not required | EXCLUDE | Yes |
+| `src/hooks/useReportSorting.js`, `src/utils/reportSorting.js` | Entirely X-006 sorting extension | EXCLUDE | Yes |
+| `src/utils/chartCapture.js`, `src/utils/exportFilenames.js` | Entirely export extension (X-007/X-008) | EXCLUDE | Yes |
+| `src/services/export/downloadService.js`, `excelExportService.js`, `exportModels.js`, `pdfExportService.js` | Entirely export extension — team explicitly named PDF/Excel export as not belonging in the final PDF | EXCLUDE | Yes |
+| `eslint.config.js`, `vite.config.js` | Tooling/config, not "code you coded" in the R-143 sense; PDF-scope status **NEEDS REVIEW** pending explicit confirmation | NEEDS REVIEW | Yes |
+| `tests/db/db.test.js`, `tests/db/vanilla-db.test.js` | Directly validate the required db.js contract | INCLUDE candidate | Yes |
+| `tests/currency/`, `tests/charts/chartAggregation.test.js`, `tests/charts/yearlyAggregation.test.js`, `tests/categories/`, `tests/dateTime/`, `tests/services/exchangeRatesService.test.js`, `tests/services/settingsService.test.js` | Directly validate required behavior | INCLUDE candidate | Yes |
+| `tests/exports/*`, `tests/reports/reportSorting.test.js`, `tests/reports/detailedReportsService.test.js` (Yearly-report portion) | Validate extension-only behavior | EXCLUDE candidate | Yes |
+| `src/pages/*.test.jsx`, component `.test.jsx` files | Split the same way as their subject file above (Add Cost/Monthly/Charts/Bar-chart INCLUDE-leaning or MIXED; Manage Costs/Yearly Report/sorting EXCLUDE) | Mirrors subject file | Yes |
+
+**Whether tests enter the PDF at all** is itself covered by the August 26
+"JavaScript only" wording (tests are `.js`/`.jsx`) but was not addressed by
+the team's narrower course-requirement clarification, which was framed
+around application code. This is flagged **NEEDS REVIEW** rather than
+resolved unilaterally.
+
+No production file is modified for PDF packaging. MIXED files must be
+reproduced as complete, real files in the eventual PDF, not split into
+fragments.
 
 ---
 
@@ -1259,8 +1482,8 @@ date: {
 
 - [x] Newly added costs store day/month/year/hour/minute.
 - [x] Monthly filtering continues to use month/year.
-- [x] Official report item compatibility remains day-only while `OQ-002`
-      remains open.
+- [x] Official report item compatibility remains day-only; `OQ-002` is now
+      RESOLVED — the lecturer has confirmed this shape is correct.
 - [x] Manage Costs UI can edit full date/time values.
 - [x] Monthly Report displays stored cost time.
 - [x] Yearly Report displays stored cost date and time.
@@ -1278,8 +1501,8 @@ date: {
   original currency.
 - The yearly total uses the selected target currency and reuses the existing
   synchronous monthly `getReport()` conversion behavior.
-- Official `getReport()` report-item date shape remains unchanged while
-  `OQ-002` remains open.
+- Official `getReport()` report-item date shape remains unchanged; `OQ-002`
+  is now RESOLVED — the lecturer has confirmed this shape is correct.
 
 ### Verification
 
