@@ -1,9 +1,10 @@
 /*
- * Bridges the required asynchronous Fetch API with the required synchronous
+ * Bridges the required asynchronous Fetch API with the synchronous-looking
  * getReport() call shown in the official db.js sample. The course requires
- * exchange rates to come from Fetch, but the grader's sample calls
+ * exchange rates to come from Fetch, but the official sample calls
  * ob.getReport("USD") and reads data.total.sum on the very next line, with
- * no await — so getReport() cannot itself perform a network request.
+ * no await — so, to keep that sample working as shown, getReport() cannot
+ * itself perform a network request.
  *
  * The resolution used throughout this project: the application fetches and
  * validates rates elsewhere (see exchangeRatesService.js), then stores the

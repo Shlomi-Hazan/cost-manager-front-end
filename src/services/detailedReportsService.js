@@ -1,12 +1,13 @@
 /*
- * TEAM EXTENSION: the official db.js getReport() returns each cost with
- * only { day } in its date (to match the official report-item shape — see
- * OQ-002 in docs/REQUIREMENTS.md) and with the row's own sum/currency
- * un-converted. The team's Monthly/Yearly report screens want the FULL
- * stored date/time for display and sorting, so this module reads the raw
- * costs via db.js's getAllCosts() extension for the row data, while still
- * getting the official-shape total from getReport() itself — the required
- * getReport() contract and its return shape are never modified.
+ * TEAM EXTENSION: our db.js's required getReport() returns each cost with
+ * only { day } in its date — a project choice made to match the official
+ * report-item example (see OQ-002 in docs/REQUIREMENTS.md, which remains
+ * open) — and with the row's own sum/currency un-converted. The team's
+ * Monthly/Yearly report screens want the FULL stored date/time for display
+ * and sorting, so this module reads the raw costs via db.js's
+ * getAllCosts() extension for the row data, while still getting the
+ * required total from getReport() itself — the required getReport()
+ * contract and its return shape are never modified.
  */
 import { buildYearlyMonthlyTotals } from "../utils/yearlyAggregation.js";
 

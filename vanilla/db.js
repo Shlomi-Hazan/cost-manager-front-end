@@ -397,11 +397,17 @@
     storageKey = getStorageKey(databaseName, databaseVersion);
 
     return {
-      // Required method. Accepts exactly the four documented properties,
-      // stamps on a generated id (team extension) and the automatic date
-      // (R-035), appends to storage, and returns a copy of the stored cost
-      // — including the extra id/date fields, since the course Q&A does not
-      // restrict the return value to only the four input properties.
+      // Required method. Its documented input is exactly the four required
+      // properties (sum, currency, category, description), and the official
+      // course document states the returned object's properties should be
+      // those same four. This implementation additionally stamps on a
+      // generated id (team extension) and the automatic date (R-035), and
+      // currently returns them as extra properties on the result alongside
+      // the four required ones. The official course Q&A confirms that EXTRA
+      // db.js METHODS are allowed, but it does not explicitly say whether
+      // addCost() may return extra PROPERTIES beyond the documented four —
+      // that specific question has been raised as a clarification and is
+      // not yet officially answered, so do not treat it as resolved.
       addCost: function addCost(cost) {
         var storedCost;
         var costs;
