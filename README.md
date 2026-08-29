@@ -4,7 +4,7 @@ Final project for the **Front-End Development** course.
 
 This repository is intentionally being built from the project requirements outward: requirements, architecture, AI-agent instructions, testing strategy, Git/GitHub workflow, implementation, deployment, audit, and submission.
 
-> **Current status:** Milestone 13 — Production Deployment (in progress).
+> **Current status:** Milestone 13 — Production Deployment (production-verified).
 
 ## Project Goal
 
@@ -131,12 +131,17 @@ Public.
 Pull requests into `main` continue to be validated automatically using the
 `CI` GitHub Actions workflow (`npm ci`, lint, test, build) before merge.
 
-A separate `Deploy` workflow now builds and publishes the application to
+A separate `Deploy` workflow builds and publishes the application to
 GitHub Pages on every push to `main`. The production build is served from a
 repository subpath (`/cost-manager-front-end/`), so both the build's asset
 base path and the default exchange-rate URL are resolved from Vite's
 `BASE_URL` rather than a hard-coded root path.
 
-The public production URL will be added here once the deployment workflow
-has run from `main` and the resulting Pages site has been verified with a
-real production smoke test.
+**Production URL:** https://shlomi-hazan.github.io/cost-manager-front-end/
+
+**Deployment platform:** GitHub Pages (via GitHub Actions).
+
+Production smoke testing has passed: page load and navigation, the default
+exchange-rate source, localStorage persistence, Monthly/Yearly reports, the
+Pie and Bar charts, and report/chart exports were all verified directly
+against the production URL.
