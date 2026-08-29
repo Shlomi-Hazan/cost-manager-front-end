@@ -4,7 +4,7 @@ Final project for the **Front-End Development** course.
 
 This repository is intentionally being built from the project requirements outward: requirements, architecture, AI-agent instructions, testing strategy, Git/GitHub workflow, implementation, deployment, audit, and submission.
 
-> **Current status:** Milestone 11 — Automated Testing & QA.
+> **Current status:** Milestone 12 — GitHub Actions CI.
 
 ## Project Goal
 
@@ -126,14 +126,21 @@ Public.
 
 ## Current Milestone
 
-### Milestone 11 — Automated Testing & QA
+### Milestone 12 — GitHub Actions CI
 
-The project has completed a comprehensive regression QA pass: strengthened
-`db.js` contract coverage (malformed stored data, unrelated localStorage key
-preservation), confirmed Module/Vanilla parity, verified the official Vanilla
-compatibility sample in latest Chrome, and manually verified Add Cost, Manage
-Costs, Monthly/Yearly Reports, Pie/Bar Charts, Settings, and Excel/PDF exports
-against a real dataset entered through the UI, with numeric results matching
-independently computed expected values.
+Pull requests into `main` are now validated automatically using GitHub
+Actions. Each pull request runs:
 
-Production deployment smoke testing is deferred until Milestone 13.
+```bash
+npm ci
+npm run lint
+npm test
+npm run build
+```
+
+as separate, individually visible steps. A pull request should have a
+successful CI check before it is merged. This pipeline does not deploy the
+application and does not replace the manual Vanilla `db.js` Chrome
+compatibility test or manual QA described in `docs/TEST_PLAN.md`.
+
+Production deployment is a later milestone.
