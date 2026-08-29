@@ -40,23 +40,26 @@
 ## R-002 — Monitor Official Clarifications
 
 - **Type:** Mandatory process requirement
-- **Status:** `VERIFIED`
+- **Status:** `BLOCKED`
+- **Readiness: PENDING EXTERNAL VERIFICATION — does not block beginning
+  Stage B, but must be completed before final submission.** The updated
+  official course PDF supplied by the team has been reviewed, confirming
+  two relevant changes: (1) August 18 — `db.getReport("USD")` corrected to
+  `ob.getReport("USD")`, already reflected in R-066; (2) August 26 — the
+  source-code PDF scope narrowed from "all code files that you coded" to
+  "all code files (JavaScript only) that you coded" (see §18.2, the
+  PDF-scope inventory). What remains open is the requirement's own
+  ongoing/final clause: a last course-forum/newest-clarification check
+  immediately before submission has not yet happened, since submission has
+  not happened yet.
 - The official specification may receive clarifications before the deadline.
 - Changes are expected to be listed at the bottom of the official document.
 - The course forum should be followed to verify interpretations and clarifications.
-- **Evidence (2026-08-29):** the team reports the updated official course PDF
-  has been reviewed and reports two relevant changes: (1) August 18 —
-  `db.getReport("USD")` corrected to `ob.getReport("USD")`, already reflected
-  in R-066; (2) August 26 — the source-code PDF scope narrowed from "all code
-  files that you coded" to "all code files (JavaScript only) that you coded"
-  (see §18.1 and the PDF-scope inventory). This session was not given the PDF
-  file directly to inspect; these changes are recorded as team-reported
-  content, consistent with how the Collaborative Tools clarification below is
-  handled.
 
 ### Verification
 
-- [x] Latest version of the specification checked before final audit. (Team-reported, 2026-08-29.)
+- [x] Updated/current supplied specification reviewed (2026-08-29) — August 18 and August 26 changes confirmed.
+- [ ] Final relevant course-forum / newest-clarification re-check performed immediately before submission.
 - [ ] Relevant course-forum clarifications reviewed before submission.
 
 ---
@@ -822,7 +825,7 @@ The project architecture may choose React/MUI, but this is a **project decision*
 ## R-122 — No JSDoc Requirement; Use Normal JS Comments
 
 - **Type:** Clarified by official Q&A
-- **Status:** `NOT STARTED`
+- **Status:** `VERIFIED`
 - JSDoc comments are not required.
 - The official Q&A says comments should use:
 
@@ -836,9 +839,17 @@ or:
 // ...
 ```
 
+- **Evidence (2026-08-29):** [PR #41](https://github.com/Shlomi-Hazan/cost-manager-front-end/pull/41)
+  added comprehensive comments using only `//` and `/* ... */` styles across
+  all 73 team-authored files. A repository-wide review found no JSDoc-style
+  (`/** ... */`) documentation or `@param`/`@returns`/`@typedef` annotations
+  introduced by the comment pass. This is a Q&A clarification, not a
+  Mandatory-type requirement, so it is not part of the mandatory-requirement
+  denominator.
+
 ### Verification
 
-- [ ] Project comments use the permitted comment styles.
+- [x] Project comments use the permitted comment styles.
 
 ---
 
@@ -961,12 +972,18 @@ console.log(data.total.sum);
 - **Status:** `BLOCKED`
 - **Readiness: PENDING FINAL ARTIFACT** — not created yet in this audit, as
   instructed. Preconditions are now in place: comprehensive comments exist
-  (R-121, PR #41) and must be preserved in the PDF (not stripped/minified);
-  the August 26 official scope change ("all code files (JavaScript only)
-  that you coded") and a team-reported clarification narrowing this further
-  to JavaScript/JSX implementing required course functionality are both
-  recorded — see the PDF-scope inventory in this audit's report.
-- Create a PDF containing all code files coded by the team.
+  (R-121, PR #41) and must be preserved verbatim in the PDF (not
+  stripped/minified/regenerated); see the PDF-scope inventory in §18.2.
+- **Official written rule (updated PDF, August 26):** "all code files
+  (**JavaScript only**) that you coded." `.jsx` counts as JavaScript.
+- **Separate team-reported lecturer/submission clarification:** the PDF's
+  code section should contain the JavaScript/JSX implementing
+  **course-required** functionality — not JavaScript that exists solely to
+  implement optional team extensions. This narrower practical scope is
+  recorded as team-reported, not as literal PDF wording, and does not
+  replace or contradict the official "JavaScript only" rule above — see
+  §18.2 for the full Include/Exclude/Mixed inventory built from both.
+- Create a PDF containing the applicable code files coded by the team.
 - The name of each file must appear next to its code.
 - Code lines must not be broken in a way that harms review.
 - The PDF must be properly organized for code review.
@@ -1124,15 +1141,21 @@ haim_michael.pdf
 
 ---
 
-## R-161 — Same Course Group
+## R-161 — Same Course Group — **NO LONGER A CURRENT MANDATORY REQUIREMENT**
 
-- **Type:** Mandatory
-- **Status:** `VERIFIED`
+- **Type:** Historical — previous document version only (excluded from the
+  current mandatory-requirement denominator)
+- **Status:** `VERIFIED` (satisfied regardless, see below)
 - Team members must be students from the same group.
-- **Evidence (2026-08-29):** the team confirms Eldad Simanian and Shlomi Hazan
-  are in the same course group. If the updated official document no longer
-  states this requirement explicitly, that does not matter here — the team
-  satisfies the condition regardless.
+- **History (2026-08-29):** the previous official course PDF stated "Teams
+  must include students from the same group." The updated official PDF
+  supplied by the team no longer contains this sentence in its current
+  team/submission section. No reason for its removal is invented here — it
+  is simply not present in the current document, so it is not carried
+  forward as an active mandatory requirement.
+- **Regardless of current-document status:** the team confirms Eldad
+  Simanian and Shlomi Hazan are in fact in the same course group, so the
+  condition is satisfied either way.
 
 ---
 
@@ -1266,20 +1289,43 @@ The official specification gives input types but does not define detailed UI val
 
 ## 18.1 Final Audit Status (Issue #13, Stage A)
 
+### Update — 2026-08-29 (third pass — corrections after independent review)
+
+This section supersedes the second-pass and first-pass notes below where
+they conflict.
+
+- **R-002** is `BLOCKED`, not `VERIFIED` — the updated PDF's content has now
+  been confirmed, but the requirement's own final pre-submission
+  course-forum/newest-clarification check has not happened yet (submission
+  itself hasn't happened). See the corrected R-002 entry above.
+- **R-122** is now `VERIFIED` (its type is "Clarified by official Q&A," not
+  "Mandatory," so this does not change the mandatory-requirement
+  denominator). See its entry.
+- **R-161** (same course group) is reclassified as
+  **NO LONGER CURRENT REQUIREMENT** and excluded from the current mandatory
+  denominator — see its entry for the historical-vs-current explanation.
+- The mandatory-requirement denominator is therefore **56**, not 57 — see
+  the recalculated counts in this audit's Pull Request description.
+- The GitHub collaboration-evidence claim that "Shlomi reviewed and approved
+  every PR opened by Eldad, including #40/#41" was corrected — PR #40 (this
+  audit) has not yet received a human review; only the merged PRs, including
+  #41, were actually reviewed/approved. See `docs/SUBMISSION_CHECKLIST.md`
+  §11.
+- The stale deadline text in `docs/SUBMISSION_CHECKLIST.md` §18 (claiming
+  the deadline was entirely unknown) was corrected to match R-151 below.
+
 ### Update — 2026-08-29 (second pass, after PR #41 merged)
 
 This section supersedes the first-pass notes below where they conflict.
 
-**Authoritative source, corrected:** the team has since supplied the updated
-official course PDF's relevant content and reports two changes: (1)
+**Authoritative source:** the updated official course PDF supplied by the
+team has been independently reviewed, confirming two changes: (1)
 **August 18** — `db.getReport("USD")` corrected to `ob.getReport("USD")`,
 already reflected in R-066; (2) **August 26** — the source-code PDF scope
 narrowed from "all code files that you coded" to **"all code files
-(JavaScript only) that you coded."** This session was not itself given the
-PDF file to open and inspect directly; the above is recorded as **team-reported
-document content**, the same standard already applied to the Collaborative
-Tools clarification. The prior "PDF unavailable" blocker on R-002 no longer
-applies and has been updated (R-002 is now `VERIFIED`).
+(JavaScript only) that you coded."** The prior "PDF unavailable" blocker on
+R-002 no longer applies (see the third-pass update above for R-002's current,
+corrected status).
 
 **OQ-002 is now RESOLVED.** The team reports the lecturer has confirmed the
 public `getReport()` date shape `date: { day: ... }` is correct

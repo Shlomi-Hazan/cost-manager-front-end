@@ -40,10 +40,10 @@ Final manual verification
 
 Before packaging anything:
 
-- [x] Review the latest official project specification. — Team-reported content of the updated PDF reviewed (August 18 and August 26 changes recorded — see `docs/REQUIREMENTS.md` §18.1). This session was not given the PDF file directly to inspect.
-- [x] Review relevant lecturer/course-forum clarifications. — Collaborative Tools (GitHub+Discord) and OQ-002 (`{ day }` shape) are resolved (both team-reported). OQ-001/003/004/005 and the addCost() extra-return-property question remain unanswered.
+- [x] Review the latest official project specification. — The updated official course PDF supplied by the team was independently reviewed; the August 18 and August 26 changes were confirmed (see `docs/REQUIREMENTS.md` §18.1).
+- [x] Review relevant lecturer/course-forum clarifications. — Collaborative Tools (GitHub+Discord), OQ-002 (`{ day }` shape), and same-course-group status are resolved. OQ-001/003/004/005 and the addCost() extra-return-property question remain unanswered. A final pre-submission course-forum/newest-clarification re-check is still outstanding — see R-002.
 - [x] Update `docs/REQUIREMENTS.md` if needed.
-- [x] Verify every mandatory requirement. — 43/57 mandatory requirements VERIFIED, 12 PENDING FINAL ARTIFACT, 2 PENDING EXTERNAL VERIFICATION, 0 NOT SATISFIED (see `docs/REQUIREMENTS.md`; the register itself keeps these 14 as `BLOCKED` per its own status legend, with a Readiness note distinguishing the two cases).
+- [x] Verify every mandatory requirement. — 41/56 mandatory requirements VERIFIED, 15 BLOCKED (0 of those are `NOT SATISFIED` compliance defects — see `docs/REQUIREMENTS.md`; each BLOCKED entry's Readiness note distinguishes PENDING FINAL ARTIFACT from PENDING EXTERNAL VERIFICATION). R-161 (same course group) is no longer part of the current mandatory denominator — see its entry.
 - [ ] Complete the requirement traceability table.
 - [x] Resolve or explicitly document remaining ambiguities.
 - [x] Confirm no required behavior was replaced by a project preference.
@@ -334,7 +334,7 @@ Before writing the ≤100-word final summary, collect examples from:
 
 - [x] GitHub Issues. (19 issues, all opened by team manager Shlomi to scope work.)
 - [x] Pull Requests. (21 PRs total: 15 by Shlomi (#14–#35 range), 6 by Eldad (#36–#41).)
-- [x] reviews. (Shlomi reviewed and approved every PR opened by Eldad, including #40/#41.)
+- [x] reviews. (Shlomi reviewed/approved the merged PRs opened by Eldad, including PR #41. PR #40 — this audit — is still open and has not yet received a human review.)
 - [ ] comments. (Not separately inventoried this session.)
 - [x] branches. (Feature/task branch workflow used throughout — confirmed via PR head branches.)
 - [x] commits. (Both team members contributed real, verifiable commit history.)
@@ -369,13 +369,11 @@ inserted into a PDF:**
 
 # 12. Source-Code PDF — Code Section
 
-The PDF must contain all code files coded by the team.
-
-**Scope, corrected 2026-08-29:** the updated official PDF's August 26 change
-narrows this to **"all code files (JavaScript only) that you coded."**
-`.jsx` is JavaScript source and counts. This EXCLUDES from the code section:
-HTML, CSS, Markdown, YAML, JSON, `package-lock.json`, generated files,
-`node_modules`, `dist`, and third-party/dependency code.
+**Scope:** the updated official PDF states the code section must contain
+**"all code files (JavaScript only) that you coded."** `.jsx` is JavaScript
+source and counts. This EXCLUDES from the code section: HTML, CSS, Markdown,
+YAML, JSON, `package-lock.json`, generated files, `node_modules`, `dist`, and
+third-party/dependency code.
 
 **Further team-reported submission clarification:** the code section should
 contain the JavaScript/JSX implementing the **course-required** functionality
@@ -544,21 +542,25 @@ The official document instructs students to treat the Moodle deadline as if it w
 
 Checklist:
 
-- [ ] record official deadline.
-- [ ] subtract at least 30 minutes for internal deadline.
-- [ ] target completion earlier than the minimum buffer.
+- [x] record official deadline **date**. (05.09.2026 — team-confirmed.)
+- [ ] record official deadline **clock time**. (Not yet supplied — do not invent 23:59/00:00/or any other time.)
+- [ ] subtract at least 30 minutes for internal deadline. (Cannot be numerically calculated until the exact clock time is known.)
+- [x] target completion earlier than the minimum buffer. (Internal target is several days ahead of the official date — see below.)
 - [ ] do not leave video upload/PDF generation/ZIP creation to the final minutes.
 
 Internal submission target:
 
 ```text
-Official Moodle deadline: UNKNOWN — not yet provided to this audit (2026-08-29)
-Internal latest submission time: cannot be computed until the deadline is known
-Preferred team target: _____________________
+Official Moodle deadline date:  05.09.2026
+Official Moodle deadline time:  PENDING (not yet supplied)
+Internal latest submission time: cannot be computed until the exact clock time is known
+Team internal planned target:   02.09.2026, approximately 21:00
 ```
 
-**MISSING SUBMISSION INPUT:** the official Moodle deadline has not been
-supplied. This must be resolved before Stage B/C submission-timing planning.
+**Remaining input needed:** only the exact Moodle deadline **clock time** on
+05.09.2026. This is a final submission-timing input, not a code/audit
+blocker — the team's internal target already provides a multi-day safety
+margin ahead of the official date regardless.
 
 ---
 

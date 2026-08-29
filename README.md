@@ -129,18 +129,21 @@ Public.
 ### Milestone 15 — Final Requirements Audit (Issue #13, Stage A)
 
 A requirement-by-requirement audit of `docs/REQUIREMENTS.md` is complete
-against the updated official course document (team-reported content,
+against the updated official course document (independently reviewed,
 including the August 18 `ob.getReport()` correction and the August 26
-JavaScript-only PDF-scope rule): 43 of 57 mandatory requirements are
+JavaScript-only PDF-scope rule): 41 of 56 mandatory requirements are
 `VERIFIED` with concrete evidence (automated tests, CI, production QA, and
-PR review); the remaining 14 are not compliance defects — 12 are final
+PR review). One previously-mandatory requirement (same course group) is no
+longer present in the updated document and has been reclassified
+accordingly. The remaining 15 are not compliance defects — 12 are final
 submission artifacts that intentionally do not exist yet (video, source-code
 PDF, ZIP, separately-copied Vanilla `db.js`, PDF front matter/summary
-insertion), and 2 are pending external verification (the Professional
-JavaScript Guide's own content, and the exact Moodle deadline clock time).
-See `docs/REQUIREMENTS.md` §18.1/§18.2 and this audit's Pull Request for full
-detail. **Completing this audit does not mean the project is ready to
-submit** — Milestone 16 (final artifact generation) has not started.
+insertion), and 3 are pending external verification (a final pre-submission
+forum re-check, the Professional JavaScript Guide's own content, and the
+exact Moodle deadline clock time). See `docs/REQUIREMENTS.md` §18.1/§18.2 and
+this audit's Pull Request for full detail. **Completing this audit does not
+mean the project is ready to submit** — Milestone 16 (final artifact
+generation) has not started.
 
 ### Milestone 14 — Documentation & Teamwork Evidence
 
