@@ -332,7 +332,7 @@ The project should preserve evidence throughout development.
 
 Before writing the ≤100-word final summary, collect examples from:
 
-- [x] GitHub Issues. (19 issues, all opened by team manager Shlomi to scope work.)
+- [x] GitHub Issues. (19 issues, opened by Shlomi to scope and coordinate project work.)
 - [x] Pull Requests. (21 PRs total: 15 by Shlomi (#14–#35 range), 6 by Eldad (#36–#41).)
 - [x] reviews. (Shlomi reviewed/approved the merged PRs opened by Eldad, including PR #41. PR #40 — this audit — is still open and has not yet received a human review.)
 - [ ] comments. (Not separately inventoried this session.)
