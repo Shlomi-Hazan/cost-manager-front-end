@@ -4,7 +4,7 @@ Final project for the **Front-End Development** course.
 
 This repository is intentionally being built from the project requirements outward: requirements, architecture, AI-agent instructions, testing strategy, Git/GitHub workflow, implementation, deployment, audit, and submission.
 
-> **Current status:** Milestone 10 — UI/UX Polish.
+> **Current status:** Milestone 11 — Automated Testing & QA.
 
 ## Project Goal
 
@@ -126,8 +126,14 @@ Public.
 
 ## Current Milestone
 
-### Milestone 10 — UI/UX Polish
+### Milestone 11 — Automated Testing & QA
 
-The application now applies cross-page visual consistency, a polished Dashboard,
-cleaner forms, tables, feedback states, chart readability, and desktop Chrome
-usability refinements.
+The project has completed a comprehensive regression QA pass: strengthened
+`db.js` contract coverage (malformed stored data, unrelated localStorage key
+preservation), confirmed Module/Vanilla parity, verified the official Vanilla
+compatibility sample in latest Chrome, and manually verified Add Cost, Manage
+Costs, Monthly/Yearly Reports, Pie/Bar Charts, Settings, and Excel/PDF exports
+against a real dataset entered through the UI, with numeric results matching
+independently computed expected values.
+
+Production deployment smoke testing is deferred until Milestone 13.

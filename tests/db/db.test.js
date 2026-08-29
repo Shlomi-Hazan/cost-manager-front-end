@@ -772,4 +772,53 @@ describe("module db contract", () => {
       "Cross-currency report totals require cached exchange rates."
     );
   });
+
+  it("treats malformed stored cost data as an empty list instead of throwing", () => {
+    localStorage.setItem(
+      "cost-manager:costsdb:v1:costs",
+      "{not valid JSON"
+    );
+    const ob = db.openCostsDB("costsdb", 1);
+
+    expect(() => ob.getReport("USD", 2026, 8)).not.toThrow();
+    expect(ob.getReport("USD", 2026, 8)).toEqual({
+      year: 2026,
+      month: 8,
+      costs: [],
+      total: { currency: "USD", sum: 0 }
+    });
+    expect(ob.getAllCosts()).toEqual([]);
+
+    ob.addCost({
+      sum: 40,
+      currency: "USD",
+      category: "Recovered",
+      description: "Added after malformed data"
+    });
+
+    expect(ob.getReport("USD", 2026, 8).total.sum).toBe(40);
+  });
+
+  it("preserves unrelated localStorage keys when adding, updating, and deleting costs", () => {
+    const unrelatedKey = "some-other-app:preference";
+    const unrelatedValue = JSON.stringify({ theme: "dark" });
+
+    localStorage.setItem(unrelatedKey, unrelatedValue);
+
+    const ob = db.openCostsDB("costsdb", 1);
+    const added = ob.addCost({
+      sum: 10,
+      currency: "USD",
+      category: "Isolation",
+      description: "Should not touch other keys"
+    });
+
+    expect(localStorage.getItem(unrelatedKey)).toBe(unrelatedValue);
+
+    ob.updateCost(added.id, editableCost());
+    expect(localStorage.getItem(unrelatedKey)).toBe(unrelatedValue);
+
+    ob.deleteCost(added.id);
+    expect(localStorage.getItem(unrelatedKey)).toBe(unrelatedValue);
+  });
 });
