@@ -528,13 +528,13 @@ Therefore `getReport()` is required on the object returned by `openCostsDB()`.
 ## R-067 — Additional `db.js` Functions Are Allowed
 
 - **Type:** Explicitly allowed
-- **Status:** `NOT STARTED`
+- **Status:** `VERIFIED`
 - The course Q&A explicitly permits additional functions in `db.js`.
 - The required functions must still remain compatible with the documented API.
 
 ### Verification
 
-- [ ] Any added functions do not break `openCostsDB`, `addCost`, or `getReport`.
+- [x] Any added functions do not break `openCostsDB`, `addCost`, or `getReport`.
 
 ---
 
