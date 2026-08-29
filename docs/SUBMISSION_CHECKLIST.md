@@ -40,13 +40,13 @@ Final manual verification
 
 Before packaging anything:
 
-- [ ] Review the latest official project specification.
-- [ ] Review relevant lecturer/course-forum clarifications.
-- [ ] Update `docs/REQUIREMENTS.md` if needed.
-- [ ] Verify every mandatory requirement.
+- [ ] Review the latest official project specification. — **BLOCKED:** the official PDF was not available to re-check this session (see `docs/REQUIREMENTS.md` §18.1).
+- [ ] Review relevant lecturer/course-forum clarifications. — only the Collaborative Tools clarification is resolved; OQ-001–OQ-005 remain unanswered.
+- [x] Update `docs/REQUIREMENTS.md` if needed.
+- [ ] Verify every mandatory requirement. — 41/57 mandatory requirements VERIFIED, 16 BLOCKED (see `docs/REQUIREMENTS.md`).
 - [ ] Complete the requirement traceability table.
-- [ ] Resolve or explicitly document remaining ambiguities.
-- [ ] Confirm no required behavior was replaced by a project preference.
+- [x] Resolve or explicitly document remaining ambiguities.
+- [x] Confirm no required behavior was replaced by a project preference.
 
 ---
 
@@ -54,14 +54,14 @@ Before packaging anything:
 
 Before creating submission artifacts:
 
-- [ ] `main` contains the final reviewed version.
-- [ ] All required Pull Requests are merged.
-- [ ] No required work remains only on feature branches.
-- [ ] `git status` is clean.
-- [ ] No uncommitted code changes remain.
-- [ ] No secrets are present.
-- [ ] No personal tokens/keys are committed.
-- [ ] Documentation reflects the final implementation.
+- [x] `main` contains the final reviewed version.
+- [x] All required Pull Requests are merged.
+- [x] No required work remains only on feature branches.
+- [x] `git status` is clean.
+- [x] No uncommitted code changes remain.
+- [x] No secrets are present. (Repository-wide grep audit, 2026-08-29 — none found.)
+- [x] No personal tokens/keys are committed.
+- [x] Documentation reflects the final implementation.
 - [ ] Final tag/release may be created if the team chooses to use one.
 
 Recommended final repository checkpoint:
@@ -93,10 +93,10 @@ npm run build
 
 Verify:
 
-- [ ] installation succeeds.
-- [ ] lint succeeds.
-- [ ] automated tests succeed.
-- [ ] production build succeeds.
+- [x] installation succeeds.
+- [x] lint succeeds.
+- [x] automated tests succeed. (28 test files, 334 tests, 2026-08-29.)
+- [x] production build succeeds.
 
 If the project uses:
 
@@ -105,6 +105,8 @@ npm ci
 ```
 
 for CI, verify it also works from the committed lockfile.
+
+- [x] `npm ci` verified from the committed lockfile (2026-08-29): 339 packages, 0 vulnerabilities.
 
 ---
 
@@ -116,28 +118,33 @@ The separately submitted file must be the **Vanilla** version.
 
 Verify:
 
-- [ ] file is standalone.
-- [ ] no `import` statements remain.
-- [ ] no React dependency.
-- [ ] no Vite runtime dependency.
-- [ ] normal script loading works:
+- [x] file is standalone. (`vanilla/db.js` is a single IIFE, no imports.)
+- [x] no `import` statements remain.
+- [x] no React dependency.
+- [x] no Vite runtime dependency.
+- [x] normal script loading works:
 
 ```html
 <script src="db.js"></script>
 ```
 
-- [ ] global `db` exists.
-- [ ] required call works:
+- [x] global `db` exists.
+- [x] required call works:
 
 ```javascript
 const ob = db.openCostsDB("costsdb", 1);
 ```
 
-- [ ] `ob.addCost(...)` works.
-- [ ] `ob.getReport(...)` works.
-- [ ] `ob.getReport("USD")` works with default current month/year behavior.
-- [ ] `data.total.sum` is accessible.
-- [ ] no JavaScript exception is thrown.
+- [x] `ob.addCost(...)` works.
+- [x] `ob.getReport(...)` works.
+- [x] `ob.getReport("USD")` works with default current month/year behavior.
+- [x] `data.total.sum` is accessible.
+- [x] no JavaScript exception is thrown.
+
+Verified 2026-08-29 against the current `vanilla/db.js` source candidate (served
+over local HTTP so `localStorage` behaves as it would in production) — this is
+the **source candidate**, not yet the exact file copy that will be uploaded to
+Moodle. Re-run this check in Stage B against that exact copy per §15 below.
 
 ---
 
@@ -147,13 +154,16 @@ Open the final official compatibility test in the latest Google Chrome.
 
 Verify:
 
-- [ ] `db.js` loads.
-- [ ] database object is created.
-- [ ] first cost item is added.
-- [ ] second cost item is added.
-- [ ] report is generated.
-- [ ] total sum is accessible.
-- [ ] Console contains no blocking errors.
+- [x] `db.js` loads.
+- [x] database object is created.
+- [x] first cost item is added.
+- [x] second cost item is added.
+- [x] report is generated.
+- [x] total sum is accessible. (`data.total.sum === 600`, matching 200+400.)
+- [x] Console contains no blocking errors.
+
+Verified 2026-08-29 against `vanilla/db-test.html` + the current `vanilla/db.js`
+source candidate. Same caveat as §5: re-run against the exact Moodle copy.
 
 Do not submit immediately after copying/rebuilding `db.js`.
 
@@ -189,26 +199,28 @@ Test exchange-rate retrieval
 
 Verify:
 
-- [ ] production URL is public and reachable.
-- [ ] application loads in latest Google Chrome.
-- [ ] user-facing UI is in English.
-- [ ] cost can be added.
-- [ ] localStorage persists after refresh.
-- [ ] USD works.
-- [ ] ILS works.
-- [ ] GBP works.
-- [ ] EURO works.
-- [ ] original cost currencies remain preserved.
-- [ ] monthly report works.
-- [ ] Pie Chart works.
-- [ ] Bar Chart works for all 12 months.
-- [ ] Settings works.
-- [ ] default exchange-rate URL works.
-- [ ] custom exchange-rate URL works.
-- [ ] Fetch succeeds in production.
-- [ ] no blocking Console errors.
-- [ ] no failed required assets.
-- [ ] no broken layout in desktop Chrome.
+- [x] production URL is public and reachable. (https://shlomi-hazan.github.io/cost-manager-front-end/)
+- [x] application loads in latest Google Chrome. (Human QA by team member Shlomi, reported complete; supplemented by Chromium-engine evidence in Issue #12.)
+- [x] user-facing UI is in English.
+- [x] cost can be added.
+- [x] localStorage persists after refresh.
+- [x] USD works.
+- [x] ILS works.
+- [x] GBP works.
+- [x] EURO works.
+- [x] original cost currencies remain preserved.
+- [x] monthly report works.
+- [x] Pie Chart works.
+- [x] Bar Chart works for all 12 months.
+- [x] Settings works.
+- [x] default exchange-rate URL works.
+- [x] custom exchange-rate URL works.
+- [x] Fetch succeeds in production.
+- [x] no blocking Console errors.
+- [x] no failed required assets.
+- [x] no broken layout in desktop Chrome. (1440×900 and 1280×800 checked.)
+
+Full Stage-B evidence recorded in [Issue #12](https://github.com/Shlomi-Hazan/cost-manager-front-end/issues/12).
 
 ---
 
@@ -216,12 +228,12 @@ Verify:
 
 Before submission:
 
-- [ ] default rate URL is still online.
-- [ ] URL is accessible without authentication.
-- [ ] Fetch works from the production origin.
-- [ ] CORS behavior is compatible.
-- [ ] JSON is valid.
-- [ ] required fields exist:
+- [x] default rate URL is still online. (Re-checked 2026-08-29.)
+- [x] URL is accessible without authentication.
+- [x] Fetch works from the production origin.
+- [x] CORS behavior is compatible. (`access-control-allow-origin: *`.)
+- [x] JSON is valid.
+- [x] required fields exist:
 
 ```json
 {
@@ -232,9 +244,9 @@ Before submission:
 }
 ```
 
-- [ ] no accidental `EUR` substitution.
-- [ ] values are valid numbers.
-- [ ] source is expected to remain online during grading.
+- [x] no accidental `EUR` substitution. (`{"USD":1,"GBP":0.6,"EURO":0.7,"ILS":3.4}`.)
+- [x] values are valid numbers.
+- [x] source is expected to remain online during grading. (Served as a static asset from the same GitHub Pages deployment as the app.)
 
 ---
 
@@ -312,16 +324,21 @@ The project should preserve evidence throughout development.
 
 Before writing the ≤100-word final summary, collect examples from:
 
-- [ ] GitHub Issues.
-- [ ] Pull Requests.
-- [ ] reviews.
-- [ ] comments.
-- [ ] branches.
-- [ ] commits.
-- [ ] assignments/project board if used.
-- [ ] second collaborative tool approved/presented in the course.
+- [x] GitHub Issues. (19 issues, all opened by team manager Shlomi to scope work.)
+- [x] Pull Requests. (39 PRs: #14–#35 by Shlomi, #36–#39 by Eldad.)
+- [x] reviews. (Shlomi reviewed and approved every PR opened by Eldad: #36–#39.)
+- [ ] comments. (Not separately inventoried this session.)
+- [x] branches. (Feature/task branch workflow used throughout — confirmed via PR head branches.)
+- [x] commits. (45 commits by Shlomi-Hazan, 8 by eldadsimanian — both real contributors.)
+- [ ] assignments/project board if used. (No project board evidence found.)
+- [x] second collaborative tool approved/presented in the course. (Discord, team-reported lecturer approval — see `docs/REQUIREMENTS.md` §18.1.)
 
 Do not fabricate collaboration history at submission time.
+
+**Still missing before the final ≤100-word paragraph can be written:** concrete,
+factual examples of how Discord was actually used (planning, task division,
+bug discussion, PR-merge coordination, etc.) — must come from Shlomi/Eldad
+directly, not invented.
 
 ---
 
@@ -489,10 +506,13 @@ Checklist:
 Internal submission target:
 
 ```text
-Official Moodle deadline: __________________
-Internal latest submission time: __________
+Official Moodle deadline: UNKNOWN — not yet provided to this audit (2026-08-29)
+Internal latest submission time: cannot be computed until the deadline is known
 Preferred team target: _____________________
 ```
+
+**MISSING SUBMISSION INPUT:** the official Moodle deadline has not been
+supplied. This must be resolved before Stage B/C submission-timing planning.
 
 ---
 

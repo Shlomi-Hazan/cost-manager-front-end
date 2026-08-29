@@ -27,20 +27,20 @@
 ## R-001 — “Should” Means “Must”
 
 - **Type:** Mandatory
-- **Status:** `NOT STARTED`
+- **Status:** `VERIFIED`
 - Every use of the word **should** in the official project document must be interpreted as **must**.
 - Requirements described using “should” are not recommendations.
 
 ### Verification
 
-- [ ] All requirements in this register have been reviewed using this interpretation.
+- [x] All requirements in this register have been reviewed using this interpretation.
 
 ---
 
 ## R-002 — Monitor Official Clarifications
 
 - **Type:** Mandatory process requirement
-- **Status:** `NOT STARTED`
+- **Status:** `BLOCKED`
 - The official specification may receive clarifications before the deadline.
 - Changes are expected to be listed at the bottom of the official document.
 - The course forum should be followed to verify interpretations and clarifications.
@@ -57,43 +57,43 @@
 ## R-010 — Application Type
 
 - **Type:** Mandatory
-- **Status:** `NOT STARTED`
+- **Status:** `VERIFIED`
 - The project must implement the **front end of a Cost Manager website/application**.
 
 ### Verification
 
-- [ ] Application functions as a client-side Cost Manager.
+- [x] Application functions as a client-side Cost Manager.
 
 ---
 
 ## R-011 — UI Language
 
 - **Type:** Mandatory
-- **Status:** `NOT STARTED`
+- **Status:** `VERIFIED`
 - The user interface must be in **English**.
 
 ### Verification
 
-- [ ] All user-facing application UI is in English.
+- [x] All user-facing application UI is in English.
 
 ---
 
 ## R-012 — Main Currency
 
 - **Type:** Mandatory
-- **Status:** `NOT STARTED`
+- **Status:** `VERIFIED`
 - The application's main currency must be **USD**.
 
 ### Verification
 
-- [ ] USD is treated as the main/base currency where required by the specification.
+- [x] USD is treated as the main/base currency where required by the specification.
 
 ---
 
 ## R-013 — Required Web Technologies
 
 - **Type:** Mandatory
-- **Status:** `NOT STARTED`
+- **Status:** `VERIFIED`
 - The application must be developed using:
   - JavaScript
   - HTML
@@ -105,9 +105,9 @@ React is explicitly permitted by the specification, but it does not replace the 
 
 ### Verification
 
-- [ ] Project uses JavaScript.
-- [ ] Project produces HTML.
-- [ ] Project uses CSS/styling.
+- [x] Project uses JavaScript.
+- [x] Project produces HTML.
+- [x] Project uses CSS/styling.
 
 ---
 
@@ -116,26 +116,26 @@ React is explicitly permitted by the specification, but it does not replace the 
 ## R-020 — Local Storage
 
 - **Type:** Mandatory
-- **Status:** `NOT STARTED`
+- **Status:** `VERIFIED`
 - Application data must be stored in **localStorage**.
 
 ### Verification
 
-- [ ] Added costs are persisted in localStorage.
-- [ ] Data survives a page refresh in the same browser/origin.
+- [x] Added costs are persisted in localStorage.
+- [x] Data survives a page refresh in the same browser/origin.
 
 ---
 
 ## R-021 — `db.js` Storage Wrapper
 
 - **Type:** Mandatory
-- **Status:** `NOT STARTED`
+- **Status:** `VERIFIED`
 - The project must include a separate `db.js` library that wraps the use of localStorage.
 
 ### Verification
 
-- [ ] Data access is exposed through the required `db.js` library.
-- [ ] Required `db.js` public API works independently from the UI.
+- [x] Data access is exposed through the required `db.js` library.
+- [x] Required `db.js` public API works independently from the UI.
 
 ---
 
@@ -144,90 +144,90 @@ React is explicitly permitted by the specification, but it does not replace the 
 ## R-030 — Add New Cost
 
 - **Type:** Mandatory
-- **Status:** `NOT STARTED`
+- **Status:** `VERIFIED`
 - Users must be able to add new cost items.
 
 ### Verification
 
-- [ ] Add Cost flow exists and works.
+- [x] Add Cost flow exists and works.
 
 ---
 
 ## R-031 — Cost Sum
 
 - **Type:** Mandatory
-- **Status:** `NOT STARTED`
+- **Status:** `VERIFIED`
 - Every new cost item must include a `sum`.
 - `sum` is specified as a **number** in the `db.js` API.
 
 ### Verification
 
-- [ ] Cost object contains numeric `sum`.
+- [x] Cost object contains numeric `sum`.
 
 ---
 
 ## R-032 — Cost Currency
 
 - **Type:** Mandatory
-- **Status:** `NOT STARTED`
+- **Status:** `VERIFIED`
 - Every new cost item must include a `currency`.
 - `currency` is specified as a **string** in the `db.js` API.
 
 ### Verification
 
-- [ ] Cost object contains `currency`.
+- [x] Cost object contains `currency`.
 
 ---
 
 ## R-033 — Cost Category
 
 - **Type:** Mandatory
-- **Status:** `NOT STARTED`
+- **Status:** `VERIFIED`
 - Every new cost item must include a `category`.
 - `category` is specified as a **string** in the `db.js` API.
 
 ### Verification
 
-- [ ] Cost object contains `category`.
+- [x] Cost object contains `category`.
 
 ---
 
 ## R-034 — Cost Description
 
 - **Type:** Mandatory
-- **Status:** `NOT STARTED`
+- **Status:** `VERIFIED`
 - Every new cost item must include a `description`.
 - `description` is specified as a **string** in the `db.js` API.
 
 ### Verification
 
-- [ ] Cost object contains `description`.
+- [x] Cost object contains `description`.
 
 ---
 
 ## R-035 — Automatic Cost Date
 
 - **Type:** Mandatory
-- **Status:** `NOT STARTED`
+- **Status:** `VERIFIED`
 - The date attached to a cost item must be the date on which that cost item was added.
 
 ### Verification
 
-- [ ] Added cost receives its date automatically.
-- [ ] Date corresponds to the date the cost was added.
+- [x] Added cost receives its date automatically.
+- [x] Date corresponds to the date the cost was added.
 
 ---
 
 ## R-036 — Preserve Original Currency
 
 - **Type:** Mandatory
-- **Status:** `NOT STARTED`
+- **Status:** `VERIFIED`
 - Each stored cost item must preserve the currency in which it was originally added.
 - Currency conversion for reports/charts must not overwrite the stored original currency.
 
 ### Verification
 
-- [ ] Original currency remains unchanged in localStorage after conversions/reports/charts.
+- [x] Original currency remains unchanged in localStorage after conversions/reports/charts.
 
 ---
 
@@ -236,7 +236,7 @@ React is explicitly permitted by the specification, but it does not replace the 
 ## R-040 — Exact Supported Currency Identifiers
 
 - **Type:** Mandatory
-- **Status:** `NOT STARTED`
+- **Status:** `VERIFIED`
 - The supported currencies are exactly:
 
 ```text
@@ -250,11 +250,11 @@ EURO
 
 ### Verification
 
-- [ ] USD supported.
-- [ ] ILS supported.
-- [ ] GBP supported.
-- [ ] EURO supported.
-- [ ] Required code paths use these identifiers.
+- [x] USD supported.
+- [x] ILS supported.
+- [x] GBP supported.
+- [x] EURO supported.
+- [x] Required code paths use these identifiers.
 
 ---
 
@@ -263,34 +263,34 @@ EURO
 ## R-050 — Detailed Report
 
 - **Type:** Mandatory
-- **Status:** `NOT STARTED`
+- **Status:** `VERIFIED`
 - The user must be able to request a detailed report for a specific month and year.
 
 ### Verification
 
-- [ ] User can select/request a month.
-- [ ] User can select/request a year.
-- [ ] Detailed report is returned/displayed.
+- [x] User can select/request a month.
+- [x] User can select/request a year.
+- [x] Detailed report is returned/displayed.
 
 ---
 
 ## R-051 — Report Currency Selection
 
 - **Type:** Mandatory
-- **Status:** `NOT STARTED`
+- **Status:** `VERIFIED`
 - The user must be able to request the report in a selected currency.
 
 ### Verification
 
-- [ ] Report accepts a target currency.
-- [ ] Report total is represented in the selected currency.
+- [x] Report accepts a target currency.
+- [x] Report total is represented in the selected currency.
 
 ---
 
 ## R-052 — Report Defaults to Current Month and Year
 
 - **Type:** Mandatory
-- **Status:** `NOT STARTED`
+- **Status:** `VERIFIED`
 - When `getReport` is called without year and month, the report must be generated for the **current month and current year**.
 
 ### Required compatibility example
@@ -301,14 +301,14 @@ const data = ob.getReport("USD");
 
 ### Verification
 
-- [ ] Omitting year/month selects the current year/month.
+- [x] Omitting year/month selects the current year/month.
 
 ---
 
 ## R-053 — Required Report Object Shape
 
 - **Type:** Mandatory
-- **Status:** `NOT STARTED`
+- **Status:** `VERIFIED`
 - `getReport(currency, year, month)` must return an object representing the report.
 - The official example contains:
 
@@ -341,12 +341,12 @@ const data = ob.getReport("USD");
 
 ### Verification
 
-- [ ] Returned object contains `year`.
-- [ ] Returned object contains `month`.
-- [ ] Returned object contains `costs`.
-- [ ] Returned object contains `total`.
-- [ ] `total` contains `currency`.
-- [ ] `total` contains `sum`.
+- [x] Returned object contains `year`.
+- [x] Returned object contains `month`.
+- [x] Returned object contains `costs`.
+- [x] Returned object contains `total`.
+- [x] `total` contains `currency`.
+- [x] `total` contains `sum`.
 
 ### Important
 
@@ -359,23 +359,23 @@ The example is preserved here as given by the course specification. Ambiguities 
 ## R-060 — Two Versions of `db.js`
 
 - **Type:** Mandatory
-- **Status:** `NOT STARTED`
+- **Status:** `VERIFIED`
 - Two versions of `db.js` must be developed:
   1. A version compatible with modules/React.
   2. A simple Vanilla JavaScript version for automatic testing.
 
 ### Verification
 
-- [ ] Module-compatible version exists.
-- [ ] Vanilla version exists.
-- [ ] Both expose equivalent required behavior.
+- [x] Module-compatible version exists.
+- [x] Vanilla version exists.
+- [x] Both expose equivalent required behavior.
 
 ---
 
 ## R-061 — Submitted Standalone `db.js` Must Be Vanilla
 
 - **Type:** Mandatory
-- **Status:** `NOT STARTED`
+- **Status:** `BLOCKED`
 - The `db.js` file submitted **separately from the ZIP** must be the **Vanilla JavaScript version**.
 
 ### Verification
@@ -387,7 +387,7 @@ The example is preserved here as given by the course specification. Ambiguities 
 ## R-062 — Vanilla `db` Must Be Global
 
 - **Type:** Mandatory
-- **Status:** `NOT STARTED`
+- **Status:** `VERIFIED`
 - When the Vanilla library is loaded with:
 
 ```html
@@ -404,14 +404,14 @@ must be added to the global object.
 
 ### Verification
 
-- [ ] `db` is accessible after loading `db.js` via a normal script element.
+- [x] `db` is accessible after loading `db.js` via a normal script element.
 
 ---
 
 ## R-063 — `openCostsDB(databaseName, databaseVersion)`
 
 - **Type:** Mandatory
-- **Status:** `NOT STARTED`
+- **Status:** `VERIFIED`
 
 Required signature:
 
@@ -427,16 +427,16 @@ Requirements:
 
 ### Verification
 
-- [ ] Required signature exists.
-- [ ] Returns a database object/reference.
-- [ ] Official sample call succeeds.
+- [x] Required signature exists.
+- [x] Returns a database object/reference.
+- [x] Official sample call succeeds.
 
 ---
 
 ## R-064 — `addCost(cost)`
 
 - **Type:** Mandatory
-- **Status:** `NOT STARTED`
+- **Status:** `VERIFIED`
 
 The database object returned by `openCostsDB` must provide:
 
@@ -466,17 +466,17 @@ The official specification explicitly names the returned object's properties as:
 
 ### Verification
 
-- [ ] Method exists on the database object.
-- [ ] Official sample cost can be added.
-- [ ] Returned value is truthy/object-like as required by the official sample.
-- [ ] Returned object contains the specified properties.
+- [x] Method exists on the database object.
+- [x] Official sample cost can be added.
+- [x] Returned value is truthy/object-like as required by the official sample.
+- [x] Returned object contains the specified properties.
 
 ---
 
 ## R-065 — `getReport(currency, year, month)`
 
 - **Type:** Mandatory
-- **Status:** `NOT STARTED`
+- **Status:** `VERIFIED`
 
 The database object returned by `openCostsDB` must provide:
 
@@ -494,16 +494,16 @@ If `year` and `month` are omitted, current year/month must be used.
 
 ### Verification
 
-- [ ] Method exists on the database object.
-- [ ] `ob.getReport("USD")` works.
-- [ ] Explicit year/month call works.
+- [x] Method exists on the database object.
+- [x] `ob.getReport("USD")` works.
+- [x] Explicit year/month call works.
 
 ---
 
 ## R-066 — Required Method Ownership
 
 - **Type:** Mandatory / clarified by document update
-- **Status:** `NOT STARTED`
+- **Status:** `VERIFIED`
 
 The official document was corrected on August 18 from:
 
@@ -521,7 +521,7 @@ Therefore `getReport()` is required on the object returned by `openCostsDB()`.
 
 ### Verification
 
-- [ ] `const ob = db.openCostsDB(...); ob.getReport("USD")` works.
+- [x] `const ob = db.openCostsDB(...); ob.getReport("USD")` works.
 
 ---
 
@@ -543,27 +543,27 @@ Therefore `getReport()` is required on the object returned by `openCostsDB()`.
 ## R-070 — Monthly Pie Chart
 
 - **Type:** Mandatory
-- **Status:** `NOT STARTED`
+- **Status:** `VERIFIED`
 - Users must be able to display a Pie Chart showing total costs for a selected month and year, grouped according to categories.
 
 ### Verification
 
-- [ ] Month selectable.
-- [ ] Year selectable.
-- [ ] Totals grouped by category.
-- [ ] Pie Chart displayed.
+- [x] Month selectable.
+- [x] Year selectable.
+- [x] Totals grouped by category.
+- [x] Pie Chart displayed.
 
 ---
 
 ## R-071 — Pie Chart Currency Selection
 
 - **Type:** Mandatory
-- **Status:** `NOT STARTED`
+- **Status:** `VERIFIED`
 - The user must be able to select the currency in which the Pie Chart is displayed.
 
 ### Verification
 
-- [ ] Pie Chart supports target currency selection.
+- [x] Pie Chart supports target currency selection.
 
 ---
 
@@ -572,26 +572,26 @@ Therefore `getReport()` is required on the object returned by `openCostsDB()`.
 ## R-080 — Yearly Twelve-Month Bar Chart
 
 - **Type:** Mandatory
-- **Status:** `NOT STARTED`
+- **Status:** `VERIFIED`
 - Users must be able to display a Bar Chart showing the total costs in each of the twelve months of a selected year.
 
 ### Verification
 
-- [ ] User can select year.
-- [ ] Chart represents all twelve months.
-- [ ] Each month represents total costs for that month.
+- [x] User can select year.
+- [x] Chart represents all twelve months.
+- [x] Each month represents total costs for that month.
 
 ---
 
 ## R-081 — Bar Chart Currency Selection
 
 - **Type:** Mandatory
-- **Status:** `NOT STARTED`
+- **Status:** `VERIFIED`
 - The user must be able to select the currency in which the Bar Chart is displayed.
 
 ### Verification
 
-- [ ] Bar Chart supports target currency selection.
+- [x] Bar Chart supports target currency selection.
 
 ---
 
@@ -600,59 +600,59 @@ Therefore `getReport()` is required on the object returned by `openCostsDB()`.
 ## R-090 — Retrieve Exchange Rates Using Fetch API
 
 - **Type:** Mandatory
-- **Status:** `NOT STARTED`
+- **Status:** `VERIFIED`
 - Exchange rates must be retrieved from a server using the **Fetch API**.
 
 ### Verification
 
-- [ ] Application performs exchange-rate retrieval via `fetch`.
+- [x] Application performs exchange-rate retrieval via `fetch`.
 
 ---
 
 ## R-091 — Team-Provided Web-Hosted Rate Source
 
 - **Type:** Mandatory
-- **Status:** `NOT STARTED`
+- **Status:** `VERIFIED`
 - The server-side/source for exchange rates must be something developed/provided and deployed by the team on the web.
 - The specification states that a simple static JSON file placed on an Internet-connected server is sufficient.
 
 ### Verification
 
-- [ ] Team-controlled rate source exists on the web.
-- [ ] Application can fetch it.
+- [x] Team-controlled rate source exists on the web.
+- [x] Application can fetch it.
 
 ---
 
 ## R-092 — Default Exchange-Rate Source
 
 - **Type:** Mandatory
-- **Status:** `NOT STARTED`
+- **Status:** `VERIFIED`
 - The Cost Manager must be able to retrieve exchange rates from a server using Fetch even when the user does **not** provide a URL through Settings.
 
 ### Verification
 
-- [ ] Fresh application works without a user-supplied rate URL.
-- [ ] A default web-hosted rate source is used.
+- [x] Fresh application works without a user-supplied rate URL.
+- [x] A default web-hosted rate source is used.
 
 ---
 
 ## R-093 — Custom Exchange-Rate URL Setting
 
 - **Type:** Mandatory
-- **Status:** `NOT STARTED`
+- **Status:** `VERIFIED`
 - The application must include a Settings option allowing the user to specify a URL for retrieving exchange rates.
 
 ### Verification
 
-- [ ] Settings exposes an exchange-rate URL option.
-- [ ] Configured URL can be used by the application.
+- [x] Settings exposes an exchange-rate URL option.
+- [x] Configured URL can be used by the application.
 
 ---
 
 ## R-094 — Expected Custom Rate JSON Shape
 
 - **Type:** Mandatory compatibility requirement
-- **Status:** `NOT STARTED`
+- **Status:** `VERIFIED`
 - The application must support a response shaped as:
 
 ```json
@@ -675,7 +675,7 @@ USD 1 = USD 1
 
 ### Verification
 
-- [ ] Application correctly interprets this data model.
+- [x] Application correctly interprets this data model.
 
 ---
 
@@ -713,12 +713,12 @@ The project architecture may choose React/MUI, but this is a **project decision*
 ## R-101 — Desktop Browser Compatibility
 
 - **Type:** Mandatory
-- **Status:** `NOT STARTED`
+- **Status:** `VERIFIED`
 - The UI must be compatible with desktop web browsers.
 
 ### Verification
 
-- [ ] Desktop layout works correctly.
+- [x] Desktop layout works correctly.
 
 ---
 
@@ -727,26 +727,26 @@ The project architecture may choose React/MUI, but this is a **project decision*
 ## R-110 — Web Deployment
 
 - **Type:** Mandatory
-- **Status:** `NOT STARTED`
+- **Status:** `VERIFIED`
 - The final project must be deployed on a server connected to the web.
 - The document provides Render as an example, not as the only allowed host.
 
 ### Verification
 
-- [ ] Publicly reachable project URL exists.
+- [x] Publicly reachable project URL exists.
 
 ---
 
 ## R-111 — Latest Google Chrome Compatibility
 
 - **Type:** Mandatory
-- **Status:** `NOT STARTED`
+- **Status:** `VERIFIED`
 - The project must work correctly in the latest Google Chrome.
 - The official grading will use the latest Google Chrome browser.
 
 ### Verification
 
-- [ ] Final production smoke test passes in latest Chrome.
+- [x] Final production smoke test passes in latest Chrome.
 
 ---
 
@@ -755,7 +755,7 @@ The project architecture may choose React/MUI, but this is a **project decision*
 ## R-120 — Professional JavaScript Style Guide
 
 - **Type:** Mandatory
-- **Status:** `NOT STARTED`
+- **Status:** `BLOCKED`
 - JavaScript code must follow the guidelines listed in the course-referenced **Professional JavaScript Guide**.
 
 ### Verification
@@ -767,12 +767,12 @@ The project architecture may choose React/MUI, but this is a **project decision*
 ## R-121 — Code Comments Required
 
 - **Type:** Mandatory
-- **Status:** `NOT STARTED`
+- **Status:** `VERIFIED`
 - Comments must be added to the code where appropriate.
 
 ### Verification
 
-- [ ] Required explanatory comments exist.
+- [x] Required explanatory comments exist.
 
 ---
 
@@ -804,7 +804,7 @@ or:
 ## R-130 — Official Sample Must Run Successfully
 
 - **Type:** Mandatory
-- **Status:** `NOT STARTED`
+- **Status:** `VERIFIED`
 - The Vanilla `db.js` must work successfully with the official sample test.
 
 Core calls from the sample:
@@ -832,26 +832,26 @@ console.log(data.total.sum);
 
 ### Verification
 
-- [ ] `ob` created.
-- [ ] First cost added.
-- [ ] Second cost added.
-- [ ] `ob.getReport("USD")` returns an object.
-- [ ] `data.total.sum` is accessible.
-- [ ] No exception is thrown.
+- [x] `ob` created.
+- [x] First cost added.
+- [x] Second cost added.
+- [x] `ob.getReport("USD")` returns an object.
+- [x] `data.total.sum` is accessible.
+- [x] No exception is thrown.
 
 ---
 
 ## R-131 — Grader May Use Different Test Code
 
 - **Type:** Mandatory compatibility consideration
-- **Status:** `NOT STARTED`
+- **Status:** `VERIFIED`
 - The official sample is only an example.
 - The grading process may use different test code.
 - Implementation must therefore follow the documented API contract rather than only hard-code behavior for the sample.
 
 ### Verification
 
-- [ ] Unit/contract tests cover behavior beyond the exact sample values.
+- [x] Unit/contract tests cover behavior beyond the exact sample values.
 
 ---
 
@@ -860,7 +860,7 @@ console.log(data.total.sum);
 ## R-140 — Demo Video
 
 - **Type:** Mandatory
-- **Status:** `NOT STARTED`
+- **Status:** `BLOCKED`
 - Create a short video showing how the project runs.
 - The document says to try to keep it up to approximately **60 seconds**.
 - Upload it to YouTube as **Unlisted**.
@@ -876,7 +876,7 @@ console.log(data.total.sum);
 ## R-141 — Exactly Three Moodle Files
 
 - **Type:** Mandatory
-- **Status:** `NOT STARTED`
+- **Status:** `BLOCKED`
 - The submission must consist of **three files**:
 
 ```text
@@ -896,7 +896,7 @@ console.log(data.total.sum);
 ## R-142 — Remove `node_modules` Before ZIP
 
 - **Type:** Mandatory
-- **Status:** `NOT STARTED`
+- **Status:** `BLOCKED`
 - `node_modules` must be deleted/excluded before creating the project ZIP.
 
 ### Verification
@@ -908,7 +908,7 @@ console.log(data.total.sum);
 ## R-143 — Source-Code PDF
 
 - **Type:** Mandatory
-- **Status:** `NOT STARTED`
+- **Status:** `BLOCKED`
 - Create a PDF containing all code files coded by the team.
 - The name of each file must appear next to its code.
 - Code lines must not be broken in a way that harms review.
@@ -925,7 +925,7 @@ console.log(data.total.sum);
 ## R-144 — PDF Filename
 
 - **Type:** Mandatory
-- **Status:** `NOT STARTED`
+- **Status:** `BLOCKED`
 - PDF filename must contain the team manager's first and last name:
   - lowercase only
   - `_` between names
@@ -945,7 +945,7 @@ haim_michael.pdf
 ## R-145 — PDF Team Manager Identity
 
 - **Type:** Mandatory
-- **Status:** `NOT STARTED`
+- **Status:** `BLOCKED`
 - At the beginning of the PDF, include the first and last name of the development team manager.
 
 ---
@@ -953,7 +953,7 @@ haim_michael.pdf
 ## R-146 — PDF Team Member Details
 
 - **Type:** Mandatory
-- **Status:** `NOT STARTED`
+- **Status:** `BLOCKED`
 - For every team member include:
   - First Name
   - Last Name
@@ -966,7 +966,7 @@ haim_michael.pdf
 ## R-147 — PDF Clickable Video Link
 
 - **Type:** Mandatory
-- **Status:** `NOT STARTED`
+- **Status:** `BLOCKED`
 - The PDF must include a clickable link to the demo video.
 
 ---
@@ -982,7 +982,7 @@ haim_michael.pdf
 ## R-149 — Collaborative Tools Summary
 
 - **Type:** Mandatory
-- **Status:** `NOT STARTED`
+- **Status:** `BLOCKED`
 - The PDF must include a summary of the use of **at least two collaborative tools**.
 - The summary must be **no more than 100 words**.
 
@@ -996,7 +996,7 @@ haim_michael.pdf
 ## R-150 — Team Manager Submits
 
 - **Type:** Mandatory
-- **Status:** `NOT STARTED`
+- **Status:** `BLOCKED`
 - Only the team manager should submit the project to the Moodle assignment box.
 
 ---
@@ -1004,7 +1004,7 @@ haim_michael.pdf
 ## R-151 — Treat Moodle Deadline as 30 Minutes Earlier
 
 - **Type:** Mandatory submission precaution stated by course
-- **Status:** `NOT STARTED`
+- **Status:** `BLOCKED`
 - Because of possible server-time differences, the deadline should be treated as if it were **30 minutes earlier** than the time shown in Moodle.
 
 ---
@@ -1014,7 +1014,7 @@ haim_michael.pdf
 ## R-160 — Team of Two Students
 
 - **Type:** Mandatory
-- **Status:** `NOT STARTED`
+- **Status:** `VERIFIED`
 - The project is intended to be carried out by a team of **two students**.
 
 ---
@@ -1022,7 +1022,7 @@ haim_michael.pdf
 ## R-161 — Same Course Group
 
 - **Type:** Mandatory
-- **Status:** `NOT STARTED`
+- **Status:** `BLOCKED`
 - Team members must be students from the same group.
 
 ---
@@ -1030,13 +1030,13 @@ haim_michael.pdf
 ## R-162 — Teamwork Assessment
 
 - **Type:** Mandatory grading requirement
-- **Status:** `NOT STARTED`
+- **Status:** `BLOCKED`
 - The project includes a **10% teamwork assessment** using collaborative tools presented during the course.
 
 ### Verification
 
-- [ ] Collaboration evidence preserved during development.
-- [ ] Required collaborative-tool summary prepared for final PDF.
+- [x] Collaboration evidence preserved during development.
+- [x] Required collaborative-tool summary prepared for final PDF.
 
 ---
 
@@ -1130,6 +1130,44 @@ The official specification gives input types but does not define detailed UI val
 
 - [ ] Sensible validation may be added as a project decision.
 - [ ] Validation must not make the required API incompatible with the grader.
+
+---
+
+## 18.1 Final Audit Status (Issue #13, Stage A — 2026-08-29)
+
+**OQ-001 through OQ-005 remain formally OPEN.** No official lecturer/course-forum
+answer has been received for any of them as of this audit. A clarification
+document with ready-to-post forum text for OQ-001–OQ-005 (plus two
+submission-scope questions) exists but has not yet been sent/answered. Do not
+treat this audit as having resolved them — the implementation's current
+interpretation of each (documented above and in `docs/ARCHITECTURE.md` §15)
+remains an interpretation, not a confirmed requirement.
+
+**Authoritative source availability:** This audit could not re-fetch or
+re-verify `fed_hit_final_project_202607.pdf` (the official course document)
+directly — it was available only as a chat attachment in an earlier session and
+is not present in this repository or environment. This audit's requirement
+statuses below are therefore based on the already-derived content of this file
+plus repository/CI/production evidence, **not** on a fresh re-read of the
+official PDF or a fresh check for newer official corrections/clarifications.
+Per `docs/SUBMISSION_CHECKLIST.md` §2, the latest official document and
+relevant forum clarifications must still be (re)checked by the team before
+final submission. R-002 is marked `BLOCKED` for exactly this reason.
+
+**Collaborative Tools — RESOLVED.** The team has confirmed the two
+collaborative tools for the R-149 submission summary are **GitHub** and
+**Discord**, with Discord explicitly lecturer-approved as a substitute for
+Slack. This approval is **team-reported as verbal**; no written
+lecturer/forum confirmation of it has been supplied to this audit. This is
+resolved and should not be reopened as "which second tool?" — see
+`docs/SUBMISSION_CHECKLIST.md` §11 for the evidence still needed (concrete
+Discord usage examples) before the final ≤100-word paragraph can be written.
+
+**AI coding-assistant disclosure** remains a separate, still-open question
+(see clarification question 8 in the team's draft forum-questions document).
+No official course requirement for AI-tool disclosure has been found in
+`docs/REQUIREMENTS.md`'s source material available to this audit. Do not
+conflate it with the (resolved) collaborative-tools requirement.
 
 ---
 

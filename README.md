@@ -4,7 +4,7 @@ Final project for the **Front-End Development** course.
 
 This repository is intentionally being built from the project requirements outward: requirements, architecture, AI-agent instructions, testing strategy, Git/GitHub workflow, implementation, deployment, audit, and submission.
 
-> **Current status:** Milestone 13 — Production Deployment (production-verified).
+> **Current status:** Milestone 14 — Final Requirements Audit (Issue #13, Stage A: in progress, not submission-ready).
 
 ## Project Goal
 
@@ -125,6 +125,18 @@ Codex is planned as the primary coding agent. Claude Code is planned mainly for 
 Public.
 
 ## Current Milestone
+
+### Milestone 14 — Final Requirements Audit (Issue #13, Stage A)
+
+A requirement-by-requirement audit of `docs/REQUIREMENTS.md` has been
+completed against available sources: 41 of 57 mandatory requirements are
+`VERIFIED` with concrete evidence (automated tests, CI, and production QA);
+16 are `BLOCKED` — mostly final submission artifacts that intentionally do
+not exist yet (video, source-code PDF, ZIP, separately-copied Vanilla
+`db.js`), plus a handful of missing inputs (official document
+re-verification, personal submission metadata, the exact Moodle deadline).
+See `docs/REQUIREMENTS.md` §18.1 and this audit's Pull Request for full
+detail. **This milestone does not mean the project is ready to submit.**
 
 ### Milestone 13 — Production Deployment
 
