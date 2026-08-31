@@ -148,8 +148,6 @@ Pull Request
 ```text
 /
 ├── README.md
-├── README_HE.md
-├── README_EN.md
 ├── intent.txt
 ├── AGENTS.md
 ├── CLAUDE.md
@@ -158,7 +156,8 @@ Pull Request
 ├── docs/
 │   ├── REQUIREMENTS.md
 │   ├── ARCHITECTURE.md
-│   ├── MILESTONES.md
+│   ├── PROJECT_ROADMAP_EN.md
+│   ├── PROJECT_ROADMAP_HE.md
 │   ├── TEST_PLAN.md
 │   ├── DECISIONS.md
 │   └── SUBMISSION_CHECKLIST.md
@@ -205,7 +204,7 @@ Pull Request
 - [ ] ליצור `AGENTS.md` עבור Codex.
 - [ ] ליצור `CLAUDE.md`.
 - [ ] ליצור `docs/ARCHITECTURE.md`.
-- [ ] ליצור `docs/MILESTONES.md`.
+- [ ] ליצור את `docs/PROJECT_ROADMAP_EN.md` ואת `docs/PROJECT_ROADMAP_HE.md`.
 - [ ] ליצור `docs/TEST_PLAN.md`.
 - [ ] ליצור `docs/SUBMISSION_CHECKLIST.md`.
 - [ ] ליצור `.gitignore`.
