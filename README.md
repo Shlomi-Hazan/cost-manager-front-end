@@ -25,6 +25,14 @@ Build a client-side Cost Manager application that complies with the official cou
 - Web deployment
 - Exact final submission packaging
 
+## Project Links
+
+🌐 **Live Application:**  
+[Open Cost Manager](https://shlomi-hazan.github.io/cost-manager-front-end/)
+
+🎥 **Demo Video:**  
+[Watch the project walkthrough on YouTube](https://youtu.be/cP_SkKUGvJM)
+
 ## Planned Stack
 
 ```text
