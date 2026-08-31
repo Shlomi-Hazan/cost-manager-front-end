@@ -148,8 +148,6 @@ Pull Request
 ```text
 /
 ├── README.md
-├── README_HE.md
-├── README_EN.md
 ├── intent.txt
 ├── AGENTS.md
 ├── CLAUDE.md
@@ -158,7 +156,8 @@ Pull Request
 ├── docs/
 │   ├── REQUIREMENTS.md
 │   ├── ARCHITECTURE.md
-│   ├── MILESTONES.md
+│   ├── PROJECT_ROADMAP_EN.md
+│   ├── PROJECT_ROADMAP_HE.md
 │   ├── TEST_PLAN.md
 │   ├── DECISIONS.md
 │   └── SUBMISSION_CHECKLIST.md
@@ -205,7 +204,7 @@ Establish the complete project foundation before implementing features.
 - [ ] Create `AGENTS.md` for Codex.
 - [ ] Create `CLAUDE.md`.
 - [ ] Create `docs/ARCHITECTURE.md`.
-- [ ] Create `docs/MILESTONES.md`.
+- [ ] Create `docs/PROJECT_ROADMAP_EN.md` and `docs/PROJECT_ROADMAP_HE.md`.
 - [ ] Create `docs/TEST_PLAN.md`.
 - [ ] Create `docs/SUBMISSION_CHECKLIST.md`.
 - [ ] Create `.gitignore`.

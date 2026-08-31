@@ -51,7 +51,7 @@ The stack is a project architecture decision. Official course requirements remai
 | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Planned system structure and boundaries |
 | [`docs/DECISIONS.md`](docs/DECISIONS.md) | Architecture Decision Records |
 | [`docs/TEST_PLAN.md`](docs/TEST_PLAN.md) | Testing and verification strategy |
-| [`docs/MILESTONES.md`](docs/MILESTONES.md) | Full project milestone roadmap |
+| [`docs/PROJECT_ROADMAP_EN.md`](docs/PROJECT_ROADMAP_EN.md) | Full project milestone roadmap (English) |
 | [`docs/SUBMISSION_CHECKLIST.md`](docs/SUBMISSION_CHECKLIST.md) | Final packaging and submission gate |
 | [`AGENTS.md`](AGENTS.md) | Repository instructions for Codex |
 | [`CLAUDE.md`](CLAUDE.md) | Repository instructions for Claude Code |
@@ -59,8 +59,8 @@ The stack is a project architecture decision. Official course requirements remai
 
 ### Milestone Roadmaps
 
-- [English roadmap](README_EN.md)
-- [Hebrew roadmap](README_HE.md)
+- [English roadmap](docs/PROJECT_ROADMAP_EN.md)
+- [Hebrew roadmap](docs/PROJECT_ROADMAP_HE.md)
 
 ## Protected `db.js` Contract
 

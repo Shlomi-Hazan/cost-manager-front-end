@@ -201,8 +201,6 @@ Business/data logic belongs outside the visual components.
 cost-manager/
 │
 ├── README.md
-├── README_HE.md
-├── README_EN.md
 ├── intent.txt
 ├── AGENTS.md
 ├── CLAUDE.md
@@ -211,7 +209,8 @@ cost-manager/
 ├── docs/
 │   ├── REQUIREMENTS.md
 │   ├── ARCHITECTURE.md
-│   ├── MILESTONES.md
+│   ├── PROJECT_ROADMAP_EN.md
+│   ├── PROJECT_ROADMAP_HE.md
 │   ├── TEST_PLAN.md
 │   ├── DECISIONS.md
 │   └── SUBMISSION_CHECKLIST.md
