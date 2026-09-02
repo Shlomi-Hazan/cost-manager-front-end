@@ -244,8 +244,10 @@ function toReportCost(cost) {
     currency: cost.currency,
     category: cost.category,
     description: cost.description,
-    // Store day/month/year internally, but expose only day for the current
-    // report shape to match the official example while OQ-002 remains open.
+    // Store day/month/year internally, but expose only day for the report
+    // shape, matching the official example. OQ-002 is resolved — the
+    // lecturer confirmed this { day }-only shape is correct (see
+    // docs/REQUIREMENTS.md).
     date: {
       day: cost.date.day
     }
