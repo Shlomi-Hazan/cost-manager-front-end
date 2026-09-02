@@ -4,7 +4,7 @@ Final project for the **Front-End Development** course.
 
 This repository is intentionally being built from the project requirements outward: requirements, architecture, AI-agent instructions, testing strategy, Git/GitHub workflow, implementation, deployment, audit, and submission.
 
-> **Current status:** Milestone 15.5 — Style Guide Compliance (code brought in line with the official Professional JavaScript Style Guide and a course-supplied common-rejects checklist; pending review/merge; Milestone 16, final submission artifact generation, has not started — not submission-ready).
+> **Current status:** Milestone 15.5 — Style Guide Compliance. Core compliance work (no `var`, strict equality, camelCase constants, JSDoc, ESLint enforcement) is merged into `main` via [#47](https://github.com/Shlomi-Hazan/cost-manager-front-end/pull/47), [#48](https://github.com/Shlomi-Hazan/cost-manager-front-end/pull/48), and [#49](https://github.com/Shlomi-Hazan/cost-manager-front-end/pull/49). A follow-up comment-density refinement is open for review in [#50](https://github.com/Shlomi-Hazan/cost-manager-front-end/pull/50). Milestone 16, final submission artifact generation, has not started — not submission-ready.
 
 ## Project Goal
 
