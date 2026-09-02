@@ -4,7 +4,7 @@ Final project for the **Front-End Development** course.
 
 This repository is intentionally being built from the project requirements outward: requirements, architecture, AI-agent instructions, testing strategy, Git/GitHub workflow, implementation, deployment, audit, and submission.
 
-> **Current status:** Milestone 15.5 — Style Guide Compliance. Core compliance work (no `var`, strict equality, camelCase constants, JSDoc, ESLint enforcement) is merged into `main` via [#47](https://github.com/Shlomi-Hazan/cost-manager-front-end/pull/47), [#48](https://github.com/Shlomi-Hazan/cost-manager-front-end/pull/48), and [#49](https://github.com/Shlomi-Hazan/cost-manager-front-end/pull/49). A follow-up comment-density refinement is open for review in [#50](https://github.com/Shlomi-Hazan/cost-manager-front-end/pull/50). Milestone 16, final submission artifact generation, has not started — not submission-ready.
+> **Current status:** Milestone 15.5 — Style Guide Compliance is complete and merged into `main` through [#47](https://github.com/Shlomi-Hazan/cost-manager-front-end/pull/47), [#48](https://github.com/Shlomi-Hazan/cost-manager-front-end/pull/48), [#49](https://github.com/Shlomi-Hazan/cost-manager-front-end/pull/49), and [#50](https://github.com/Shlomi-Hazan/cost-manager-front-end/pull/50). Milestone 16 — Final Submission Package is now in progress.
 
 ## Project Goal
 
@@ -164,12 +164,11 @@ taking precedence on any conflict) and brought into compliance:
   all pass, and the official Vanilla `db.js` compatibility sample
   (`openCostsDB`/`addCost`/`getReport`) was re-verified after every change.
 
-This was a large, project-wide diff, merged into `main` across several
-pull requests ([#47](https://github.com/Shlomi-Hazan/cost-manager-front-end/pull/47),
-[#48](https://github.com/Shlomi-Hazan/cost-manager-front-end/pull/48),
-[#49](https://github.com/Shlomi-Hazan/cost-manager-front-end/pull/49)); see
-`docs/REQUIREMENTS.md` §18.1 for the full audit trail. Comment-density
-compliance is an ongoing refinement, tracked in the same section.
+This was a large, project-wide compliance pass, merged into `main` across [#47](https://github.com/Shlomi-Hazan/cost-manager-front-end/pull/47),
+[#48](https://github.com/Shlomi-Hazan/cost-manager-front-end/pull/48), [#49](https://github.com/Shlomi-Hazan/cost-manager-front-end/pull/49),
+and [#50](https://github.com/Shlomi-Hazan/cost-manager-front-end/pull/50).
+The final follow-up improved explanatory comment density throughout the codebase while avoiding unnecessary filler comments.
+See `docs/REQUIREMENTS.md` §18.1 for the full audit trail.
 
 ### Milestone 15 — Final Requirements Audit (Issue #13, Stage A)
 
