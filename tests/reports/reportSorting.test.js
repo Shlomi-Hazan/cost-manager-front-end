@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
-  REPORT_SORT_DIRECTIONS,
-  REPORT_SORT_KEYS,
+  reportSortDirections,
+  reportSortKeys,
   sortReportCosts
 } from '../../src/utils/reportSorting.js';
 
@@ -33,7 +33,7 @@ function createCost(id, overrides) {
   };
 }
 
-function sortIds(costs, sortKey, sortDirection = REPORT_SORT_DIRECTIONS.asc) {
+function sortIds(costs, sortKey, sortDirection = reportSortDirections.asc) {
   return sortReportCosts(costs, { sortKey, sortDirection }).map((cost) => cost.id);
 }
 
@@ -59,7 +59,7 @@ describe('reportSorting', () => {
       createCost('day-1', { date: { day: 1 } })
     ];
 
-    expect(sortIds(costs, REPORT_SORT_KEYS.date)).toEqual([
+    expect(sortIds(costs, reportSortKeys.date)).toEqual([
       'day-1',
       'day-2',
       'day-10'
@@ -73,7 +73,7 @@ describe('reportSorting', () => {
       createCost('feb', { date: { month: 2, day: 10 } })
     ];
 
-    expect(sortIds(costs, REPORT_SORT_KEYS.date, REPORT_SORT_DIRECTIONS.desc)).toEqual([
+    expect(sortIds(costs, reportSortKeys.date, reportSortDirections.desc)).toEqual([
       'dec',
       'feb',
       'jan'
@@ -87,12 +87,12 @@ describe('reportSorting', () => {
       createCost('third', { date: { day: 10 } })
     ];
 
-    expect(sortIds(costs, REPORT_SORT_KEYS.date)).toEqual([
+    expect(sortIds(costs, reportSortKeys.date)).toEqual([
       'first',
       'second',
       'third'
     ]);
-    expect(sortIds(costs, REPORT_SORT_KEYS.date, REPORT_SORT_DIRECTIONS.desc)).toEqual([
+    expect(sortIds(costs, reportSortKeys.date, reportSortDirections.desc)).toEqual([
       'first',
       'second',
       'third'
@@ -106,7 +106,7 @@ describe('reportSorting', () => {
       createCost('00:05', { date: { hour: 0, minute: 5 } })
     ];
 
-    expect(sortIds(costs, REPORT_SORT_KEYS.time)).toEqual([
+    expect(sortIds(costs, reportSortKeys.time)).toEqual([
       '00:05',
       '09:07',
       '16:37'
@@ -120,7 +120,7 @@ describe('reportSorting', () => {
       createCost('00:05', { date: { hour: 0, minute: 5 } })
     ];
 
-    expect(sortIds(costs, REPORT_SORT_KEYS.time, REPORT_SORT_DIRECTIONS.desc)).toEqual([
+    expect(sortIds(costs, reportSortKeys.time, reportSortDirections.desc)).toEqual([
       '16:37',
       '09:07',
       '00:05'
@@ -134,7 +134,7 @@ describe('reportSorting', () => {
       createCost('car', { description: 'car' })
     ];
 
-    expect(sortIds(costs, REPORT_SORT_KEYS.description)).toEqual([
+    expect(sortIds(costs, reportSortKeys.description)).toEqual([
       'Apple',
       'banana',
       'car'
@@ -149,7 +149,7 @@ describe('reportSorting', () => {
     ];
 
     expect(
-      sortIds(costs, REPORT_SORT_KEYS.description, REPORT_SORT_DIRECTIONS.desc)
+      sortIds(costs, reportSortKeys.description, reportSortDirections.desc)
     ).toEqual(['car', 'banana', 'Apple']);
   });
 
@@ -160,7 +160,7 @@ describe('reportSorting', () => {
       createCost('banana', { description: 'banana' })
     ];
 
-    expect(sortIds(costs, REPORT_SORT_KEYS.description)).toEqual([
+    expect(sortIds(costs, reportSortKeys.description)).toEqual([
       'lower',
       'upper',
       'banana'
@@ -174,7 +174,7 @@ describe('reportSorting', () => {
       createCost('bills', { category: 'Bills' })
     ];
 
-    expect(sortIds(costs, REPORT_SORT_KEYS.category)).toEqual([
+    expect(sortIds(costs, reportSortKeys.category)).toEqual([
       'bills',
       'food',
       'travel'
@@ -188,7 +188,7 @@ describe('reportSorting', () => {
       createCost('bills', { category: 'Bills' })
     ];
 
-    expect(sortIds(costs, REPORT_SORT_KEYS.category, REPORT_SORT_DIRECTIONS.desc)).toEqual([
+    expect(sortIds(costs, reportSortKeys.category, reportSortDirections.desc)).toEqual([
       'travel',
       'food',
       'bills'
@@ -203,7 +203,7 @@ describe('reportSorting', () => {
       createCost('25.5', { sum: 25.5 })
     ];
 
-    expect(sortIds(costs, REPORT_SORT_KEYS.sum)).toEqual([
+    expect(sortIds(costs, reportSortKeys.sum)).toEqual([
       '2',
       '10',
       '25.5',
@@ -219,7 +219,7 @@ describe('reportSorting', () => {
       createCost('25.5', { sum: 25.5 })
     ];
 
-    expect(sortIds(costs, REPORT_SORT_KEYS.sum, REPORT_SORT_DIRECTIONS.desc)).toEqual([
+    expect(sortIds(costs, reportSortKeys.sum, reportSortDirections.desc)).toEqual([
       '100',
       '25.5',
       '10',
@@ -235,7 +235,7 @@ describe('reportSorting', () => {
       createCost('ILS', { currency: 'ILS' })
     ];
 
-    expect(sortIds(costs, REPORT_SORT_KEYS.currency)).toEqual([
+    expect(sortIds(costs, reportSortKeys.currency)).toEqual([
       'EURO',
       'GBP',
       'ILS',
@@ -251,7 +251,7 @@ describe('reportSorting', () => {
       createCost('ILS', { currency: 'ILS' })
     ];
 
-    expect(sortIds(costs, REPORT_SORT_KEYS.currency, REPORT_SORT_DIRECTIONS.desc)).toEqual([
+    expect(sortIds(costs, reportSortKeys.currency, reportSortDirections.desc)).toEqual([
       'USD',
       'ILS',
       'GBP',
@@ -267,7 +267,7 @@ describe('reportSorting', () => {
     ];
     const sourceOrder = costs.map((cost) => cost.id);
 
-    sortReportCosts(costs, { sortKey: REPORT_SORT_KEYS.sum });
+    sortReportCosts(costs, { sortKey: reportSortKeys.sum });
 
     expect(costs.map((cost) => cost.id)).toEqual(sourceOrder);
   });
@@ -279,7 +279,7 @@ describe('reportSorting', () => {
     });
     const before = structuredClone(cost);
 
-    sortReportCosts([cost], { sortKey: REPORT_SORT_KEYS.description });
+    sortReportCosts([cost], { sortKey: reportSortKeys.description });
 
     expect(cost).toEqual(before);
   });
@@ -291,12 +291,12 @@ describe('reportSorting', () => {
       createCost('third', { sum: 10 })
     ];
 
-    expect(sortIds(costs, REPORT_SORT_KEYS.sum)).toEqual([
+    expect(sortIds(costs, reportSortKeys.sum)).toEqual([
       'first',
       'second',
       'third'
     ]);
-    expect(sortIds(costs, REPORT_SORT_KEYS.sum, REPORT_SORT_DIRECTIONS.desc)).toEqual([
+    expect(sortIds(costs, reportSortKeys.sum, reportSortDirections.desc)).toEqual([
       'first',
       'second',
       'third'

@@ -9,14 +9,14 @@
 // Built from Vite's BASE_URL rather than a hard-coded leading slash so this
 // still resolves correctly when the app is served from a subpath, such as a
 // GitHub Pages project site (https://<user>.github.io/cost-manager-front-end/).
-export const DEFAULT_EXCHANGE_RATES_URL = `${import.meta.env.BASE_URL}exchange-rates.json`;
-export const SETTINGS_STORAGE_KEY = 'cost-manager:settings';
+export const defaultExchangeRatesUrl = `${import.meta.env.BASE_URL}exchange-rates.json`;
+export const settingsStorageKey = 'cost-manager:settings';
 
 // Settings are stored as a single small object under one key rather than one
 // key per setting, since there is currently only one setting to persist and
 // this keeps room to add more without a storage-key migration.
 function readSettings() {
-  const storedValue = localStorage.getItem(SETTINGS_STORAGE_KEY);
+  const storedValue = localStorage.getItem(settingsStorageKey);
 
   if (storedValue === null) {
     return {};
@@ -34,7 +34,7 @@ function readSettings() {
 }
 
 function writeSettings(settings) {
-  localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(settings));
+  localStorage.setItem(settingsStorageKey, JSON.stringify(settings));
 }
 
 // Returns null (not an empty string) when no custom URL is configured, so
@@ -67,7 +67,7 @@ export function setCustomExchangeRatesUrl(url) {
 // This is the "Use Default Source" behavior in Settings: it removes the
 // custom URL entirely (rather than writing back the default URL string), so
 // getExchangeRatesUrl() below naturally falls through to the true default
-// again, including any future change to DEFAULT_EXCHANGE_RATES_URL itself.
+// again, including any future change to defaultExchangeRatesUrl itself.
 export function clearCustomExchangeRatesUrl() {
   const settings = readSettings();
 
@@ -78,5 +78,5 @@ export function clearCustomExchangeRatesUrl() {
 // The single place the rest of the app should ask "what URL should exchange
 // rates come from right now?" — custom always wins when one is configured.
 export function getExchangeRatesUrl() {
-  return getCustomExchangeRatesUrl() ?? DEFAULT_EXCHANGE_RATES_URL;
+  return getCustomExchangeRatesUrl() ?? defaultExchangeRatesUrl;
 }

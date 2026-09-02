@@ -17,7 +17,7 @@ import LoadingButtonLabel from '../components/common/LoadingButtonLabel.jsx';
 import PageHeader from '../components/common/PageHeader.jsx';
 import SectionCard from '../components/common/SectionCard.jsx';
 import SortableReportTable from '../components/reports/SortableReportTable.jsx';
-import { SUPPORTED_CURRENCIES } from '../constants/currencies.js';
+import { supportedCurrencies } from '../constants/currencies.js';
 import { useReportSorting } from '../hooks/useReportSorting.js';
 import { costsDatabase } from '../lib/costsDatabase.js';
 import { buildDetailedMonthlyReport } from '../services/detailedReportsService.js';
@@ -41,7 +41,7 @@ import { formatDisplayAmount } from '../utils/amountFormat.js';
  * change what getReport() returns or how it is calculated.
  */
 
-const MONTHS = [
+const months = [
   { value: 1, label: 'January' },
   { value: 2, label: 'February' },
   { value: 3, label: 'March' },
@@ -70,7 +70,7 @@ function getCurrentFilters() {
 }
 
 function getMonthLabel(month) {
-  return MONTHS.find((option) => option.value === month)?.label ?? String(month);
+  return months.find((option) => option.value === month)?.label ?? String(month);
 }
 
 function validateFilters(filters) {
@@ -93,7 +93,7 @@ function validateFilters(filters) {
     errors.year = 'Enter a whole report year.';
   }
 
-  if (!SUPPORTED_CURRENCIES.includes(filters.currency)) {
+  if (!supportedCurrencies.includes(filters.currency)) {
     errors.currency = 'Select a supported currency.';
   }
 
@@ -302,7 +302,7 @@ function MonthlyReportPage({ headingComponent = 'h1' }) {
               value={filters.month}
             >
               {/* Fixed 12-month list, unlike Year's free numeric input. */}
-              {MONTHS.map((month) => (
+              {months.map((month) => (
                 <MenuItem key={month.value} value={String(month.value)}>
                   {month.label}
                 </MenuItem>
@@ -329,7 +329,7 @@ function MonthlyReportPage({ headingComponent = 'h1' }) {
               select
               value={filters.currency}
             >
-              {SUPPORTED_CURRENCIES.map((currency) => (
+              {supportedCurrencies.map((currency) => (
                 <MenuItem key={currency} value={currency}>
                   {currency}
                 </MenuItem>

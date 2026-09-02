@@ -23,14 +23,14 @@
  * category, description — and the required method signatures above are
  * treated as a protected, external contract throughout this file.
  */
-import { SUPPORTED_CURRENCIES } from '../constants/currencies.js';
+import { supportedCurrencies } from '../constants/currencies.js';
 import { getCachedExchangeRates } from './exchangeRatesCache.js';
 import { convertCurrency } from '../utils/currency.js';
 
-const STORAGE_PREFIX = 'cost-manager';
+const storagePrefix = 'cost-manager';
 
 function isSupportedCurrency(currency) {
-  return SUPPORTED_CURRENCIES.includes(currency);
+  return supportedCurrencies.includes(currency);
 }
 
 // R-035: every cost gets its "added on" date automatically, from the
@@ -68,7 +68,7 @@ function generateCostId() {
 // accepted and ignored), so opening the database with a different name or
 // version starts from a separate, empty cost list.
 function getStorageKey(databaseName, databaseVersion) {
-  return `${STORAGE_PREFIX}:${encodeURIComponent(databaseName)}:v${databaseVersion}:costs`;
+  return `${storagePrefix}:${encodeURIComponent(databaseName)}:v${databaseVersion}:costs`;
 }
 
 function validateDatabaseIdentity(databaseName, databaseVersion) {

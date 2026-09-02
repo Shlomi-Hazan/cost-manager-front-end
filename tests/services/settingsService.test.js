@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import {
-  DEFAULT_EXCHANGE_RATES_URL,
+  defaultExchangeRatesUrl,
   clearCustomExchangeRatesUrl,
   getCustomExchangeRatesUrl,
   getExchangeRatesUrl,
@@ -23,7 +23,7 @@ describe('settingsService', () => {
 
   it('uses the default exchange-rate URL when no custom URL exists', () => {
     expect(getCustomExchangeRatesUrl()).toBeNull();
-    expect(getExchangeRatesUrl()).toBe(DEFAULT_EXCHANGE_RATES_URL);
+    expect(getExchangeRatesUrl()).toBe(defaultExchangeRatesUrl);
   });
 
   it('persists a custom exchange-rate URL', () => {
@@ -45,6 +45,6 @@ describe('settingsService', () => {
     clearCustomExchangeRatesUrl();
 
     expect(getCustomExchangeRatesUrl()).toBeNull();
-    expect(getExchangeRatesUrl()).toBe(DEFAULT_EXCHANGE_RATES_URL);
+    expect(getExchangeRatesUrl()).toBe(defaultExchangeRatesUrl);
   });
 });

@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import {
-  REPORT_SORT_DIRECTIONS,
+  reportSortDirections,
   sortReportCosts
 } from '../utils/reportSorting.js';
 
@@ -9,7 +9,7 @@ import {
 // click behavior "for free" instead of reimplementing it twice.
 export function useReportSorting(costs) {
   const [sortKey, setSortKey] = useState(null);
-  const [sortDirection, setSortDirection] = useState(REPORT_SORT_DIRECTIONS.asc);
+  const [sortDirection, setSortDirection] = useState(reportSortDirections.asc);
 
   const sortedCosts = useMemo(() => {
     return sortReportCosts(costs, { sortKey, sortDirection });
@@ -21,20 +21,20 @@ export function useReportSorting(costs) {
   function requestSort(nextSortKey) {
     if (sortKey !== nextSortKey) {
       setSortKey(nextSortKey);
-      setSortDirection(REPORT_SORT_DIRECTIONS.asc);
+      setSortDirection(reportSortDirections.asc);
       return;
     }
 
     setSortDirection((currentDirection) => {
-      return currentDirection === REPORT_SORT_DIRECTIONS.asc
-        ? REPORT_SORT_DIRECTIONS.desc
-        : REPORT_SORT_DIRECTIONS.asc;
+      return currentDirection === reportSortDirections.asc
+        ? reportSortDirections.desc
+        : reportSortDirections.asc;
     });
   }
 
   function resetSort() {
     setSortKey(null);
-    setSortDirection(REPORT_SORT_DIRECTIONS.asc);
+    setSortDirection(reportSortDirections.asc);
   }
 
   return {

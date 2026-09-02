@@ -7,7 +7,7 @@
  * official course specification names the identifier "EURO" explicitly.
  * Do not "fix" this to EUR — that would violate the required identifier set.
  */
-export const SUPPORTED_CURRENCIES = [
+export const supportedCurrencies = [
   'USD',
   'ILS',
   'GBP',

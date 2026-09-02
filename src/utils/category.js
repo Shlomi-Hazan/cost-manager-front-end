@@ -5,7 +5,7 @@
  * and the display-name normalization used whenever a category is shown or
  * grouped, without ever rejecting a category db.js would otherwise accept.
  */
-import { COMMON_CATEGORIES } from '../constants/categories.js';
+import { commonCategories } from '../constants/categories.js';
 
 function cleanCategory(category) {
   if (typeof category !== 'string') {
@@ -38,7 +38,7 @@ export function getCategoryDisplayName(category) {
   const cleanedCategory = cleanCategory(category);
   const categoryKey = getCategoryKey(cleanedCategory);
 
-  return COMMON_CATEGORIES.find((commonCategory) => {
+  return commonCategories.find((commonCategory) => {
     return getCategoryKey(commonCategory) === categoryKey;
   }) ?? cleanedCategory;
 }

@@ -1,8 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { setCachedExchangeRates } from '../../src/lib/exchangeRatesCache.js';
 import {
-  COSTS_DATABASE_NAME,
-  COSTS_DATABASE_VERSION,
+  costsDatabaseName,
+  costsDatabaseVersion,
   costsDatabase
 } from '../../src/lib/costsDatabase.js';
 import { db } from '../../src/lib/db.js';
@@ -349,7 +349,7 @@ describe('module db contract', () => {
 
   it('uses application database version 2 without reading version 1 application costs', () => {
     localStorage.setItem(
-      `cost-manager:${encodeURIComponent(COSTS_DATABASE_NAME)}:v1:costs`,
+      `cost-manager:${encodeURIComponent(costsDatabaseName)}:v1:costs`,
       JSON.stringify([
         {
           sum: 999,
@@ -361,7 +361,7 @@ describe('module db contract', () => {
       ])
     );
 
-    expect(COSTS_DATABASE_VERSION).toBe(2);
+    expect(costsDatabaseVersion).toBe(2);
     expect(costsDatabase.getReport('USD', 2026, 8).costs).toEqual([]);
 
     costsDatabase.addCost({
@@ -371,8 +371,8 @@ describe('module db contract', () => {
       description: 'Current app cost'
     });
 
-    expect(readStoredCosts(COSTS_DATABASE_NAME, 1)).toHaveLength(1);
-    expect(readStoredCosts(COSTS_DATABASE_NAME, 2)).toHaveLength(1);
+    expect(readStoredCosts(costsDatabaseName, 1)).toHaveLength(1);
+    expect(readStoredCosts(costsDatabaseName, 2)).toHaveLength(1);
     expect(costsDatabase.getReport('USD', 2026, 8).total.sum).toBe(10);
   });
 

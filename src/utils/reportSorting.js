@@ -6,12 +6,12 @@
  * order instead of shuffling them on every sort request.
  */
 
-export const REPORT_SORT_DIRECTIONS = {
+export const reportSortDirections = {
   asc: 'asc',
   desc: 'desc'
 };
 
-export const REPORT_SORT_KEYS = {
+export const reportSortKeys = {
   date: 'date',
   time: 'time',
   description: 'description',
@@ -47,18 +47,18 @@ function compareText(left, right) {
 // are applied by the caller (sortReportCosts) so this stays a pure compare.
 function compareByKey(leftCost, rightCost, sortKey) {
   switch (sortKey) {
-    case REPORT_SORT_KEYS.date:
+    case reportSortKeys.date:
       return compareNumbers(getDateValue(leftCost), getDateValue(rightCost));
-    case REPORT_SORT_KEYS.time:
+    case reportSortKeys.time:
       return compareNumbers(getTimeValue(leftCost), getTimeValue(rightCost));
-    case REPORT_SORT_KEYS.description:
+    case reportSortKeys.description:
       return compareText(leftCost.description, rightCost.description);
     // Remaining text/numeric columns follow the same pattern above.
-    case REPORT_SORT_KEYS.category:
+    case reportSortKeys.category:
       return compareText(leftCost.category, rightCost.category);
-    case REPORT_SORT_KEYS.sum:
+    case reportSortKeys.sum:
       return compareNumbers(leftCost.sum, rightCost.sum);
-    case REPORT_SORT_KEYS.currency:
+    case reportSortKeys.currency:
       return compareText(leftCost.currency, rightCost.currency);
     default:
       throw new TypeError('Unsupported report sort key.');
@@ -69,9 +69,9 @@ function compareByKey(leftCost, rightCost, sortKey) {
  * Returns a NEW sorted array; `costs` itself is never reordered in place.
  * @param {object[]} costs - Costs to sort.
  * @param {object} [options]
- * @param {?string} [options.sortKey] - One of REPORT_SORT_KEYS, or null for
+ * @param {?string} [options.sortKey] - One of reportSortKeys, or null for
  *   "no sorting requested yet" (returns a shallow copy in insertion order).
- * @param {string} [options.sortDirection] - One of REPORT_SORT_DIRECTIONS.
+ * @param {string} [options.sortDirection] - One of reportSortDirections.
  * @returns {object[]} A new, sorted (or copied) array.
  */
 export function sortReportCosts(costs, { sortKey = null, sortDirection = 'asc' } = {}) {
@@ -79,12 +79,12 @@ export function sortReportCosts(costs, { sortKey = null, sortDirection = 'asc' }
     return [...costs];
   }
 
-  if (!Object.values(REPORT_SORT_DIRECTIONS).includes(sortDirection)) {
+  if (!Object.values(reportSortDirections).includes(sortDirection)) {
     throw new TypeError('Unsupported report sort direction.');
   }
 
   const directionFactor =
-    sortDirection === REPORT_SORT_DIRECTIONS.asc ? 1 : -1;
+    sortDirection === reportSortDirections.asc ? 1 : -1;
 
   // Pairing each cost with its original index lets ties fall back to
   // insertion order (left.index - right.index) instead of an unspecified

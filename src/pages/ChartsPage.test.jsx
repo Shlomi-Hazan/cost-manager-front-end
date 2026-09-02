@@ -3,7 +3,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { COSTS_DATABASE_NAME } from '../lib/costsDatabase.js';
+import { costsDatabaseName } from '../lib/costsDatabase.js';
 import { setCachedExchangeRates } from '../lib/exchangeRatesCache.js';
 import { costsDatabase } from '../lib/costsDatabase.js';
 import * as excelExportService from '../services/export/excelExportService.js';
@@ -86,7 +86,7 @@ function addCostOnDate({ year = 2026, month = 8, day, cost }) {
 }
 
 function readStoredCosts() {
-  const storageKey = `cost-manager:${encodeURIComponent(COSTS_DATABASE_NAME)}:v1:costs`;
+  const storageKey = `cost-manager:${encodeURIComponent(costsDatabaseName)}:v1:costs`;
 
   return JSON.parse(localStorage.getItem(storageKey) ?? '[]');
 }

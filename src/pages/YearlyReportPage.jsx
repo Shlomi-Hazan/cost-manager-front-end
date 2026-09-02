@@ -17,7 +17,7 @@ import LoadingButtonLabel from '../components/common/LoadingButtonLabel.jsx';
 import PageHeader from '../components/common/PageHeader.jsx';
 import SectionCard from '../components/common/SectionCard.jsx';
 import SortableReportTable from '../components/reports/SortableReportTable.jsx';
-import { SUPPORTED_CURRENCIES } from '../constants/currencies.js';
+import { supportedCurrencies } from '../constants/currencies.js';
 import { useReportSorting } from '../hooks/useReportSorting.js';
 import { costsDatabase } from '../lib/costsDatabase.js';
 import { buildDetailedYearlyReport } from '../services/detailedReportsService.js';
@@ -59,7 +59,7 @@ function validateFilters(filters) {
     errors.year = 'Enter a whole report year.';
   }
 
-  if (!SUPPORTED_CURRENCIES.includes(filters.currency)) {
+  if (!supportedCurrencies.includes(filters.currency)) {
     errors.currency = 'Select a supported currency.';
   }
 
@@ -255,7 +255,7 @@ function YearlyReportPage({ headingComponent = 'h1' }) {
               select
               value={filters.currency}
             >
-              {SUPPORTED_CURRENCIES.map((currency) => (
+              {supportedCurrencies.map((currency) => (
                 <MenuItem key={currency} value={currency}>
                   {currency}
                 </MenuItem>

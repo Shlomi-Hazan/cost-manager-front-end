@@ -13,13 +13,13 @@ import YearlyReportPage from './YearlyReportPage.jsx';
  * additional Yearly Report, as two tabs rather than two separate top-level
  * nav items.
  */
-const REPORT_TABS = {
+const reportTabs = {
   monthly: 'monthly',
   yearly: 'yearly'
 };
 
 function ReportsPage() {
-  const [activeReport, setActiveReport] = useState(REPORT_TABS.monthly);
+  const [activeReport, setActiveReport] = useState(reportTabs.monthly);
 
   return (
     <Stack spacing={3}>
@@ -39,23 +39,23 @@ function ReportsPage() {
             icon={<CalendarMonthOutlinedIcon aria-hidden="true" fontSize="small" />}
             iconPosition="start"
             label="Monthly"
-            value={REPORT_TABS.monthly}
+            value={reportTabs.monthly}
           />
           {/* Yearly tab: the team's own extension, not a course requirement. */}
           <Tab
             icon={<DateRangeOutlinedIcon aria-hidden="true" fontSize="small" />}
             iconPosition="start"
             label="Yearly"
-            value={REPORT_TABS.yearly}
+            value={reportTabs.yearly}
           />
         </Tabs>
       </SectionCard>
 
-      {activeReport === REPORT_TABS.monthly ? (
+      {activeReport === reportTabs.monthly ? (
         <MonthlyReportPage headingComponent="h2" />
       ) : null}
 
-      {activeReport === REPORT_TABS.yearly ? (
+      {activeReport === reportTabs.yearly ? (
         <YearlyReportPage headingComponent="h2" />
       ) : null}
     </Stack>

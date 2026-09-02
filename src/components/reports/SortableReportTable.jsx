@@ -16,9 +16,9 @@ import {
  * this component only renders columns and forwards header clicks.
  */
 import { formatDateForDisplay, formatTime } from '../../utils/dateTime.js';
-import { REPORT_SORT_KEYS } from '../../utils/reportSorting.js';
+import { reportSortKeys } from '../../utils/reportSorting.js';
 
-const DATE_MODES = {
+const dateModes = {
   monthly: 'monthly',
   yearly: 'yearly'
 };
@@ -32,17 +32,17 @@ function formatAmount(amount) {
 }
 
 function getDateLabel(dateMode) {
-  return dateMode === DATE_MODES.yearly ? 'Date' : 'Day';
+  return dateMode === dateModes.yearly ? 'Date' : 'Day';
 }
 
 function getTableLabel(dateMode) {
-  return dateMode === DATE_MODES.yearly
+  return dateMode === dateModes.yearly
     ? 'Yearly report costs'
     : 'Monthly report costs';
 }
 
 function formatDateCell(cost, dateMode) {
-  return dateMode === DATE_MODES.yearly
+  return dateMode === dateModes.yearly
     ? formatDateForDisplay(cost.date)
     : cost.date.day;
 }
@@ -88,14 +88,14 @@ function SortableReportTable({
               onRequestSort={onRequestSort}
               sortDirection={sortDirection}
               sortKey={sortKey}
-              targetSortKey={REPORT_SORT_KEYS.date}
+              targetSortKey={reportSortKeys.date}
             />
             <SortableHeaderCell
               label="Time"
               onRequestSort={onRequestSort}
               sortDirection={sortDirection}
               sortKey={sortKey}
-              targetSortKey={REPORT_SORT_KEYS.time}
+              targetSortKey={reportSortKeys.time}
             />
             {/* Text columns: description then category. */}
             <SortableHeaderCell
@@ -103,14 +103,14 @@ function SortableReportTable({
               onRequestSort={onRequestSort}
               sortDirection={sortDirection}
               sortKey={sortKey}
-              targetSortKey={REPORT_SORT_KEYS.description}
+              targetSortKey={reportSortKeys.description}
             />
             <SortableHeaderCell
               label="Category"
               onRequestSort={onRequestSort}
               sortDirection={sortDirection}
               sortKey={sortKey}
-              targetSortKey={REPORT_SORT_KEYS.category}
+              targetSortKey={reportSortKeys.category}
             />
             {/* Numeric columns: sum is right-aligned, currency is not. */}
             <SortableHeaderCell
@@ -119,7 +119,7 @@ function SortableReportTable({
               onRequestSort={onRequestSort}
               sortDirection={sortDirection}
               sortKey={sortKey}
-              targetSortKey={REPORT_SORT_KEYS.sum}
+              targetSortKey={reportSortKeys.sum}
             />
             {/* Last header cell: currency code for each row. */}
             <SortableHeaderCell
@@ -127,7 +127,7 @@ function SortableReportTable({
               onRequestSort={onRequestSort}
               sortDirection={sortDirection}
               sortKey={sortKey}
-              targetSortKey={REPORT_SORT_KEYS.currency}
+              targetSortKey={reportSortKeys.currency}
             />
           </TableRow>
         </TableHead>

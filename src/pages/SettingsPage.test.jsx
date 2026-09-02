@@ -8,8 +8,8 @@ import {
   setCachedExchangeRates
 } from '../lib/exchangeRatesCache.js';
 import {
-  DEFAULT_EXCHANGE_RATES_URL,
-  SETTINGS_STORAGE_KEY,
+  defaultExchangeRatesUrl,
+  settingsStorageKey,
   getCustomExchangeRatesUrl,
   getExchangeRatesUrl,
   setCustomExchangeRatesUrl
@@ -110,8 +110,8 @@ describe('SettingsPage', () => {
     renderSettingsPage();
 
     expect(screen.getByRole('heading', { name: 'Exchange Rate Source' })).toBeInTheDocument();
-    expect(screen.getAllByText(DEFAULT_EXCHANGE_RATES_URL)).toHaveLength(2);
-    expectEffectiveSource(DEFAULT_EXCHANGE_RATES_URL);
+    expect(screen.getAllByText(defaultExchangeRatesUrl)).toHaveLength(2);
+    expectEffectiveSource(defaultExchangeRatesUrl);
   });
 
   it('shows Default as the current source type initially', () => {
@@ -170,7 +170,7 @@ describe('SettingsPage', () => {
     await saveCustomSource(user, '/broken-rates.json');
 
     expect(getCustomExchangeRatesUrl()).toBeNull();
-    expect(getExchangeRatesUrl()).toBe(DEFAULT_EXCHANGE_RATES_URL);
+    expect(getExchangeRatesUrl()).toBe(defaultExchangeRatesUrl);
   });
 
   it('shows Custom as the current source type after a successful save', async () => {
@@ -303,9 +303,9 @@ describe('SettingsPage', () => {
 
     await user.click(screen.getByRole('button', { name: 'Use Default Source' }));
 
-    expect(globalThis.fetch).toHaveBeenCalledWith(DEFAULT_EXCHANGE_RATES_URL);
+    expect(globalThis.fetch).toHaveBeenCalledWith(defaultExchangeRatesUrl);
     expect(getCustomExchangeRatesUrl()).toBeNull();
-    expect(getExchangeRatesUrl()).toBe(DEFAULT_EXCHANGE_RATES_URL);
+    expect(getExchangeRatesUrl()).toBe(defaultExchangeRatesUrl);
     expect(getCachedExchangeRates()).toEqual(defaultRates);
   });
 
@@ -318,7 +318,7 @@ describe('SettingsPage', () => {
     await user.click(screen.getByRole('button', { name: 'Use Default Source' }));
 
     expectCurrentSourceType('Default');
-    expectEffectiveSource(DEFAULT_EXCHANGE_RATES_URL);
+    expectEffectiveSource(defaultExchangeRatesUrl);
     expect(
       screen.getByText('Default exchange-rate source restored successfully.')
     ).toBeInTheDocument();
@@ -413,12 +413,12 @@ describe('SettingsPage', () => {
   });
 
   it('falls back to the default UI when stored settings are malformed', () => {
-    localStorage.setItem(SETTINGS_STORAGE_KEY, '{not-json');
+    localStorage.setItem(settingsStorageKey, '{not-json');
 
     renderSettingsPage();
 
     expectCurrentSourceType('Default');
-    expectEffectiveSource(DEFAULT_EXCHANGE_RATES_URL);
+    expectEffectiveSource(defaultExchangeRatesUrl);
     expect(screen.getByLabelText('Custom exchange-rate source')).toHaveValue('');
   });
 
