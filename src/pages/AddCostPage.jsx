@@ -1,5 +1,5 @@
-import { useState } from "react";
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutlineOutlined";
+import { useState } from 'react';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutlineOutlined';
 import {
   Alert,
   Autocomplete,
@@ -8,13 +8,14 @@ import {
   MenuItem,
   Stack,
   TextField,
-} from "@mui/material";
-import PageHeader from "../components/common/PageHeader.jsx";
-import SectionCard from "../components/common/SectionCard.jsx";
-import { COMMON_CATEGORIES } from "../constants/categories.js";
-import { SUPPORTED_CURRENCIES } from "../constants/currencies.js";
-import { costsDatabase } from "../lib/costsDatabase.js";
-import { normalizeCategoryInput } from "../utils/category.js";
+} from '@mui/material';
+// Shared UI components, then local constants/db/utils below.
+import PageHeader from '../components/common/PageHeader.jsx';
+import SectionCard from '../components/common/SectionCard.jsx';
+import { COMMON_CATEGORIES } from '../constants/categories.js';
+import { SUPPORTED_CURRENCIES } from '../constants/currencies.js';
+import { costsDatabase } from '../lib/costsDatabase.js';
+import { normalizeCategoryInput } from '../utils/category.js';
 
 /*
  * Course requirement: lets the user add a new cost with sum, currency,
@@ -26,10 +27,10 @@ import { normalizeCategoryInput } from "../utils/category.js";
  */
 
 const initialFormValues = {
-  sum: "",
-  currency: "USD",
-  category: "",
-  description: ""
+  sum: '',
+  currency: 'USD',
+  category: '',
+  description: ''
 };
 
 // UI-level validation only (non-empty description/category, numeric sum,
@@ -43,22 +44,22 @@ function validateForm(values) {
   const numericSum = Number(trimmedSum);
   const normalizedCategory = normalizeCategoryInput(values.category);
 
-  if (trimmedSum === "") {
-    nextErrors.sum = "Enter a cost sum.";
+  if (trimmedSum === '') {
+    nextErrors.sum = 'Enter a cost sum.';
   } else if (!Number.isFinite(numericSum)) {
-    nextErrors.sum = "Enter a valid numeric sum.";
+    nextErrors.sum = 'Enter a valid numeric sum.';
   }
 
   if (!SUPPORTED_CURRENCIES.includes(values.currency)) {
-    nextErrors.currency = "Select a supported currency.";
+    nextErrors.currency = 'Select a supported currency.';
   }
 
-  if (normalizedCategory === "") {
-    nextErrors.category = "Enter a category.";
+  if (normalizedCategory === '') {
+    nextErrors.category = 'Enter a category.';
   }
 
-  if (values.description.trim() === "") {
-    nextErrors.description = "Enter a description.";
+  if (values.description.trim() === '') {
+    nextErrors.description = 'Enter a description.';
   }
 
   return {
@@ -94,7 +95,7 @@ function AddCostPage() {
   function handleCategoryChange(_event, value) {
     setFormValues((currentValues) => ({
       ...currentValues,
-      category: value ?? ""
+      category: value ?? ''
     }));
     setErrors((currentErrors) => ({
       ...currentErrors,
@@ -124,8 +125,8 @@ function AddCostPage() {
 
     if (!validation.isValid) {
       setFeedback({
-        severity: "error",
-        message: "Please correct the highlighted fields."
+        severity: 'error',
+        message: 'Please correct the highlighted fields.'
       });
       return;
     }
@@ -142,15 +143,16 @@ function AddCostPage() {
         description: formValues.description.trim()
       });
 
+      // Reset the form so the next entry starts from a clean slate.
       setFormValues(initialFormValues);
       setFeedback({
-        severity: "success",
-        message: "Cost added successfully."
+        severity: 'success',
+        message: 'Cost added successfully.'
       });
     } catch {
       setFeedback({
-        severity: "error",
-        message: "Could not add cost. Please try again."
+        severity: 'error',
+        message: 'Could not add cost. Please try again.'
       });
     }
   }
@@ -173,28 +175,31 @@ function AddCostPage() {
             <Alert severity={feedback.severity}>{feedback.message}</Alert>
           ) : null}
 
+          {/* Sum and currency side by side on wide screens (R-031/R-032). */}
           <Box
             sx={{
-              display: "grid",
+              display: 'grid',
               gap: 2,
               gridTemplateColumns: {
-                xs: "1fr",
-                sm: "minmax(0, 1fr) 180px"
+                xs: '1fr',
+                sm: 'minmax(0, 1fr) 180px'
               }
             }}
           >
+            {/* Sum: numeric keyboard on mobile, otherwise a plain text input. */}
             <TextField
               error={Boolean(errors.sum)}
-              helperText={errors.sum ?? "Use a numeric value."}
+              helperText={errors.sum ?? 'Use a numeric value.'}
               inputMode="decimal"
               label="Sum"
               name="sum"
               onChange={handleChange}
               value={formValues.sum}
             />
+            {/* Currency select, restricted to the four required identifiers. */}
             <TextField
               error={Boolean(errors.currency)}
-              helperText={errors.currency ?? " "}
+              helperText={errors.currency ?? ' '}
               label="Currency"
               name="currency"
               onChange={handleChange}
@@ -209,6 +214,7 @@ function AddCostPage() {
             </TextField>
           </Box>
 
+          {/* freeSolo: COMMON_CATEGORIES are only suggestions (R-033, OQ-004). */}
           <Autocomplete
             freeSolo
             inputValue={formValues.category}
@@ -216,20 +222,22 @@ function AddCostPage() {
             onInputChange={handleCategoryInputChange}
             openOnFocus
             options={COMMON_CATEGORIES}
+            // MUI Autocomplete requires the text field to be supplied this way.
             renderInput={(params) => (
               <TextField
                 {...params}
                 error={Boolean(errors.category)}
-                helperText={errors.category ?? "Choose a suggestion or type a custom category."}
+                helperText={errors.category ?? 'Choose a suggestion or type a custom category.'}
                 label="Category"
                 name="category"
               />
             )}
           />
 
+          {/* Description: date/id are added automatically, not entered here. */}
           <TextField
             error={Boolean(errors.description)}
-            helperText={errors.description ?? "The date will be added automatically."}
+            helperText={errors.description ?? 'The date will be added automatically.'}
             label="Description"
             multiline
             name="description"
@@ -238,6 +246,7 @@ function AddCostPage() {
             value={formValues.description}
           />
 
+          {/* type="submit" triggers the form's onSubmit (handleSubmit) above. */}
           <Box>
             <Button
               startIcon={<AddCircleOutlineIcon aria-hidden="true" />}

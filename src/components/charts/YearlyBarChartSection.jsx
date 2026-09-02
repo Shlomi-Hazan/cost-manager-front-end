@@ -1,7 +1,9 @@
-import { useRef, useState } from "react";
-import BarChartOutlinedIcon from "@mui/icons-material/BarChartOutlined";
-import PictureAsPdfOutlinedIcon from "@mui/icons-material/PictureAsPdfOutlined";
-import TableChartOutlinedIcon from "@mui/icons-material/TableChartOutlined";
+import { useRef, useState } from 'react';
+// Icons for the generate button and the two export buttons below.
+import BarChartOutlinedIcon from '@mui/icons-material/BarChartOutlined';
+import PictureAsPdfOutlinedIcon from '@mui/icons-material/PictureAsPdfOutlined';
+import TableChartOutlinedIcon from '@mui/icons-material/TableChartOutlined';
+// MUI layout/form/table primitives used by the filters bar and totals table.
 import {
   Alert,
   Box,
@@ -16,7 +18,8 @@ import {
   TableRow,
   TextField,
   Typography
-} from "@mui/material";
+} from '@mui/material';
+// Recharts primitives for the required 12-month bar chart itself.
 import {
   Bar,
   BarChart as RechartsBarChart,
@@ -26,20 +29,22 @@ import {
   Tooltip,
   XAxis,
   YAxis
-} from "recharts";
-import LoadingButtonLabel from "../common/LoadingButtonLabel.jsx";
-import SectionCard from "../common/SectionCard.jsx";
-import { SUPPORTED_CURRENCIES } from "../../constants/currencies.js";
-import { costsDatabase } from "../../lib/costsDatabase.js";
-import { refreshExchangeRates } from "../../services/exchangeRatesService.js";
-import * as excelExportService from "../../services/export/excelExportService.js";
-import { buildBarChartExportModel } from "../../services/export/exportModels.js";
-import * as pdfExportService from "../../services/export/pdfExportService.js";
-import { captureChartSvgAsPngDataUrl } from "../../utils/chartCapture.js";
-import { getBarChartExportFilename } from "../../utils/exportFilenames.js";
-import { buildYearlyMonthlyTotals } from "../../utils/yearlyAggregation.js";
-import { formatDisplayAmount } from "../../utils/amountFormat.js";
-import { formatPositiveBarValueLabel } from "../../utils/chartPresentation.js";
+} from 'recharts';
+// Shared UI components, then local constants/db/services/utils below.
+import LoadingButtonLabel from '../common/LoadingButtonLabel.jsx';
+import SectionCard from '../common/SectionCard.jsx';
+import { SUPPORTED_CURRENCIES } from '../../constants/currencies.js';
+import { costsDatabase } from '../../lib/costsDatabase.js';
+import { refreshExchangeRates } from '../../services/exchangeRatesService.js';
+// TEAM EXTENSION: Excel/PDF export helpers for the yearly bar chart data.
+import * as excelExportService from '../../services/export/excelExportService.js';
+import { buildBarChartExportModel } from '../../services/export/exportModels.js';
+import * as pdfExportService from '../../services/export/pdfExportService.js';
+import { captureChartSvgAsPngDataUrl } from '../../utils/chartCapture.js';
+import { getBarChartExportFilename } from '../../utils/exportFilenames.js';
+import { buildYearlyMonthlyTotals } from '../../utils/yearlyAggregation.js';
+import { formatDisplayAmount } from '../../utils/amountFormat.js';
+import { formatPositiveBarValueLabel } from '../../utils/chartPresentation.js';
 
 /*
  * Course requirement: the yearly 12-month Bar Chart (R-080/R-081) — always
@@ -52,7 +57,7 @@ import { formatPositiveBarValueLabel } from "../../utils/chartPresentation.js";
 function getCurrentFilters() {
   return {
     year: String(new Date().getFullYear()),
-    currency: "USD"
+    currency: 'USD'
   };
 }
 
@@ -61,14 +66,15 @@ function validateFilters(filters) {
   const trimmedYear = filters.year.trim();
   const chartYear = Number(trimmedYear);
 
-  if (trimmedYear === "") {
-    errors.year = "Enter a chart year.";
+  if (trimmedYear === '') {
+    errors.year = 'Enter a chart year.';
   } else if (!Number.isFinite(chartYear) || !Number.isInteger(chartYear)) {
-    errors.year = "Enter a whole chart year.";
+    errors.year = 'Enter a whole chart year.';
   }
 
+  // Currency: must be one of the four required identifiers.
   if (!SUPPORTED_CURRENCIES.includes(filters.currency)) {
-    errors.currency = "Select a supported currency.";
+    errors.currency = 'Select a supported currency.';
   }
 
   return {
@@ -81,21 +87,21 @@ function validateFilters(filters) {
 function getYearlyErrorMessage(error) {
   if (
     error instanceof Error &&
-    (error.message.includes("cached exchange rates") ||
-      error.message.includes("Exchange rates"))
+    (error.message.includes('cached exchange rates') ||
+      error.message.includes('Exchange rates'))
   ) {
-    return "Exchange rates are unavailable for converting this yearly chart. Please try again.";
+    return 'Exchange rates are unavailable for converting this yearly chart. Please try again.';
   }
 
-  return "Could not generate the yearly chart. Please try again.";
+  return 'Could not generate the yearly chart. Please try again.';
 }
 
 function YearlyBarChartSection() {
   const [filters, setFilters] = useState(getCurrentFilters);
   const [errors, setErrors] = useState({});
   const [yearlyResult, setYearlyResult] = useState(null);
-  const [errorMessage, setErrorMessage] = useState("");
-  const [exportErrorMessage, setExportErrorMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState('');
+  const [exportErrorMessage, setExportErrorMessage] = useState('');
   const [exportingAction, setExportingAction] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [hasGenerated, setHasGenerated] = useState(false);
@@ -112,8 +118,8 @@ function YearlyBarChartSection() {
       ...currentErrors,
       [name]: undefined
     }));
-    setErrorMessage("");
-    setExportErrorMessage("");
+    setErrorMessage('');
+    setExportErrorMessage('');
     setYearlyResult(null);
     setHasGenerated(false);
   }
@@ -124,11 +130,11 @@ function YearlyBarChartSection() {
     const validation = validateFilters(filters);
 
     setErrors(validation.errors);
-    setErrorMessage("");
-    setExportErrorMessage("");
+    setErrorMessage('');
+    setExportErrorMessage('');
 
     if (!validation.isValid) {
-      setErrorMessage("Please correct the highlighted yearly chart filters.");
+      setErrorMessage('Please correct the highlighted yearly chart filters.');
       return;
     }
 
@@ -175,8 +181,8 @@ function YearlyBarChartSection() {
       return;
     }
 
-    setExportErrorMessage("");
-    setExportingAction("excel");
+    setExportErrorMessage('');
+    setExportingAction('excel');
 
     try {
       await excelExportService.downloadBarChartWorkbook(
@@ -184,11 +190,11 @@ function YearlyBarChartSection() {
         getBarChartExportFilename({
           year: yearlyResult.year,
           currency: yearlyResult.currency,
-          extension: "xlsx"
+          extension: 'xlsx'
         })
       );
     } catch {
-      setExportErrorMessage("Could not export the Excel file. Please try again.");
+      setExportErrorMessage('Could not export the Excel file. Please try again.');
     } finally {
       setExportingAction(null);
     }
@@ -199,8 +205,8 @@ function YearlyBarChartSection() {
       return;
     }
 
-    setExportErrorMessage("");
-    setExportingAction("pdf");
+    setExportErrorMessage('');
+    setExportingAction('pdf');
 
     try {
       const chartImageDataUrl = await captureChartSvgAsPngDataUrl(
@@ -208,7 +214,7 @@ function YearlyBarChartSection() {
       );
 
       if (chartImageDataUrl === null) {
-        throw new Error("Bar chart image capture failed.");
+        throw new Error('Bar chart image capture failed.');
       }
 
       await pdfExportService.downloadChartPdf(
@@ -216,12 +222,12 @@ function YearlyBarChartSection() {
         getBarChartExportFilename({
           year: yearlyResult.year,
           currency: yearlyResult.currency,
-          extension: "pdf"
+          extension: 'pdf'
         }),
         chartImageDataUrl
       );
     } catch {
-      setExportErrorMessage("Could not export the chart PDF. Please try again.");
+      setExportErrorMessage('Could not export the chart PDF. Please try again.');
     } finally {
       setExportingAction(null);
     }
@@ -250,17 +256,17 @@ function YearlyBarChartSection() {
 
           <Box
             sx={{
-              display: "grid",
+              display: 'grid',
               gap: 2,
               gridTemplateColumns: {
-                xs: "1fr",
-                md: "180px 180px auto"
+                xs: '1fr',
+                md: '180px 180px auto'
               }
             }}
           >
             <TextField
               error={Boolean(errors.year)}
-              helperText={errors.year ?? " "}
+              helperText={errors.year ?? ' '}
               inputMode="numeric"
               label="Yearly Chart Year"
               name="year"
@@ -270,7 +276,7 @@ function YearlyBarChartSection() {
 
             <TextField
               error={Boolean(errors.currency)}
-              helperText={errors.currency ?? " "}
+              helperText={errors.currency ?? ' '}
               label="Yearly Chart Currency"
               name="currency"
               onChange={handleChange}
@@ -284,7 +290,8 @@ function YearlyBarChartSection() {
               ))}
             </TextField>
 
-            <Box sx={{ alignSelf: "start", pt: { md: 1 } }}>
+            {/* Submitting the form calls handleSubmit further up. */}
+            <Box sx={{ alignSelf: 'start', pt: { md: 1 } }}>
               <Button
                 disabled={isLoading}
                 startIcon={
@@ -327,36 +334,38 @@ function YearlyBarChartSection() {
               <Alert severity="error">{exportErrorMessage}</Alert>
             ) : null}
 
-            <Stack direction={{ xs: "column", sm: "row" }} spacing={1}>
+            {/* TEAM EXTENSION: Excel/PDF export of this bar chart. */}
+            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1}>
               <Button
                 disabled={Boolean(exportingAction)}
                 onClick={handleExcelExport}
                 startIcon={
-                  exportingAction === "excel" ? null : (
+                  exportingAction === 'excel' ? null : (
                     <TableChartOutlinedIcon aria-hidden="true" />
                   )
                 }
                 variant="outlined"
               >
                 <LoadingButtonLabel
-                  isLoading={exportingAction === "excel"}
+                  isLoading={exportingAction === 'excel'}
                   loadingText="Exporting..."
                 >
                   Export Excel
                 </LoadingButtonLabel>
               </Button>
+              {/* PDF export mirrors the Excel button, different action/icon. */}
               <Button
                 disabled={Boolean(exportingAction)}
                 onClick={handlePdfExport}
                 startIcon={
-                  exportingAction === "pdf" ? null : (
+                  exportingAction === 'pdf' ? null : (
                     <PictureAsPdfOutlinedIcon aria-hidden="true" />
                   )
                 }
                 variant="outlined"
               >
                 <LoadingButtonLabel
-                  isLoading={exportingAction === "pdf"}
+                  isLoading={exportingAction === 'pdf'}
                   loadingText="Exporting..."
                 >
                   Export PDF
@@ -368,16 +377,18 @@ function YearlyBarChartSection() {
               <Alert severity="info">No costs found for this year.</Alert>
             ) : null}
 
+            {/* R-080/R-081: all 12 months, zero-value bars included. */}
             <Box
               aria-label="Yearly monthly bar chart"
               ref={chartContainerRef}
               role="img"
               sx={{
                 height: 360,
-                width: "100%"
+                width: '100%'
               }}
             >
               <ResponsiveContainer height="100%" width="100%">
+                {/* margin leaves room for axis labels and the top value labels. */}
                 <RechartsBarChart
                   data={monthlyTotals}
                   margin={{
@@ -389,6 +400,7 @@ function YearlyBarChartSection() {
                 >
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="shortLabel" />
+                  {/* Y-axis headroom: 15% above the tallest bar (or 1 if all zero). */}
                   <YAxis
                     domain={[
                       0,
@@ -402,9 +414,10 @@ function YearlyBarChartSection() {
                       `${formatDisplayAmount(value)} ${yearlyResult.currency}`
                     }
                     labelFormatter={(_label, payload) =>
-                      payload?.[0]?.payload?.label ?? ""
+                      payload?.[0]?.payload?.label ?? ''
                     }
                   />
+                  {/* Numeric label drawn above each bar, hidden for zero totals. */}
                   <Bar dataKey="total" fill="#2563eb" name="Monthly total">
                     <LabelList
                       dataKey="total"
@@ -418,6 +431,7 @@ function YearlyBarChartSection() {
               </ResponsiveContainer>
             </Box>
 
+            {/* Same 12 monthly totals as the chart, in table form. */}
             <TableContainer>
               <Table aria-label="Yearly monthly totals">
                 <TableHead>
@@ -427,6 +441,7 @@ function YearlyBarChartSection() {
                     <TableCell>Currency</TableCell>
                   </TableRow>
                 </TableHead>
+                {/* Column order matches the header cells above. */}
                 <TableBody>
                   {monthlyTotals.map((entry) => (
                     <TableRow key={entry.month}>

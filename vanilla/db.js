@@ -23,14 +23,14 @@
  * openCostsDB/addCost/getReport.
  */
 (function exposeDb(global) {
-  "use strict";
+  'use strict';
 
-  var SUPPORTED_CURRENCIES = ["USD", "ILS", "GBP", "EURO"];
-  var STORAGE_PREFIX = "cost-manager";
+  const SUPPORTED_CURRENCIES = ['USD', 'ILS', 'GBP', 'EURO'];
+  const STORAGE_PREFIX = 'cost-manager';
   // Must match the key used by src/lib/exchangeRatesCache.js exactly, since
   // this is how a standalone-loaded page and the React app would ever share
   // the same cached rates if they ran against the same localStorage origin.
-  var EXCHANGE_RATES_CACHE_KEY = "cost-manager:exchange-rates-cache";
+  const EXCHANGE_RATES_CACHE_KEY = 'cost-manager:exchange-rates-cache';
 
   function isSupportedCurrency(currency) {
     return SUPPORTED_CURRENCIES.indexOf(currency) !== -1;
@@ -42,7 +42,7 @@
   // parity, even though nothing in this standalone file's own test harness
   // displays them.
   function getCurrentDateParts() {
-    var now = new Date();
+    const now = new Date();
 
     return {
       day: now.getDate(),
@@ -57,14 +57,14 @@
   // can still be edited/deleted independently. Falls back to a
   // timestamp+random string where crypto.randomUUID() is unavailable.
   function generateCostId() {
-    if (global.crypto && typeof global.crypto.randomUUID === "function") {
+    if (global.crypto && typeof global.crypto.randomUUID === 'function') {
       return global.crypto.randomUUID();
     }
 
     return (
-      "cost-" +
+      'cost-' +
       Date.now().toString(36) +
-      "-" +
+      '-' +
       Math.random().toString(36).slice(2)
     );
   }
@@ -75,21 +75,21 @@
   function getStorageKey(databaseName, databaseVersion) {
     return (
       STORAGE_PREFIX +
-      ":" +
+      ':' +
       encodeURIComponent(databaseName) +
-      ":v" +
+      ':v' +
       databaseVersion +
-      ":costs"
+      ':costs'
     );
   }
 
   function validateDatabaseIdentity(databaseName, databaseVersion) {
-    if (typeof databaseName !== "string") {
-      throw new TypeError("databaseName must be a string.");
+    if (typeof databaseName !== 'string') {
+      throw new TypeError('databaseName must be a string.');
     }
 
-    if (typeof databaseVersion !== "number" || !Number.isFinite(databaseVersion)) {
-      throw new TypeError("databaseVersion must be a finite number.");
+    if (typeof databaseVersion !== 'number' || !Number.isFinite(databaseVersion)) {
+      throw new TypeError('databaseVersion must be a finite number.');
     }
   }
 
@@ -100,31 +100,31 @@
   // them (see OQ-005 in docs/REQUIREMENTS.md) and the grader may rely on
   // that documented type-only contract.
   function validateCost(cost) {
-    if (cost === null || typeof cost !== "object") {
-      throw new TypeError("cost must be an object.");
+    if (cost === null || typeof cost !== 'object') {
+      throw new TypeError('cost must be an object.');
     }
 
-    if (typeof cost.sum !== "number" || !Number.isFinite(cost.sum)) {
-      throw new TypeError("cost.sum must be a finite number.");
+    if (typeof cost.sum !== 'number' || !Number.isFinite(cost.sum)) {
+      throw new TypeError('cost.sum must be a finite number.');
     }
 
     if (!isSupportedCurrency(cost.currency)) {
-      throw new TypeError("cost.currency must be one of USD, ILS, GBP, EURO.");
+      throw new TypeError('cost.currency must be one of USD, ILS, GBP, EURO.');
     }
 
-    if (typeof cost.category !== "string") {
-      throw new TypeError("cost.category must be a string.");
+    if (typeof cost.category !== 'string') {
+      throw new TypeError('cost.category must be a string.');
     }
 
-    if (typeof cost.description !== "string") {
-      throw new TypeError("cost.description must be a string.");
+    if (typeof cost.description !== 'string') {
+      throw new TypeError('cost.description must be a string.');
     }
   }
 
   // TEAM EXTENSION — guards the id-based CRUD helpers below.
   function validateCostId(id) {
-    if (typeof id !== "string" || id.trim() === "") {
-      throw new TypeError("id must be a non-empty string.");
+    if (typeof id !== 'string' || id.trim() === '') {
+      throw new TypeError('id must be a non-empty string.');
     }
   }
 
@@ -132,7 +132,7 @@
   // February) by letting Date normalize the input and checking whether it
   // rolled over into a different date than what was requested.
   function isRealCalendarDate(day, month, year) {
-    var candidate = new Date(0);
+    const candidate = new Date(0);
 
     candidate.setFullYear(year, month - 1, day);
     candidate.setHours(0, 0, 0, 0);
@@ -146,21 +146,15 @@
 
   // TEAM EXTENSION — full date/time validation, used only by updateCost().
   function validateCostDate(date) {
-    var day;
-    var month;
-    var year;
-    var hour;
-    var minute;
-
-    if (date === null || typeof date !== "object" || Array.isArray(date)) {
-      throw new TypeError("cost.date must be an object.");
+    if (date === null || typeof date !== 'object' || Array.isArray(date)) {
+      throw new TypeError('cost.date must be an object.');
     }
 
-    day = date.day;
-    month = date.month;
-    year = date.year;
-    hour = date.hour;
-    minute = date.minute;
+    const day = date.day;
+    const month = date.month;
+    const year = date.year;
+    const hour = date.hour;
+    const minute = date.minute;
 
     if (
       !Number.isInteger(day) ||
@@ -169,23 +163,23 @@
       !Number.isInteger(hour) ||
       !Number.isInteger(minute)
     ) {
-      throw new TypeError("cost.date values must be integers.");
+      throw new TypeError('cost.date values must be integers.');
     }
 
     if (month < 1 || month > 12) {
-      throw new TypeError("cost.date.month must be an integer from 1 to 12.");
+      throw new TypeError('cost.date.month must be an integer from 1 to 12.');
     }
 
     if (!isRealCalendarDate(day, month, year)) {
-      throw new TypeError("cost.date must be a real calendar date.");
+      throw new TypeError('cost.date must be a real calendar date.');
     }
 
     if (hour < 0 || hour > 23) {
-      throw new TypeError("cost.date.hour must be an integer from 0 to 23.");
+      throw new TypeError('cost.date.hour must be an integer from 0 to 23.');
     }
 
     if (minute < 0 || minute > 59) {
-      throw new TypeError("cost.date.minute must be an integer from 0 to 59.");
+      throw new TypeError('cost.date.minute must be an integer from 0 to 59.');
     }
   }
 
@@ -196,20 +190,20 @@
 
   function validateReportArguments(currency, year, month) {
     if (!isSupportedCurrency(currency)) {
-      throw new TypeError("currency must be one of USD, ILS, GBP, EURO.");
+      throw new TypeError('currency must be one of USD, ILS, GBP, EURO.');
     }
 
-    if (typeof year !== "number" || !Number.isInteger(year)) {
-      throw new TypeError("year must be an integer.");
+    if (typeof year !== 'number' || !Number.isInteger(year)) {
+      throw new TypeError('year must be an integer.');
     }
 
     if (
-      typeof month !== "number" ||
+      typeof month !== 'number' ||
       !Number.isInteger(month) ||
       month < 1 ||
       month > 12
     ) {
-      throw new TypeError("month must be an integer from 1 to 12.");
+      throw new TypeError('month must be an integer from 1 to 12.');
     }
   }
 
@@ -218,15 +212,14 @@
   // corrupted localStorage entry degrades to "no costs yet" rather than
   // crashing the standalone test harness.
   function readCosts(storageKey) {
-    var storedValue = localStorage.getItem(storageKey);
-    var parsedValue;
+    const storedValue = localStorage.getItem(storageKey);
 
     if (storedValue === null) {
       return [];
     }
 
     try {
-      parsedValue = JSON.parse(storedValue);
+      const parsedValue = JSON.parse(storedValue);
 
       return Array.isArray(parsedValue) ? parsedValue : [];
     } catch {
@@ -248,6 +241,7 @@
       currency: cost.currency,
       category: cost.category,
       description: cost.description,
+      // Full internal date/time, unlike toReportCost()'s { day }-only shape.
       date: {
         day: cost.date.day,
         month: cost.date.month,
@@ -264,30 +258,30 @@
   // (rather than imported) because this file must remain standalone with no
   // module dependencies.
   function validateExchangeRates(rates) {
-    if (rates === null || typeof rates !== "object" || Array.isArray(rates)) {
-      throw new TypeError("Exchange rates must be an object.");
+    if (rates === null || typeof rates !== 'object' || Array.isArray(rates)) {
+      throw new TypeError('Exchange rates must be an object.');
     }
 
     SUPPORTED_CURRENCIES.forEach(function validateRate(currency) {
       if (!Object.hasOwn(rates, currency)) {
-        throw new TypeError("Exchange rates must include " + currency + ".");
+        throw new TypeError('Exchange rates must include ' + currency + '.');
       }
 
-      if (typeof rates[currency] !== "number" || !Number.isFinite(rates[currency])) {
+      if (typeof rates[currency] !== 'number' || !Number.isFinite(rates[currency])) {
         throw new TypeError(
-          "Exchange rate for " + currency + " must be a finite number."
+          'Exchange rate for ' + currency + ' must be a finite number.'
         );
       }
 
       if (rates[currency] <= 0) {
         throw new TypeError(
-          "Exchange rate for " + currency + " must be greater than zero."
+          'Exchange rate for ' + currency + ' must be greater than zero.'
         );
       }
     });
 
     if (rates.USD !== 1) {
-      throw new TypeError("Exchange rate for USD must be exactly 1.");
+      throw new TypeError('Exchange rate for USD must be exactly 1.');
     }
 
     return SUPPORTED_CURRENCIES.reduce(function copyRate(validatedRates, currency) {
@@ -303,7 +297,7 @@
   // below, and src/lib/exchangeRatesCache.js for the full rationale shared
   // with the module version.
   function getCachedExchangeRates() {
-    var storedValue = localStorage.getItem(EXCHANGE_RATES_CACHE_KEY);
+    const storedValue = localStorage.getItem(EXCHANGE_RATES_CACHE_KEY);
 
     if (storedValue === null) {
       return null;
@@ -321,21 +315,19 @@
   // amount / rates[source] (source -> USD) then * rates[target]
   // (USD -> target), collapsed into one expression.
   function convertCurrency(amount, sourceCurrency, targetCurrency, rates) {
-    var validatedRates;
-
-    if (typeof amount !== "number" || !Number.isFinite(amount)) {
-      throw new TypeError("amount must be a finite number.");
+    if (typeof amount !== 'number' || !Number.isFinite(amount)) {
+      throw new TypeError('amount must be a finite number.');
     }
 
     if (!isSupportedCurrency(sourceCurrency)) {
-      throw new TypeError("sourceCurrency must be one of USD, ILS, GBP, EURO.");
+      throw new TypeError('sourceCurrency must be one of USD, ILS, GBP, EURO.');
     }
 
     if (!isSupportedCurrency(targetCurrency)) {
-      throw new TypeError("targetCurrency must be one of USD, ILS, GBP, EURO.");
+      throw new TypeError('targetCurrency must be one of USD, ILS, GBP, EURO.');
     }
 
-    validatedRates = validateExchangeRates(rates);
+    const validatedRates = validateExchangeRates(rates);
 
     return (amount / validatedRates[sourceCurrency]) * validatedRates[targetCurrency];
   }
@@ -364,10 +356,9 @@
   // which matters because this standalone file may be tested with no
   // hosting application (and therefore no cache) ever having run.
   function calculateSameCurrencyTotal(costs, targetCurrency) {
-    var requiresConversion = costs.some(function hasDifferentCurrency(cost) {
+    const requiresConversion = costs.some(function hasDifferentCurrency(cost) {
       return cost.currency !== targetCurrency;
     });
-    var cachedRates;
 
     if (!requiresConversion) {
       return costs.reduce(function addCostToTotal(total, cost) {
@@ -375,13 +366,13 @@
       }, 0);
     }
 
-    cachedRates = getCachedExchangeRates();
+    const cachedRates = getCachedExchangeRates();
 
     if (cachedRates === null) {
       // getReport() remains synchronous; exchange rates must be fetched and cached
       // before cross-currency totals can be calculated.
       throw new Error(
-        "Cross-currency report totals require cached exchange rates."
+        'Cross-currency report totals require cached exchange rates.'
       );
     }
 
@@ -390,33 +381,36 @@
     }, 0);
   }
 
-  // Required entry point. Returns a fresh database object bound to one
-  // (databaseName, databaseVersion) storage key.
+  /**
+   * Required entry point of the protected db.js contract. Returns a fresh
+   * database object bound to one (databaseName, databaseVersion) storage key.
+   * @param {string} databaseName - Name of the costs database.
+   * @param {number} databaseVersion - Version of the costs database.
+   * @returns {object} Database object exposing addCost/getReport (required)
+   *   plus getAllCosts/getCostById/updateCost/deleteCost (team extensions).
+   */
   function openCostsDB(databaseName, databaseVersion) {
-    var storageKey;
-
     validateDatabaseIdentity(databaseName, databaseVersion);
-    storageKey = getStorageKey(databaseName, databaseVersion);
+    const storageKey = getStorageKey(databaseName, databaseVersion);
 
     return {
-      // Required method. Its documented input is exactly the four required
-      // properties (sum, currency, category, description), and the official
-      // course document states the returned object's properties should be
-      // those same four. This implementation additionally stamps on a
-      // generated id (team extension) and the automatic date (R-035), and
-      // currently returns them as extra properties on the result alongside
-      // the four required ones. The official course Q&A confirms that EXTRA
-      // db.js METHODS are allowed, but it does not explicitly say whether
-      // addCost() may return extra PROPERTIES beyond the documented four —
-      // that specific question has been raised as a clarification and is
-      // not yet officially answered, so do not treat it as resolved.
+      /**
+       * Required method. Stores a new cost item, stamping on a generated id
+       * (team extension) and the automatic added-on date (R-035).
+       * @param {object} cost - The cost to add.
+       * @param {number} cost.sum - Cost amount.
+       * @param {string} cost.currency - One of USD, ILS, GBP, EURO.
+       * @param {string} cost.category - Free-text category.
+       * @param {string} cost.description - Free-text description.
+       * @returns {object} The stored cost, including its generated id/date
+       *   alongside the four required properties (extra properties beyond
+       *   those four are not addressed by the official spec; see OQ in
+       *   docs/REQUIREMENTS.md).
+       */
       addCost: function addCost(cost) {
-        var storedCost;
-        var costs;
-
         validateCost(cost);
 
-        storedCost = {
+        const storedCost = {
           id: generateCostId(),
           sum: cost.sum,
           currency: cost.currency,
@@ -424,43 +418,52 @@
           description: cost.description,
           date: getCurrentDateParts()
         };
-        costs = readCosts(storageKey);
+        const costs = readCosts(storageKey);
 
         writeCosts(storageKey, costs.concat([storedCost]));
 
         return copyStoredCost(storedCost);
       },
 
-      // TEAM EXTENSION — not exercised by the official compatibility test.
+      /**
+       * TEAM EXTENSION — not exercised by the official compatibility test.
+       * @returns {object[]} Every stored cost, each with its full internal
+       *   date/time (unlike getReport()'s { day }-only report shape).
+       */
       getAllCosts: function getAllCosts() {
         return readCosts(storageKey).map(copyStoredCost);
       },
 
-      // TEAM EXTENSION — not exercised by the official compatibility test.
+      /**
+       * TEAM EXTENSION — not exercised by the official compatibility test.
+       * @param {string} id - Id of the cost to look up.
+       * @returns {object|null} The matching cost, or null if no cost has
+       *   this id.
+       */
       getCostById: function getCostById(id) {
-        var matchingCost;
-
         validateCostId(id);
 
-        matchingCost = readCosts(storageKey).find(function hasMatchingId(cost) {
+        const matchingCost = readCosts(storageKey).find(function hasMatchingId(cost) {
           return cost.id === id;
         });
 
         return matchingCost ? copyStoredCost(matchingCost) : null;
       },
 
-      // TEAM EXTENSION — full-record edit, preserving the original id.
-      // Returns null for an unknown id (expected outcome, not an error); a
-      // genuinely malformed id or payload still throws via validation.
+      /**
+       * TEAM EXTENSION — full-record edit, preserving the original id.
+       * @param {string} id - Id of the cost to update.
+       * @param {object} cost - Full editable payload: sum, currency,
+       *   category, description, and date ({ day, month, year, hour, minute }).
+       * @returns {object|null} The updated cost, or null for an unknown id
+       *   (expected outcome, not an error); a malformed id or payload still
+       *   throws via validation.
+       */
       updateCost: function updateCost(id, cost) {
-        var costs;
-        var costIndex;
-        var updatedCost;
-
         validateCostId(id);
 
-        costs = readCosts(storageKey);
-        costIndex = costs.findIndex(function hasMatchingId(storedCost) {
+        const costs = readCosts(storageKey);
+        const costIndex = costs.findIndex(function hasMatchingId(storedCost) {
           return storedCost.id === id;
         });
 
@@ -470,7 +473,8 @@
 
         validateEditableCost(cost);
 
-        updatedCost = {
+        // Full editable payload replaces the stored record; id is kept.
+        const updatedCost = {
           id: id,
           sum: cost.sum,
           currency: cost.currency,
@@ -491,17 +495,18 @@
         return copyStoredCost(updatedCost);
       },
 
-      // TEAM EXTENSION — id-based so two otherwise-identical costs can be
-      // deleted independently.
+      /**
+       * TEAM EXTENSION — id-based so two otherwise-identical costs can be
+       * deleted independently.
+       * @param {string} id - Id of the cost to delete.
+       * @returns {object|null} The deleted cost, or null if no cost has
+       *   this id.
+       */
       deleteCost: function deleteCost(id) {
-        var costs;
-        var costIndex;
-        var deletedCost;
-
         validateCostId(id);
 
-        costs = readCosts(storageKey);
-        costIndex = costs.findIndex(function hasMatchingId(storedCost) {
+        const costs = readCosts(storageKey);
+        const costIndex = costs.findIndex(function hasMatchingId(storedCost) {
           return storedCost.id === id;
         });
 
@@ -509,26 +514,33 @@
           return null;
         }
 
-        deletedCost = costs.splice(costIndex, 1)[0];
+        const deletedCost = costs.splice(costIndex, 1)[0];
         writeCosts(storageKey, costs);
 
         return copyStoredCost(deletedCost);
       },
 
-      // Required method. `year`/`month` default to the current date (R-052)
-      // when omitted, matching the official `ob.getReport("USD")` sample.
-      // Returns the required { year, month, costs, total } shape: rows keep
-      // their original sum/currency and an official-shape { day } date,
-      // while `total` is calculated in the requested currency.
+      /**
+       * Required method of the protected db.js contract.
+       * @param {string} currency - Currency to report the total in; one of
+       *   USD, ILS, GBP, EURO.
+       * @param {number} [year] - Report year; defaults to the current year
+       *   (R-052) when omitted, matching the official `ob.getReport("USD")`
+       *   sample.
+       * @param {number} [month] - Report month (1-12); defaults to the
+       *   current month when omitted.
+       * @returns {object} { year, month, costs, total }: rows keep their
+       *   original sum/currency and an official-shape { day } date, while
+       *   `total` is calculated in the requested currency.
+       */
       getReport: function getReport(currency, year, month) {
-        var currentDate = getCurrentDateParts();
-        var reportYear = year == null ? currentDate.year : year;
-        var reportMonth = month == null ? currentDate.month : month;
-        var matchingCosts;
+        const currentDate = getCurrentDateParts();
+        const reportYear = year ?? currentDate.year;
+        const reportMonth = month ?? currentDate.month;
 
         validateReportArguments(currency, reportYear, reportMonth);
 
-        matchingCosts = readCosts(storageKey).filter(function isInReportMonth(cost) {
+        const matchingCosts = readCosts(storageKey).filter(function isInReportMonth(cost) {
           return (
             cost.date &&
             cost.date.year === reportYear &&

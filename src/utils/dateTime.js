@@ -6,29 +6,43 @@
  */
 
 function padTwo(value) {
-  return String(value).padStart(2, "0");
+  return String(value).padStart(2, '0');
 }
 
+/**
+ * @param {object} date - { day, month, year, ... } as stored by db.js.
+ * @returns {string} date formatted as dd/mm/yyyy.
+ */
 export function formatDateForDisplay(date) {
   return `${padTwo(date.day)}/${padTwo(date.month)}/${date.year}`;
 }
 
-// HTML <input type="date"> requires exactly this yyyy-mm-dd shape.
+/**
+ * @param {object} date - { day, month, year, ... } as stored by db.js.
+ * @returns {string} date formatted as yyyy-mm-dd, the shape HTML
+ *   <input type="date"> requires.
+ */
 export function formatDateForInput(date) {
   return `${date.year}-${padTwo(date.month)}-${padTwo(date.day)}`;
 }
 
+/**
+ * @param {object} date - { hour, minute, ... } as stored by db.js.
+ * @returns {string} date's time formatted as HH:mm.
+ */
 export function formatTime(date) {
   return `${padTwo(date.hour)}:${padTwo(date.minute)}`;
 }
 
-// Parses an <input type="date"> value back into { day, month, year}.
-// Returns null (rather than throwing) for anything that does not match the
-// expected shape or contains an out-of-range month/day, so the Manage Costs
-// edit form can show a friendly validation message instead of crashing.
-// This performs only a cheap range check (day 1-31) — the authoritative
-// "is this a real calendar date" check (e.g. rejecting 31 February) lives in
-// db.js's isRealCalendarDate(), which runs when the edit is actually saved.
+/**
+ * Parses an <input type="date"> value back into { day, month, year }. This
+ * performs only a cheap range check (day 1-31) — the authoritative "is this
+ * a real calendar date" check (e.g. rejecting 31 February) lives in db.js's
+ * isRealCalendarDate(), which runs when the edit is actually saved.
+ * @param {string} value - Raw <input type="date"> value.
+ * @returns {{day: number, month: number, year: number}|null} Parsed date,
+ *   or null if value does not match the expected shape or is out of range.
+ */
 export function parseDateInput(value) {
   const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
 
@@ -41,6 +55,8 @@ export function parseDateInput(value) {
   const month = Number(monthValue);
   const day = Number(dayValue);
 
+  // Reject out-of-range values; this is a lightweight sanity check, not a
+  // full calendar validation (no Feb-30 detection).
   if (
     !Number.isInteger(year) ||
     !Number.isInteger(month) ||
@@ -60,7 +76,12 @@ export function parseDateInput(value) {
   };
 }
 
-// Same idea as parseDateInput(), for an <input type="time"> value.
+/**
+ * Same idea as parseDateInput(), for an <input type="time"> value.
+ * @param {string} value - Raw <input type="time"> value.
+ * @returns {{hour: number, minute: number}|null} Parsed time, or null if
+ *   value does not match the expected shape or is out of range.
+ */
 export function parseTimeInput(value) {
   const match = /^(\d{2}):(\d{2})$/.exec(value);
 

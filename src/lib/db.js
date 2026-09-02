@@ -23,11 +23,11 @@
  * category, description — and the required method signatures above are
  * treated as a protected, external contract throughout this file.
  */
-import { SUPPORTED_CURRENCIES } from "../constants/currencies.js";
-import { getCachedExchangeRates } from "./exchangeRatesCache.js";
-import { convertCurrency } from "../utils/currency.js";
+import { SUPPORTED_CURRENCIES } from '../constants/currencies.js';
+import { getCachedExchangeRates } from './exchangeRatesCache.js';
+import { convertCurrency } from '../utils/currency.js';
 
-const STORAGE_PREFIX = "cost-manager";
+const STORAGE_PREFIX = 'cost-manager';
 
 function isSupportedCurrency(currency) {
   return SUPPORTED_CURRENCIES.includes(currency);
@@ -72,12 +72,12 @@ function getStorageKey(databaseName, databaseVersion) {
 }
 
 function validateDatabaseIdentity(databaseName, databaseVersion) {
-  if (typeof databaseName !== "string") {
-    throw new TypeError("databaseName must be a string.");
+  if (typeof databaseName !== 'string') {
+    throw new TypeError('databaseName must be a string.');
   }
 
-  if (typeof databaseVersion !== "number" || !Number.isFinite(databaseVersion)) {
-    throw new TypeError("databaseVersion must be a finite number.");
+  if (typeof databaseVersion !== 'number' || !Number.isFinite(databaseVersion)) {
+    throw new TypeError('databaseVersion must be a finite number.');
   }
 }
 
@@ -88,32 +88,32 @@ function validateDatabaseIdentity(databaseName, databaseVersion) {
 // document does not state, so this stays compatible with a grader that only
 // relies on the documented types (see OQ-005 in docs/REQUIREMENTS.md).
 function validateCost(cost) {
-  if (cost === null || typeof cost !== "object") {
-    throw new TypeError("cost must be an object.");
+  if (cost === null || typeof cost !== 'object') {
+    throw new TypeError('cost must be an object.');
   }
 
-  if (typeof cost.sum !== "number" || !Number.isFinite(cost.sum)) {
-    throw new TypeError("cost.sum must be a finite number.");
+  if (typeof cost.sum !== 'number' || !Number.isFinite(cost.sum)) {
+    throw new TypeError('cost.sum must be a finite number.');
   }
 
   if (!isSupportedCurrency(cost.currency)) {
-    throw new TypeError("cost.currency must be one of USD, ILS, GBP, EURO.");
+    throw new TypeError('cost.currency must be one of USD, ILS, GBP, EURO.');
   }
 
-  if (typeof cost.category !== "string") {
-    throw new TypeError("cost.category must be a string.");
+  if (typeof cost.category !== 'string') {
+    throw new TypeError('cost.category must be a string.');
   }
 
-  if (typeof cost.description !== "string") {
-    throw new TypeError("cost.description must be a string.");
+  if (typeof cost.description !== 'string') {
+    throw new TypeError('cost.description must be a string.');
   }
 }
 
 // TEAM EXTENSION: guards getCostById/updateCost/deleteCost, all of which are
 // keyed by the generated id rather than by the required addCost() fields.
 function validateCostId(id) {
-  if (typeof id !== "string" || id.trim() === "") {
-    throw new TypeError("id must be a non-empty string.");
+  if (typeof id !== 'string' || id.trim() === '') {
+    throw new TypeError('id must be a non-empty string.');
   }
 }
 
@@ -137,8 +137,8 @@ function isRealCalendarDate(day, month, year) {
 // the Manage Costs UI lets a user edit the complete stored date/time rather
 // than only the auto-assigned original.
 function validateCostDate(date) {
-  if (date === null || typeof date !== "object" || Array.isArray(date)) {
-    throw new TypeError("cost.date must be an object.");
+  if (date === null || typeof date !== 'object' || Array.isArray(date)) {
+    throw new TypeError('cost.date must be an object.');
   }
 
   const { day, month, year, hour, minute } = date;
@@ -150,23 +150,23 @@ function validateCostDate(date) {
     !Number.isInteger(hour) ||
     !Number.isInteger(minute)
   ) {
-    throw new TypeError("cost.date values must be integers.");
+    throw new TypeError('cost.date values must be integers.');
   }
 
   if (month < 1 || month > 12) {
-    throw new TypeError("cost.date.month must be an integer from 1 to 12.");
+    throw new TypeError('cost.date.month must be an integer from 1 to 12.');
   }
 
   if (!isRealCalendarDate(day, month, year)) {
-    throw new TypeError("cost.date must be a real calendar date.");
+    throw new TypeError('cost.date must be a real calendar date.');
   }
 
   if (hour < 0 || hour > 23) {
-    throw new TypeError("cost.date.hour must be an integer from 0 to 23.");
+    throw new TypeError('cost.date.hour must be an integer from 0 to 23.');
   }
 
   if (minute < 0 || minute > 59) {
-    throw new TypeError("cost.date.minute must be an integer from 0 to 59.");
+    throw new TypeError('cost.date.minute must be an integer from 0 to 59.');
   }
 }
 
@@ -177,20 +177,20 @@ function validateEditableCost(cost) {
 
 function validateReportArguments(currency, year, month) {
   if (!isSupportedCurrency(currency)) {
-    throw new TypeError("currency must be one of USD, ILS, GBP, EURO.");
+    throw new TypeError('currency must be one of USD, ILS, GBP, EURO.');
   }
 
-  if (typeof year !== "number" || !Number.isInteger(year)) {
-    throw new TypeError("year must be an integer.");
+  if (typeof year !== 'number' || !Number.isInteger(year)) {
+    throw new TypeError('year must be an integer.');
   }
 
   if (
-    typeof month !== "number" ||
+    typeof month !== 'number' ||
     !Number.isInteger(month) ||
     month < 1 ||
     month > 12
   ) {
-    throw new TypeError("month must be an integer from 1 to 12.");
+    throw new TypeError('month must be an integer from 1 to 12.');
   }
 }
 
@@ -228,6 +228,7 @@ function copyStoredCost(cost) {
     currency: cost.currency,
     category: cost.category,
     description: cost.description,
+    // Full internal date/time, unlike toReportCost()'s { day }-only shape.
     date: {
       day: cost.date.day,
       month: cost.date.month,
@@ -273,7 +274,7 @@ function calculateSameCurrencyTotal(costs, targetCurrency) {
     // getReport() remains synchronous; exchange rates must be fetched and cached
     // before cross-currency totals can be calculated.
     throw new Error(
-      "Cross-currency report totals require cached exchange rates."
+      'Cross-currency report totals require cached exchange rates.'
     );
   }
 
@@ -282,27 +283,35 @@ function calculateSameCurrencyTotal(costs, targetCurrency) {
   }, 0);
 }
 
-// Required entry point. Returns a fresh database object bound to one
-// (databaseName, databaseVersion) storage key; nothing is cached at module
-// scope, so multiple calls with the same identity independently read/write
-// the same underlying localStorage entry.
+/**
+ * Required entry point of the protected db.js contract. Returns a fresh
+ * database object bound to one (databaseName, databaseVersion) storage key;
+ * nothing is cached at module scope, so multiple calls with the same
+ * identity independently read/write the same underlying localStorage entry.
+ * @param {string} databaseName - Name of the costs database.
+ * @param {number} databaseVersion - Version of the costs database.
+ * @returns {object} Database object exposing addCost/getReport (required)
+ *   plus getAllCosts/getCostById/updateCost/deleteCost (team extensions).
+ */
 function openCostsDB(databaseName, databaseVersion) {
   validateDatabaseIdentity(databaseName, databaseVersion);
 
   const storageKey = getStorageKey(databaseName, databaseVersion);
 
   return {
-    // Required method. Its documented input is exactly the four required
-    // properties (sum, currency, category, description), and the official
-    // course document states the returned object's properties should be
-    // those same four. This implementation additionally stamps on a
-    // generated id (team extension) and the automatic date (R-035), and
-    // currently returns them as extra properties on the result alongside
-    // the four required ones. The official course Q&A confirms that EXTRA
-    // db.js METHODS are allowed, but it does not explicitly say whether
-    // addCost() may return extra PROPERTIES beyond the documented four —
-    // that specific question has been raised as a clarification and is
-    // not yet officially answered, so do not treat it as resolved.
+    /**
+     * Required method. Stores a new cost item, stamping on a generated id
+     * (team extension) and the automatic added-on date (R-035).
+     * @param {object} cost - The cost to add.
+     * @param {number} cost.sum - Cost amount.
+     * @param {string} cost.currency - One of USD, ILS, GBP, EURO.
+     * @param {string} cost.category - Free-text category.
+     * @param {string} cost.description - Free-text description.
+     * @returns {object} The stored cost, including its generated id/date
+     *   alongside the four required properties (extra properties beyond
+     *   those four are not addressed by the official spec; see OQ in
+     *   docs/REQUIREMENTS.md).
+     */
     addCost(cost) {
       validateCost(cost);
 
@@ -321,12 +330,21 @@ function openCostsDB(databaseName, databaseVersion) {
       return copyStoredCost(storedCost);
     },
 
-    // TEAM EXTENSION — powers the Manage Costs list view.
+    /**
+     * TEAM EXTENSION — powers the Manage Costs list view.
+     * @returns {object[]} Every stored cost, each with its full internal
+     *   date/time (unlike getReport()'s { day }-only report shape).
+     */
     getAllCosts() {
       return readCosts(storageKey).map(copyStoredCost);
     },
 
-    // TEAM EXTENSION — used by Manage Costs to load a single row for editing.
+    /**
+     * TEAM EXTENSION — used by Manage Costs to load a single row for editing.
+     * @param {string} id - Id of the cost to look up.
+     * @returns {object|null} The matching cost, or null if no cost has
+     *   this id.
+     */
     getCostById(id) {
       validateCostId(id);
 
@@ -335,12 +353,16 @@ function openCostsDB(databaseName, databaseVersion) {
       return matchingCost ? copyStoredCost(matchingCost) : null;
     },
 
-    // TEAM EXTENSION — full-record edit (sum/currency/category/description
-    // and the complete date/time), used by Manage Costs. Preserves the
-    // original id. Returns null for an unknown id rather than throwing,
-    // since "nothing to update" is an expected outcome, not a programming
-    // error; an actually malformed id or payload still throws via
-    // validateCostId()/validateEditableCost().
+    /**
+     * TEAM EXTENSION — full-record edit, used by Manage Costs. Preserves the
+     * original id.
+     * @param {string} id - Id of the cost to update.
+     * @param {object} cost - Full editable payload: sum, currency,
+     *   category, description, and date ({ day, month, year, hour, minute }).
+     * @returns {object|null} The updated cost, or null for an unknown id
+     *   (expected outcome, not an error); a malformed id or payload still
+     *   throws via validation.
+     */
     updateCost(id, cost) {
       validateCostId(id);
 
@@ -353,6 +375,7 @@ function openCostsDB(databaseName, databaseVersion) {
 
       validateEditableCost(cost);
 
+      // Full editable payload replaces the stored record; id is kept.
       const updatedCost = {
         id,
         sum: cost.sum,
@@ -374,9 +397,13 @@ function openCostsDB(databaseName, databaseVersion) {
       return copyStoredCost(updatedCost);
     },
 
-    // TEAM EXTENSION — id-based deletion so that two costs which otherwise
-    // look identical (same sum/currency/category/description) can be told
-    // apart and deleted independently.
+    /**
+     * TEAM EXTENSION — id-based deletion so that two costs which otherwise
+     * look identical can be told apart and deleted independently.
+     * @param {string} id - Id of the cost to delete.
+     * @returns {object|null} The deleted cost, or null if no cost has
+     *   this id.
+     */
     deleteCost(id) {
       validateCostId(id);
 
@@ -394,11 +421,19 @@ function openCostsDB(databaseName, databaseVersion) {
       return copyStoredCost(deletedCost);
     },
 
-    // Required method. `year`/`month` default to the current date (R-052)
-    // when omitted, matching the official `ob.getReport("USD")` sample call.
-    // Returns the required { year, month, costs, total } shape: each row in
-    // `costs` keeps its original sum/currency and an official-shape
-    // { day } date, while `total` is calculated in the requested currency.
+    /**
+     * Required method of the protected db.js contract.
+     * @param {string} currency - Currency to report the total in; one of
+     *   USD, ILS, GBP, EURO.
+     * @param {number} [year] - Report year; defaults to the current year
+     *   (R-052) when omitted, matching the official `ob.getReport("USD")`
+     *   sample.
+     * @param {number} [month] - Report month (1-12); defaults to the
+     *   current month when omitted.
+     * @returns {object} { year, month, costs, total }: rows keep their
+     *   original sum/currency and an official-shape { day } date, while
+     *   `total` is calculated in the requested currency.
+     */
     getReport(currency, year, month) {
       const currentDate = getCurrentDateParts();
       const reportYear = year ?? currentDate.year;

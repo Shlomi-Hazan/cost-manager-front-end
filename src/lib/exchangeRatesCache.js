@@ -15,9 +15,9 @@
  * because the official document does not explicitly resolve this tension
  * (tracked as OQ-003 in docs/REQUIREMENTS.md).
  */
-import { validateExchangeRates } from "../utils/currency.js";
+import { validateExchangeRates } from '../utils/currency.js';
 
-export const EXCHANGE_RATES_CACHE_KEY = "cost-manager:exchange-rates-cache";
+export const EXCHANGE_RATES_CACHE_KEY = 'cost-manager:exchange-rates-cache';
 
 // Returns null (rather than throwing) for "no cache yet" AND for corrupted/
 // invalid cached data, since both cases mean the same thing to a caller:

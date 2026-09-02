@@ -1,9 +1,9 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from 'vitest';
 import {
   REPORT_SORT_DIRECTIONS,
   REPORT_SORT_KEYS,
   sortReportCosts
-} from "../../src/utils/reportSorting.js";
+} from '../../src/utils/reportSorting.js';
 
 /*
  * TEAM EXTENSION tests (X-006): protects that sorting is correct per
@@ -18,9 +18,9 @@ function createCost(id, overrides) {
   return {
     id,
     description: id,
-    category: "General",
+    category: 'General',
     sum: 1,
-    currency: "USD",
+    currency: 'USD',
     ...costOverrides,
     date: {
       day: 1,
@@ -37,233 +37,233 @@ function sortIds(costs, sortKey, sortDirection = REPORT_SORT_DIRECTIONS.asc) {
   return sortReportCosts(costs, { sortKey, sortDirection }).map((cost) => cost.id);
 }
 
-describe("reportSorting", () => {
-  it("preserves original order when no sort is active", () => {
+describe('reportSorting', () => {
+  it('preserves original order when no sort is active', () => {
     const costs = [
-      createCost("first", {}),
-      createCost("second", {}),
-      createCost("third", {})
+      createCost('first', {}),
+      createCost('second', {}),
+      createCost('third', {})
     ];
 
     expect(sortReportCosts(costs).map((cost) => cost.id)).toEqual([
-      "first",
-      "second",
-      "third"
+      'first',
+      'second',
+      'third'
     ]);
   });
 
-  it("sorts Date ascending chronologically", () => {
+  it('sorts Date ascending chronologically', () => {
     const costs = [
-      createCost("day-2", { date: { day: 2 } }),
-      createCost("day-10", { date: { day: 10 } }),
-      createCost("day-1", { date: { day: 1 } })
+      createCost('day-2', { date: { day: 2 } }),
+      createCost('day-10', { date: { day: 10 } }),
+      createCost('day-1', { date: { day: 1 } })
     ];
 
     expect(sortIds(costs, REPORT_SORT_KEYS.date)).toEqual([
-      "day-1",
-      "day-2",
-      "day-10"
+      'day-1',
+      'day-2',
+      'day-10'
     ]);
   });
 
-  it("sorts Date descending chronologically", () => {
+  it('sorts Date descending chronologically', () => {
     const costs = [
-      createCost("jan", { date: { month: 1, day: 5 } }),
-      createCost("dec", { date: { month: 12, day: 3 } }),
-      createCost("feb", { date: { month: 2, day: 10 } })
+      createCost('jan', { date: { month: 1, day: 5 } }),
+      createCost('dec', { date: { month: 12, day: 3 } }),
+      createCost('feb', { date: { month: 2, day: 10 } })
     ];
 
     expect(sortIds(costs, REPORT_SORT_KEYS.date, REPORT_SORT_DIRECTIONS.desc)).toEqual([
-      "dec",
-      "feb",
-      "jan"
+      'dec',
+      'feb',
+      'jan'
     ]);
   });
 
-  it("keeps same-date rows stable", () => {
+  it('keeps same-date rows stable', () => {
     const costs = [
-      createCost("first", { date: { day: 10 } }),
-      createCost("second", { date: { day: 10 } }),
-      createCost("third", { date: { day: 10 } })
+      createCost('first', { date: { day: 10 } }),
+      createCost('second', { date: { day: 10 } }),
+      createCost('third', { date: { day: 10 } })
     ];
 
     expect(sortIds(costs, REPORT_SORT_KEYS.date)).toEqual([
-      "first",
-      "second",
-      "third"
+      'first',
+      'second',
+      'third'
     ]);
     expect(sortIds(costs, REPORT_SORT_KEYS.date, REPORT_SORT_DIRECTIONS.desc)).toEqual([
-      "first",
-      "second",
-      "third"
+      'first',
+      'second',
+      'third'
     ]);
   });
 
-  it("sorts Time ascending chronologically", () => {
+  it('sorts Time ascending chronologically', () => {
     const costs = [
-      createCost("09:07", { date: { hour: 9, minute: 7 } }),
-      createCost("16:37", { date: { hour: 16, minute: 37 } }),
-      createCost("00:05", { date: { hour: 0, minute: 5 } })
+      createCost('09:07', { date: { hour: 9, minute: 7 } }),
+      createCost('16:37', { date: { hour: 16, minute: 37 } }),
+      createCost('00:05', { date: { hour: 0, minute: 5 } })
     ];
 
     expect(sortIds(costs, REPORT_SORT_KEYS.time)).toEqual([
-      "00:05",
-      "09:07",
-      "16:37"
+      '00:05',
+      '09:07',
+      '16:37'
     ]);
   });
 
-  it("sorts Time descending chronologically", () => {
+  it('sorts Time descending chronologically', () => {
     const costs = [
-      createCost("09:07", { date: { hour: 9, minute: 7 } }),
-      createCost("16:37", { date: { hour: 16, minute: 37 } }),
-      createCost("00:05", { date: { hour: 0, minute: 5 } })
+      createCost('09:07', { date: { hour: 9, minute: 7 } }),
+      createCost('16:37', { date: { hour: 16, minute: 37 } }),
+      createCost('00:05', { date: { hour: 0, minute: 5 } })
     ];
 
     expect(sortIds(costs, REPORT_SORT_KEYS.time, REPORT_SORT_DIRECTIONS.desc)).toEqual([
-      "16:37",
-      "09:07",
-      "00:05"
+      '16:37',
+      '09:07',
+      '00:05'
     ]);
   });
 
-  it("sorts Description ascending alphabetically", () => {
+  it('sorts Description ascending alphabetically', () => {
     const costs = [
-      createCost("banana", { description: "banana" }),
-      createCost("Apple", { description: "Apple" }),
-      createCost("car", { description: "car" })
+      createCost('banana', { description: 'banana' }),
+      createCost('Apple', { description: 'Apple' }),
+      createCost('car', { description: 'car' })
     ];
 
     expect(sortIds(costs, REPORT_SORT_KEYS.description)).toEqual([
-      "Apple",
-      "banana",
-      "car"
+      'Apple',
+      'banana',
+      'car'
     ]);
   });
 
-  it("sorts Description descending alphabetically", () => {
+  it('sorts Description descending alphabetically', () => {
     const costs = [
-      createCost("banana", { description: "banana" }),
-      createCost("Apple", { description: "Apple" }),
-      createCost("car", { description: "car" })
+      createCost('banana', { description: 'banana' }),
+      createCost('Apple', { description: 'Apple' }),
+      createCost('car', { description: 'car' })
     ];
 
     expect(
       sortIds(costs, REPORT_SORT_KEYS.description, REPORT_SORT_DIRECTIONS.desc)
-    ).toEqual(["car", "banana", "Apple"]);
+    ).toEqual(['car', 'banana', 'Apple']);
   });
 
-  it("compares Description case-insensitively", () => {
+  it('compares Description case-insensitively', () => {
     const costs = [
-      createCost("lower", { description: "apple" }),
-      createCost("upper", { description: "Apple" }),
-      createCost("banana", { description: "banana" })
+      createCost('lower', { description: 'apple' }),
+      createCost('upper', { description: 'Apple' }),
+      createCost('banana', { description: 'banana' })
     ];
 
     expect(sortIds(costs, REPORT_SORT_KEYS.description)).toEqual([
-      "lower",
-      "upper",
-      "banana"
+      'lower',
+      'upper',
+      'banana'
     ]);
   });
 
-  it("sorts Category ascending alphabetically", () => {
+  it('sorts Category ascending alphabetically', () => {
     const costs = [
-      createCost("travel", { category: "Travel" }),
-      createCost("food", { category: "food" }),
-      createCost("bills", { category: "Bills" })
+      createCost('travel', { category: 'Travel' }),
+      createCost('food', { category: 'food' }),
+      createCost('bills', { category: 'Bills' })
     ];
 
     expect(sortIds(costs, REPORT_SORT_KEYS.category)).toEqual([
-      "bills",
-      "food",
-      "travel"
+      'bills',
+      'food',
+      'travel'
     ]);
   });
 
-  it("sorts Category descending alphabetically", () => {
+  it('sorts Category descending alphabetically', () => {
     const costs = [
-      createCost("travel", { category: "Travel" }),
-      createCost("food", { category: "food" }),
-      createCost("bills", { category: "Bills" })
+      createCost('travel', { category: 'Travel' }),
+      createCost('food', { category: 'food' }),
+      createCost('bills', { category: 'Bills' })
     ];
 
     expect(sortIds(costs, REPORT_SORT_KEYS.category, REPORT_SORT_DIRECTIONS.desc)).toEqual([
-      "travel",
-      "food",
-      "bills"
+      'travel',
+      'food',
+      'bills'
     ]);
   });
 
-  it("sorts Sum ascending numerically", () => {
+  it('sorts Sum ascending numerically', () => {
     const costs = [
-      createCost("2", { sum: 2 }),
-      createCost("10", { sum: 10 }),
-      createCost("100", { sum: 100 }),
-      createCost("25.5", { sum: 25.5 })
+      createCost('2', { sum: 2 }),
+      createCost('10', { sum: 10 }),
+      createCost('100', { sum: 100 }),
+      createCost('25.5', { sum: 25.5 })
     ];
 
     expect(sortIds(costs, REPORT_SORT_KEYS.sum)).toEqual([
-      "2",
-      "10",
-      "25.5",
-      "100"
+      '2',
+      '10',
+      '25.5',
+      '100'
     ]);
   });
 
-  it("sorts Sum descending numerically", () => {
+  it('sorts Sum descending numerically', () => {
     const costs = [
-      createCost("2", { sum: 2 }),
-      createCost("10", { sum: 10 }),
-      createCost("100", { sum: 100 }),
-      createCost("25.5", { sum: 25.5 })
+      createCost('2', { sum: 2 }),
+      createCost('10', { sum: 10 }),
+      createCost('100', { sum: 100 }),
+      createCost('25.5', { sum: 25.5 })
     ];
 
     expect(sortIds(costs, REPORT_SORT_KEYS.sum, REPORT_SORT_DIRECTIONS.desc)).toEqual([
-      "100",
-      "25.5",
-      "10",
-      "2"
+      '100',
+      '25.5',
+      '10',
+      '2'
     ]);
   });
 
-  it("sorts Currency ascending alphabetically", () => {
+  it('sorts Currency ascending alphabetically', () => {
     const costs = [
-      createCost("USD", { currency: "USD" }),
-      createCost("EURO", { currency: "EURO" }),
-      createCost("GBP", { currency: "GBP" }),
-      createCost("ILS", { currency: "ILS" })
+      createCost('USD', { currency: 'USD' }),
+      createCost('EURO', { currency: 'EURO' }),
+      createCost('GBP', { currency: 'GBP' }),
+      createCost('ILS', { currency: 'ILS' })
     ];
 
     expect(sortIds(costs, REPORT_SORT_KEYS.currency)).toEqual([
-      "EURO",
-      "GBP",
-      "ILS",
-      "USD"
+      'EURO',
+      'GBP',
+      'ILS',
+      'USD'
     ]);
   });
 
-  it("sorts Currency descending alphabetically", () => {
+  it('sorts Currency descending alphabetically', () => {
     const costs = [
-      createCost("USD", { currency: "USD" }),
-      createCost("EURO", { currency: "EURO" }),
-      createCost("GBP", { currency: "GBP" }),
-      createCost("ILS", { currency: "ILS" })
+      createCost('USD', { currency: 'USD' }),
+      createCost('EURO', { currency: 'EURO' }),
+      createCost('GBP', { currency: 'GBP' }),
+      createCost('ILS', { currency: 'ILS' })
     ];
 
     expect(sortIds(costs, REPORT_SORT_KEYS.currency, REPORT_SORT_DIRECTIONS.desc)).toEqual([
-      "USD",
-      "ILS",
-      "GBP",
-      "EURO"
+      'USD',
+      'ILS',
+      'GBP',
+      'EURO'
     ]);
   });
 
-  it("does not mutate the source array", () => {
+  it('does not mutate the source array', () => {
     const costs = [
-      createCost("100", { sum: 100 }),
-      createCost("2", { sum: 2 }),
-      createCost("25.5", { sum: 25.5 })
+      createCost('100', { sum: 100 }),
+      createCost('2', { sum: 2 }),
+      createCost('25.5', { sum: 25.5 })
     ];
     const sourceOrder = costs.map((cost) => cost.id);
 
@@ -272,9 +272,9 @@ describe("reportSorting", () => {
     expect(costs.map((cost) => cost.id)).toEqual(sourceOrder);
   });
 
-  it("does not mutate cost objects", () => {
-    const cost = createCost("mutable-check", {
-      description: "banana",
+  it('does not mutate cost objects', () => {
+    const cost = createCost('mutable-check', {
+      description: 'banana',
       date: { day: 10, hour: 16, minute: 37 }
     });
     const before = structuredClone(cost);
@@ -284,22 +284,22 @@ describe("reportSorting", () => {
     expect(cost).toEqual(before);
   });
 
-  it("preserves source order for equal values", () => {
+  it('preserves source order for equal values', () => {
     const costs = [
-      createCost("first", { sum: 10 }),
-      createCost("second", { sum: 10 }),
-      createCost("third", { sum: 10 })
+      createCost('first', { sum: 10 }),
+      createCost('second', { sum: 10 }),
+      createCost('third', { sum: 10 })
     ];
 
     expect(sortIds(costs, REPORT_SORT_KEYS.sum)).toEqual([
-      "first",
-      "second",
-      "third"
+      'first',
+      'second',
+      'third'
     ]);
     expect(sortIds(costs, REPORT_SORT_KEYS.sum, REPORT_SORT_DIRECTIONS.desc)).toEqual([
-      "first",
-      "second",
-      "third"
+      'first',
+      'second',
+      'third'
     ]);
   });
 });

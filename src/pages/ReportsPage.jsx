@@ -1,11 +1,11 @@
-import { useState } from "react";
-import CalendarMonthOutlinedIcon from "@mui/icons-material/CalendarMonthOutlined";
-import DateRangeOutlinedIcon from "@mui/icons-material/DateRangeOutlined";
-import { Stack, Tab, Tabs } from "@mui/material";
-import PageHeader from "../components/common/PageHeader.jsx";
-import SectionCard from "../components/common/SectionCard.jsx";
-import MonthlyReportPage from "./MonthlyReportPage.jsx";
-import YearlyReportPage from "./YearlyReportPage.jsx";
+import { useState } from 'react';
+import CalendarMonthOutlinedIcon from '@mui/icons-material/CalendarMonthOutlined';
+import DateRangeOutlinedIcon from '@mui/icons-material/DateRangeOutlined';
+import { Stack, Tab, Tabs } from '@mui/material';
+import PageHeader from '../components/common/PageHeader.jsx';
+import SectionCard from '../components/common/SectionCard.jsx';
+import MonthlyReportPage from './MonthlyReportPage.jsx';
+import YearlyReportPage from './YearlyReportPage.jsx';
 
 /*
  * TEAM EXTENSION (X-009): a top-level "Reports" navigation group hosting the
@@ -14,8 +14,8 @@ import YearlyReportPage from "./YearlyReportPage.jsx";
  * nav items.
  */
 const REPORT_TABS = {
-  monthly: "monthly",
-  yearly: "yearly"
+  monthly: 'monthly',
+  yearly: 'yearly'
 };
 
 function ReportsPage() {
@@ -27,6 +27,7 @@ function ReportsPage() {
         Review detailed monthly and yearly cost reports.
       </PageHeader>
 
+      {/* Tab bar only switches which report page is rendered below. */}
       <SectionCard sx={{ p: 0 }}>
         <Tabs
           aria-label="Reports navigation"
@@ -40,6 +41,7 @@ function ReportsPage() {
             label="Monthly"
             value={REPORT_TABS.monthly}
           />
+          {/* Yearly tab: the team's own extension, not a course requirement. */}
           <Tab
             icon={<DateRangeOutlinedIcon aria-hidden="true" fontSize="small" />}
             iconPosition="start"

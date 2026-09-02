@@ -1,5 +1,5 @@
-import { describe, expect, it } from "vitest";
-import { convertCurrency, validateExchangeRates } from "../../src/utils/currency.js";
+import { describe, expect, it } from 'vitest';
+import { convertCurrency, validateExchangeRates } from '../../src/utils/currency.js';
 
 /*
  * Protects the official rate model and the conversion formula
@@ -14,64 +14,64 @@ const rates = {
   ILS: 4
 };
 
-describe("currency utilities", () => {
-  it("keeps same-currency conversion unchanged", () => {
-    expect(convertCurrency(125, "USD", "USD", rates)).toBe(125);
+describe('currency utilities', () => {
+  it('keeps same-currency conversion unchanged', () => {
+    expect(convertCurrency(125, 'USD', 'USD', rates)).toBe(125);
   });
 
-  it("converts USD to ILS using the USD-based rate model", () => {
-    expect(convertCurrency(100, "USD", "ILS", rates)).toBe(400);
+  it('converts USD to ILS using the USD-based rate model', () => {
+    expect(convertCurrency(100, 'USD', 'ILS', rates)).toBe(400);
   });
 
-  it("converts ILS to USD using the USD-based rate model", () => {
-    expect(convertCurrency(400, "ILS", "USD", rates)).toBe(100);
+  it('converts ILS to USD using the USD-based rate model', () => {
+    expect(convertCurrency(400, 'ILS', 'USD', rates)).toBe(100);
   });
 
-  it("converts GBP to EURO using the shared conversion formula", () => {
-    expect(convertCurrency(50, "GBP", "EURO", rates)).toBe(80);
+  it('converts GBP to EURO using the shared conversion formula', () => {
+    expect(convertCurrency(50, 'GBP', 'EURO', rates)).toBe(80);
   });
 
-  it("allows zero amounts", () => {
-    expect(convertCurrency(0, "GBP", "EURO", rates)).toBe(0);
+  it('allows zero amounts', () => {
+    expect(convertCurrency(0, 'GBP', 'EURO', rates)).toBe(0);
   });
 
-  it("preserves decimal precision without rounding", () => {
-    expect(convertCurrency(12.5, "ILS", "GBP", rates)).toBeCloseTo(1.5625);
+  it('preserves decimal precision without rounding', () => {
+    expect(convertCurrency(12.5, 'ILS', 'GBP', rates)).toBeCloseTo(1.5625);
   });
 
-  it("rejects invalid source currencies", () => {
-    expect(() => convertCurrency(10, "CAD", "USD", rates)).toThrow(
-      "sourceCurrency must be one of USD, ILS, GBP, EURO."
+  it('rejects invalid source currencies', () => {
+    expect(() => convertCurrency(10, 'CAD', 'USD', rates)).toThrow(
+      'sourceCurrency must be one of USD, ILS, GBP, EURO.'
     );
   });
 
-  it("rejects invalid target currencies", () => {
-    expect(() => convertCurrency(10, "USD", "CAD", rates)).toThrow(
-      "targetCurrency must be one of USD, ILS, GBP, EURO."
+  it('rejects invalid target currencies', () => {
+    expect(() => convertCurrency(10, 'USD', 'CAD', rates)).toThrow(
+      'targetCurrency must be one of USD, ILS, GBP, EURO.'
     );
   });
 
-  it("rejects invalid rate shapes", () => {
+  it('rejects invalid rate shapes', () => {
     expect(() => validateExchangeRates(null)).toThrow(
-      "Exchange rates must be an object."
+      'Exchange rates must be an object.'
     );
   });
 
-  it("rejects missing required currencies", () => {
+  it('rejects missing required currencies', () => {
     expect(() => validateExchangeRates({ USD: 1, GBP: 0.5, EURO: 0.8 })).toThrow(
-      "Exchange rates must include ILS."
+      'Exchange rates must include ILS.'
     );
   });
 
-  it("rejects USD rates that are not exactly 1", () => {
+  it('rejects USD rates that are not exactly 1', () => {
     expect(() => validateExchangeRates({ ...rates, USD: 1.1 })).toThrow(
-      "Exchange rate for USD must be exactly 1."
+      'Exchange rate for USD must be exactly 1.'
     );
   });
 
-  it("rejects non-finite rates", () => {
+  it('rejects non-finite rates', () => {
     expect(() => validateExchangeRates({ ...rates, GBP: Infinity })).toThrow(
-      "Exchange rate for GBP must be a finite number."
+      'Exchange rate for GBP must be a finite number.'
     );
   });
 });

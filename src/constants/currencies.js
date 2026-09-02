@@ -8,8 +8,8 @@
  * Do not "fix" this to EUR — that would violate the required identifier set.
  */
 export const SUPPORTED_CURRENCIES = [
-  "USD",
-  "ILS",
-  "GBP",
-  "EURO"
+  'USD',
+  'ILS',
+  'GBP',
+  'EURO'
 ];

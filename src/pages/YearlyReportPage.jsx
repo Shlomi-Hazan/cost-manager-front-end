@@ -1,7 +1,8 @@
-import { useState } from "react";
-import AssessmentOutlinedIcon from "@mui/icons-material/AssessmentOutlined";
-import PictureAsPdfOutlinedIcon from "@mui/icons-material/PictureAsPdfOutlined";
-import TableChartOutlinedIcon from "@mui/icons-material/TableChartOutlined";
+import { useState } from 'react';
+// Icons for the generate button and the two export buttons below.
+import AssessmentOutlinedIcon from '@mui/icons-material/AssessmentOutlined';
+import PictureAsPdfOutlinedIcon from '@mui/icons-material/PictureAsPdfOutlined';
+import TableChartOutlinedIcon from '@mui/icons-material/TableChartOutlined';
 import {
   Alert,
   Box,
@@ -10,25 +11,27 @@ import {
   Stack,
   TextField,
   Typography
-} from "@mui/material";
-import LoadingButtonLabel from "../components/common/LoadingButtonLabel.jsx";
-import PageHeader from "../components/common/PageHeader.jsx";
-import SectionCard from "../components/common/SectionCard.jsx";
-import SortableReportTable from "../components/reports/SortableReportTable.jsx";
-import { SUPPORTED_CURRENCIES } from "../constants/currencies.js";
-import { useReportSorting } from "../hooks/useReportSorting.js";
-import { costsDatabase } from "../lib/costsDatabase.js";
-import { buildDetailedYearlyReport } from "../services/detailedReportsService.js";
-import { refreshExchangeRates } from "../services/exchangeRatesService.js";
-import * as excelExportService from "../services/export/excelExportService.js";
+} from '@mui/material';
+// Shared UI components, then the required report/currency/db modules.
+import LoadingButtonLabel from '../components/common/LoadingButtonLabel.jsx';
+import PageHeader from '../components/common/PageHeader.jsx';
+import SectionCard from '../components/common/SectionCard.jsx';
+import SortableReportTable from '../components/reports/SortableReportTable.jsx';
+import { SUPPORTED_CURRENCIES } from '../constants/currencies.js';
+import { useReportSorting } from '../hooks/useReportSorting.js';
+import { costsDatabase } from '../lib/costsDatabase.js';
+import { buildDetailedYearlyReport } from '../services/detailedReportsService.js';
+import { refreshExchangeRates } from '../services/exchangeRatesService.js';
+// TEAM EXTENSION: Excel/PDF export helpers for this yearly report.
+import * as excelExportService from '../services/export/excelExportService.js';
 import {
   buildYearlyReportExportModel
-} from "../services/export/exportModels.js";
-import * as pdfExportService from "../services/export/pdfExportService.js";
+} from '../services/export/exportModels.js';
+import * as pdfExportService from '../services/export/pdfExportService.js';
 import {
   getYearlyReportExportFilename
-} from "../utils/exportFilenames.js";
-import { formatDisplayAmount } from "../utils/amountFormat.js";
+} from '../utils/exportFilenames.js';
+import { formatDisplayAmount } from '../utils/amountFormat.js';
 
 /*
  * TEAM EXTENSION (X-005): a full-year detail report, in addition to the
@@ -41,7 +44,7 @@ import { formatDisplayAmount } from "../utils/amountFormat.js";
 function getCurrentFilters() {
   return {
     year: String(new Date().getFullYear()),
-    currency: "USD"
+    currency: 'USD'
   };
 }
 
@@ -50,14 +53,14 @@ function validateFilters(filters) {
   const trimmedYear = filters.year.trim();
   const reportYear = Number(trimmedYear);
 
-  if (trimmedYear === "") {
-    errors.year = "Enter a report year.";
+  if (trimmedYear === '') {
+    errors.year = 'Enter a report year.';
   } else if (!Number.isFinite(reportYear) || !Number.isInteger(reportYear)) {
-    errors.year = "Enter a whole report year.";
+    errors.year = 'Enter a whole report year.';
   }
 
   if (!SUPPORTED_CURRENCIES.includes(filters.currency)) {
-    errors.currency = "Select a supported currency.";
+    errors.currency = 'Select a supported currency.';
   }
 
   return {
@@ -70,21 +73,21 @@ function validateFilters(filters) {
 function getReportErrorMessage(error) {
   if (
     error instanceof Error &&
-    (error.message.includes("cached exchange rates") ||
-      error.message.includes("Exchange rates"))
+    (error.message.includes('cached exchange rates') ||
+      error.message.includes('Exchange rates'))
   ) {
-    return "Exchange rates are unavailable for converting this yearly report. Please try again.";
+    return 'Exchange rates are unavailable for converting this yearly report. Please try again.';
   }
 
-  return "Could not generate the yearly report. Please try again.";
+  return 'Could not generate the yearly report. Please try again.';
 }
 
-function YearlyReportPage({ headingComponent = "h1" }) {
+function YearlyReportPage({ headingComponent = 'h1' }) {
   const [filters, setFilters] = useState(getCurrentFilters);
   const [errors, setErrors] = useState({});
   const [report, setReport] = useState(null);
-  const [errorMessage, setErrorMessage] = useState("");
-  const [exportErrorMessage, setExportErrorMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState('');
+  const [exportErrorMessage, setExportErrorMessage] = useState('');
   const [exportingAction, setExportingAction] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [hasGenerated, setHasGenerated] = useState(false);
@@ -107,8 +110,8 @@ function YearlyReportPage({ headingComponent = "h1" }) {
       ...currentErrors,
       [name]: undefined
     }));
-    setErrorMessage("");
-    setExportErrorMessage("");
+    setErrorMessage('');
+    setExportErrorMessage('');
     setReport(null);
     setHasGenerated(false);
     resetSort();
@@ -120,13 +123,13 @@ function YearlyReportPage({ headingComponent = "h1" }) {
     const validation = validateFilters(filters);
 
     setErrors(validation.errors);
-    setErrorMessage("");
-    setExportErrorMessage("");
+    setErrorMessage('');
+    setExportErrorMessage('');
     setReport(null);
     setHasGenerated(false);
 
     if (!validation.isValid) {
-      setErrorMessage("Please correct the highlighted report filters.");
+      setErrorMessage('Please correct the highlighted report filters.');
       return;
     }
 
@@ -166,8 +169,8 @@ function YearlyReportPage({ headingComponent = "h1" }) {
       return;
     }
 
-    setExportErrorMessage("");
-    setExportingAction("excel");
+    setExportErrorMessage('');
+    setExportingAction('excel');
 
     try {
       await excelExportService.downloadReportWorkbook(
@@ -175,11 +178,11 @@ function YearlyReportPage({ headingComponent = "h1" }) {
         getYearlyReportExportFilename({
           year: report.year,
           currency: report.total.currency,
-          extension: "xlsx"
+          extension: 'xlsx'
         })
       );
     } catch {
-      setExportErrorMessage("Could not export the Excel file. Please try again.");
+      setExportErrorMessage('Could not export the Excel file. Please try again.');
     } finally {
       setExportingAction(null);
     }
@@ -190,8 +193,8 @@ function YearlyReportPage({ headingComponent = "h1" }) {
       return;
     }
 
-    setExportErrorMessage("");
-    setExportingAction("pdf");
+    setExportErrorMessage('');
+    setExportingAction('pdf');
 
     try {
       await pdfExportService.downloadReportPdf(
@@ -199,11 +202,11 @@ function YearlyReportPage({ headingComponent = "h1" }) {
         getYearlyReportExportFilename({
           year: report.year,
           currency: report.total.currency,
-          extension: "pdf"
+          extension: 'pdf'
         })
       );
     } catch {
-      setExportErrorMessage("Could not export the PDF file. Please try again.");
+      setExportErrorMessage('Could not export the PDF file. Please try again.');
     } finally {
       setExportingAction(null);
     }
@@ -224,17 +227,17 @@ function YearlyReportPage({ headingComponent = "h1" }) {
 
           <Box
             sx={{
-              display: "grid",
+              display: 'grid',
               gap: 2,
               gridTemplateColumns: {
-                xs: "1fr",
-                md: "180px 180px auto"
+                xs: '1fr',
+                md: '180px 180px auto'
               }
             }}
           >
             <TextField
               error={Boolean(errors.year)}
-              helperText={errors.year ?? " "}
+              helperText={errors.year ?? ' '}
               inputMode="numeric"
               label="Year"
               name="year"
@@ -242,9 +245,10 @@ function YearlyReportPage({ headingComponent = "h1" }) {
               value={filters.year}
             />
 
+            {/* Currency select, restricted to the four required identifiers. */}
             <TextField
               error={Boolean(errors.currency)}
-              helperText={errors.currency ?? " "}
+              helperText={errors.currency ?? ' '}
               label="Currency"
               name="currency"
               onChange={handleChange}
@@ -258,7 +262,8 @@ function YearlyReportPage({ headingComponent = "h1" }) {
               ))}
             </TextField>
 
-            <Box sx={{ alignSelf: "start", pt: { md: 1 } }}>
+            {/* Submitting the form calls handleSubmit further up. */}
+            <Box sx={{ alignSelf: 'start', pt: { md: 1 } }}>
               <Button
                 disabled={isLoading}
                 startIcon={
@@ -267,6 +272,7 @@ function YearlyReportPage({ headingComponent = "h1" }) {
                 type="submit"
                 variant="contained"
               >
+                {/* Spinner label swap while the report is being generated. */}
                 <LoadingButtonLabel
                   isLoading={isLoading}
                   loadingText="Generating..."
@@ -278,6 +284,7 @@ function YearlyReportPage({ headingComponent = "h1" }) {
           </Box>
         </Stack>
       </SectionCard>
+      {/* Empty/info state shown before the first successful generation. */}
 
       {!hasGenerated && !errorMessage && !isLoading ? (
         <Alert severity="info">
@@ -296,7 +303,7 @@ function YearlyReportPage({ headingComponent = "h1" }) {
                 Report currency: {report.total.currency}
               </Typography>
               <Typography fontWeight={700} variant="body1">
-                Total: {formatDisplayAmount(report.total.sum)}{" "}
+                Total: {formatDisplayAmount(report.total.sum)}{' '}
                 {report.total.currency}
               </Typography>
             </Box>
@@ -305,36 +312,38 @@ function YearlyReportPage({ headingComponent = "h1" }) {
               <Alert severity="error">{exportErrorMessage}</Alert>
             ) : null}
 
-            <Stack direction={{ xs: "column", sm: "row" }} spacing={1}>
+            {/* TEAM EXTENSION: Excel/PDF export of this yearly report. */}
+            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1}>
               <Button
                 disabled={Boolean(exportingAction)}
                 onClick={handleExcelExport}
                 startIcon={
-                  exportingAction === "excel" ? null : (
+                  exportingAction === 'excel' ? null : (
                     <TableChartOutlinedIcon aria-hidden="true" />
                   )
                 }
                 variant="outlined"
               >
                 <LoadingButtonLabel
-                  isLoading={exportingAction === "excel"}
+                  isLoading={exportingAction === 'excel'}
                   loadingText="Exporting..."
                 >
                   Export Excel
                 </LoadingButtonLabel>
               </Button>
+              {/* PDF export mirrors the Excel button, different action/icon. */}
               <Button
                 disabled={Boolean(exportingAction)}
                 onClick={handlePdfExport}
                 startIcon={
-                  exportingAction === "pdf" ? null : (
+                  exportingAction === 'pdf' ? null : (
                     <PictureAsPdfOutlinedIcon aria-hidden="true" />
                   )
                 }
                 variant="outlined"
               >
                 <LoadingButtonLabel
-                  isLoading={exportingAction === "pdf"}
+                  isLoading={exportingAction === 'pdf'}
                   loadingText="Exporting..."
                 >
                   Export PDF
@@ -342,6 +351,7 @@ function YearlyReportPage({ headingComponent = "h1" }) {
               </Button>
             </Stack>
 
+            {/* Empty state vs. the shared sortable table (X-006). */}
             {report.costs.length === 0 ? (
               <Alert severity="info">No costs found for this year.</Alert>
             ) : (

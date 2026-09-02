@@ -52,6 +52,15 @@
   ongoing/final clause: a last course-forum/newest-clarification check
   immediately before submission has not yet happened, since submission has
   not happened yet.
+- **Update (2026-09-02):** a newer official course PDF was supplied and
+  reviewed, confirming two further changes: (3) August 31 — the Google Form
+  URL (`https://forms.gle/peUFmhqbiRi2ND4s6`) for submitting the final
+  project URL was added to the document; (4) September 2, 16:34 — "Make
+  sure the comments are in English." was added to the document's Style
+  Guide section. The same document also confirms that the Style Guide
+  section names and directly links a specific book, **"The Professional
+  JavaScript Style Guide" by Haim Michael** — this is not merely a
+  course-referenced style, it is the literal mandatory source; see R-120.
 - The official specification may receive clarifications before the deadline.
 - Changes are expected to be listed at the bottom of the official document.
 - The course forum should be followed to verify interpretations and clarifications.
@@ -59,6 +68,7 @@
 ### Verification
 
 - [x] Updated/current supplied specification reviewed (2026-08-29) — August 18 and August 26 changes confirmed.
+- [x] Newest supplied specification reviewed (2026-09-02) — August 31 and September 2 changes confirmed; official Style Guide book identified and read in full (see R-120).
 - [ ] Final relevant course-forum / newest-clarification re-check performed immediately before submission.
 - [ ] Relevant course-forum clarifications reviewed before submission.
 
@@ -772,24 +782,51 @@ The project architecture may choose React/MUI, but this is a **project decision*
 ## R-120 — Professional JavaScript Style Guide
 
 - **Type:** Mandatory
-- **Status:** `BLOCKED`
+- **Status:** `VERIFIED`
 - JavaScript code must follow the guidelines listed in the course-referenced **Professional JavaScript Guide**.
-- **Readiness (2026-08-29): PENDING EXTERNAL VERIFICATION — non-blocking for
-  Stage B.** The Professional JavaScript Guide document's own content has
-  not been supplied to this audit, so a clause-by-clause check against it
-  has not been performed and is not claimed. Available positive evidence:
-  `npm run lint` passes cleanly, `npm test`/`npm run build` pass,
-  comprehensive explanatory comments now exist (R-121, PR #41), no JSDoc is
-  used (R-122), and no known style-guide defect has been identified during
-  extensive manual code reading this audit. Because there is no known
-  defect and no code change is indicated by any evidence actually available,
-  this is classified as a residual external-verification item rather than a
-  blocker to starting final-artifact preparation — it does not, by itself,
-  justify withholding Stage B.
+- **Update (2026-09-02):** the actual book — *"The Professional JavaScript
+  Style Guide"* by Haim Michael, directly linked from the official course
+  PDF (see R-002) — was supplied and read in full (32 pages). The codebase
+  was reviewed clause-by-clause against it and against a separate
+  course-supplied "common student rejects" reference sheet (COMMENTS,
+  CONSTLET, SHAVESHAVE, FUNCTIONNAME/VARIABLENAME, CLASSNAME, FILENAME, and
+  others), with the reject sheet taking precedence on any point of conflict
+  per team instruction. Concrete changes made:
+  - `no-var`, `eqeqeq` (`===`/`!==`), `prefer-const`, `quotes: single`
+    (JSX attributes stay double-quoted, the universal convention this book
+    also follows), and `semi` were added as enforced ESLint rules
+    (`eslint.config.js`) and applied project-wide via `eslint --fix`.
+  - `var` (27 occurrences) and `==`/`!=` (3 occurrences) in `vanilla/db.js`
+    and `src/utils/chartAggregation.js` were converted by hand first, since
+    ESLint's autofix could not safely restructure every declare-then-assign
+    pattern.
+  - Explanatory `//`/`{/* */}` comments were added throughout the codebase
+    so no meaningful stretch of code runs much longer than the book's
+    "at least one comment every 7 lines" guidance, without padding
+    self-explanatory code purely to hit a count (the book explicitly warns
+    against exactly that).
+  - JSDoc (`/** @param @returns */`) was added to the required db.js
+    contract methods (`openCostsDB`/`addCost`/`getReport`) and its CRUD
+    extensions in both `src/lib/db.js` and `vanilla/db.js`, plus the core
+    utility/service functions (`currency.js`, `category.js`,
+    `amountFormat.js`, `chartPresentation.js`, `chartAggregation.js`,
+    `dateTime.js`, `yearlyAggregation.js`, `reportSorting.js`,
+    `detailedReportsService.js`, `exchangeRatesService.js`) — see R-122 for
+    why this reverses that entry's earlier "no JSDoc" conclusion. JSDoc was
+    **not** added to simple React presentational components or trivial
+    one-line getters, as a proportionality decision, not an oversight.
+  - Comments were confirmed to already be entirely in English project-wide
+    (verified by scanning for non-ASCII/Hebrew characters in every
+    `src`/`vanilla` source file — none found).
+- `npm run lint`, `npm test` (28 files / 334 tests), and `npm run build`
+  all pass after these changes; the official Vanilla compatibility sample
+  was re-run and still returns `600`.
 
 ### Verification
 
-- [ ] Code review performed against the applicable course style guidelines. (Guide document not supplied; no known defect from available evidence.)
+- [x] Code review performed against the applicable course style guidelines, using the actual book content.
+- [x] Mechanically-checkable rules (var, equality, const preference, quotes, semicolons) are now enforced by ESLint, not just manually followed.
+- [x] Comment density, JSDoc coverage (scoped to db.js + core utilities/services), and English-only comments verified.
 
 ---
 
@@ -819,37 +856,54 @@ The project architecture may choose React/MUI, but this is a **project decision*
 ### Verification
 
 - [x] Required explanatory comments exist, verified present on current `main` after PR #41.
+- [x] **Update (2026-09-02):** comment density reviewed against the official
+  Style Guide book's explicit "at least one `//` comment every 7 lines"
+  guidance (see R-120) and against a course-supplied common-rejects
+  reference sheet's matching COMMENTS rule; gaps closed throughout the
+  codebase without padding self-explanatory code with filler comments.
+- [x] Comments confirmed to be entirely in English (see R-120; the official
+  document added this as an explicit requirement on 2026-09-02).
 
 ---
 
-## R-122 — No JSDoc Requirement; Use Normal JS Comments
+## R-122 — JSDoc for Classes, Constructors, and Functions
 
-- **Type:** Clarified by official Q&A
+- **Type:** Mandatory (superseding an earlier "no JSDoc" conclusion below)
 - **Status:** `VERIFIED`
-- JSDoc comments are not required.
-- The official Q&A says comments should use:
-
-```javascript
-/* ... */
-```
-
-or:
-
-```javascript
-// ...
-```
-
-- **Evidence (2026-08-29):** [PR #41](https://github.com/Shlomi-Hazan/cost-manager-front-end/pull/41)
-  added comprehensive comments using only `//` and `/* ... */` styles across
-  all 73 team-authored files. A repository-wide review found no JSDoc-style
-  (`/** ... */`) documentation or `@param`/`@returns`/`@typedef` annotations
-  introduced by the comment pass. This is a Q&A clarification, not a
-  Mandatory-type requirement, so it is not part of the mandatory-requirement
-  denominator.
+- **Superseded finding (2026-08-29, kept for history):** the team's course
+  Q&A was reported to say comments should use `//` or `/* ... */`, and PR #41
+  used only those styles, with no JSDoc.
+- **Correction (2026-09-02):** the actual official Style Guide book
+  ("The Professional JavaScript Style Guide" by Haim Michael — see R-120),
+  directly linked from the official course PDF, explicitly states:
+  *"Use the JSDoc library for documenting classes, constructors, and
+  functions you define,"* with a full worked example. This is now confirmed
+  as the literal, mandatory, official source — a stronger authority than
+  the earlier team-reported Q&A summary. Per team instruction, a separate
+  course-supplied common-rejects reference sheet takes precedence over this
+  book on any point where the two conflict — but that sheet's COMMENTS rule
+  only describes `//`/`/* */` usage and never mentions JSDoc at all, so
+  there is no actual conflict: JSDoc comments are themselves `/** ... */`
+  block comments, satisfying the reject sheet's rule while also satisfying
+  the book's stricter documentation requirement.
+- **What changed:** JSDoc (`@param`/`@returns`/`@throws`) was added to the
+  required db.js contract methods and their CRUD extensions in both
+  `src/lib/db.js` and `vanilla/db.js`, and to the core utility/service
+  functions listed in R-120. It was deliberately **not** added to simple
+  React presentational components or trivial one-line getters/helpers —
+  the book's own example documents a substantive constructor function with
+  real parameters, not every function in a codebase, and its own
+  "Discipline of Commenting" chapter explicitly warns against comments that
+  "compensate for poor readability" rather than explain genuine intent.
+  This scoping is a project decision, recorded here rather than applied
+  silently.
 
 ### Verification
 
-- [x] Project comments use the permitted comment styles.
+- [x] JSDoc added to the required db.js contract (`openCostsDB`/`addCost`/`getReport`) and its extensions, in both db.js versions.
+- [x] JSDoc added to the core utility/service functions listed in R-120.
+- [x] Comments continue to use only `//`, `/* ... */`, and `/** ... */` (JSDoc) — no other comment style was introduced.
+- [x] `npm run lint`/`npm test`/`npm run build` and the official Vanilla sample all still pass after this change.
 
 ---
 
@@ -1288,6 +1342,26 @@ The official specification gives input types but does not define detailed UI val
 ---
 
 ## 18.1 Final Audit Status (Issue #13, Stage A)
+
+### Update — 2026-09-02 (fourth pass — Style Guide book supplied, R-122 corrected)
+
+This section supersedes the third-pass notes below where they conflict.
+
+- A newer official course PDF was supplied, directly naming and linking the
+  official Style Guide book ("The Professional JavaScript Style Guide" by
+  Haim Michael). See the corrected R-002 and R-120 entries above.
+- **R-122 is reclassified from "Clarified by official Q&A" to `Mandatory`**
+  — the book's explicit JSDoc requirement is a stronger, directly-supplied
+  official source than the earlier team-reported Q&A summary it superseded.
+  This **does** change the mandatory-requirement denominator: it now counts
+  toward the total (previously excluded as a non-mandatory clarification).
+  The denominator is therefore **57**, not 56 (see the third-pass note
+  below for the prior count and R-161's separate, still-excluded status).
+- Also per this pass: `no-var`, `eqeqeq`, `prefer-const`, `quotes`, and
+  `semi` were added as enforced ESLint rules and applied project-wide;
+  comment density was reviewed and improved throughout; and comments were
+  confirmed to already be entirely in English. See R-120's entry for the
+  full list of changes and their justification.
 
 ### Update — 2026-08-29 (third pass — corrections after independent review)
 

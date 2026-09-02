@@ -4,7 +4,7 @@ Final project for the **Front-End Development** course.
 
 This repository is intentionally being built from the project requirements outward: requirements, architecture, AI-agent instructions, testing strategy, Git/GitHub workflow, implementation, deployment, audit, and submission.
 
-> **Current status:** Milestone 15 — Final Requirements Audit (Issue #13, Stage A: audit complete, artifact generation not yet started, not submission-ready).
+> **Current status:** Milestone 16 — Style Guide Compliance (code brought in line with the official Professional JavaScript Style Guide and a course-supplied common-rejects checklist; pending review/merge; final submission artifacts still not generated, not submission-ready).
 
 ## Project Goal
 
@@ -133,6 +133,37 @@ Codex is planned as the primary coding agent. Claude Code is planned mainly for 
 Public.
 
 ## Current Milestone
+
+### Milestone 16 — Style Guide Compliance
+
+The official course document now directly names and links the required
+style reference, *"The Professional JavaScript Style Guide"* by Haim
+Michael, and a separately supplied course checklist lists common student
+submission rejects. The codebase was reviewed against both (the checklist
+taking precedence on any conflict) and brought into compliance:
+
+- `var` and loose equality (`==`/`!=`) were removed from the codebase
+  (`vanilla/db.js`, `src/utils/chartAggregation.js`).
+- ESLint now enforces `no-var`, `eqeqeq`, `prefer-const`, single-quoted JS
+  strings (`quotes`, with JSX attributes staying double-quoted), and
+  `semi`, applied project-wide via `eslint --fix`.
+- Explanatory comment coverage was reviewed and improved throughout the
+  codebase against the style guide's "at least one comment every 7 lines"
+  guidance, without padding already-clear code with filler comments.
+- JSDoc (`@param`/`@returns`/`@throws`) was added to the required `db.js`
+  contract methods and their CRUD extensions (both versions), and to the
+  core utility/service layer (currency conversion, category/date
+  formatting, chart and yearly aggregation, report sorting, detailed
+  reports, exchange-rate fetching) — see `docs/REQUIREMENTS.md` R-120/R-122
+  for the reasoning and for why this was not extended to every React
+  component.
+- `npm run lint`, `npm test` (28 files / 334 tests), and `npm run build`
+  all pass, and the official Vanilla `db.js` compatibility sample
+  (`openCostsDB`/`addCost`/`getReport`) was re-verified after every change.
+
+This is a large, project-wide diff. It is open for review and has not yet
+been merged into `main`; see `docs/REQUIREMENTS.md` §18.1 for the full audit
+trail.
 
 ### Milestone 15 — Final Requirements Audit (Issue #13, Stage A)
 

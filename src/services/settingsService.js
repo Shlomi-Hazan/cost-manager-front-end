@@ -10,7 +10,7 @@
 // still resolves correctly when the app is served from a subpath, such as a
 // GitHub Pages project site (https://<user>.github.io/cost-manager-front-end/).
 export const DEFAULT_EXCHANGE_RATES_URL = `${import.meta.env.BASE_URL}exchange-rates.json`;
-export const SETTINGS_STORAGE_KEY = "cost-manager:settings";
+export const SETTINGS_STORAGE_KEY = 'cost-manager:settings';
 
 // Settings are stored as a single small object under one key rather than one
 // key per setting, since there is currently only one setting to persist and
@@ -25,7 +25,7 @@ function readSettings() {
   try {
     const parsedValue = JSON.parse(storedValue);
 
-    return parsedValue !== null && typeof parsedValue === "object" && !Array.isArray(parsedValue)
+    return parsedValue !== null && typeof parsedValue === 'object' && !Array.isArray(parsedValue)
       ? parsedValue
       : {};
   } catch {
@@ -43,14 +43,14 @@ function writeSettings(settings) {
 export function getCustomExchangeRatesUrl() {
   const { exchangeRatesUrl } = readSettings();
 
-  return typeof exchangeRatesUrl === "string" && exchangeRatesUrl.trim() !== ""
+  return typeof exchangeRatesUrl === 'string' && exchangeRatesUrl.trim() !== ''
     ? exchangeRatesUrl
     : null;
 }
 
 export function setCustomExchangeRatesUrl(url) {
-  if (typeof url !== "string" || url.trim() === "") {
-    throw new TypeError("Exchange rates URL must be a non-empty string.");
+  if (typeof url !== 'string' || url.trim() === '') {
+    throw new TypeError('Exchange rates URL must be a non-empty string.');
   }
 
   const settings = readSettings();
