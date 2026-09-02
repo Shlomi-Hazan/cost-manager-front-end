@@ -264,6 +264,7 @@ function YearlyBarChartSection() {
               }
             }}
           >
+            {/* Year: free numeric input, unlike Month's fixed select list elsewhere. */}
             <TextField
               error={Boolean(errors.year)}
               helperText={errors.year ?? ' '}
@@ -274,6 +275,7 @@ function YearlyBarChartSection() {
               value={filters.year}
             />
 
+            {/* Currency select, restricted to the four required identifiers. */}
             <TextField
               error={Boolean(errors.currency)}
               helperText={errors.currency ?? ' '}
@@ -300,6 +302,7 @@ function YearlyBarChartSection() {
                 type="submit"
                 variant="contained"
               >
+                {/* Spinner label swap while the chart is being generated. */}
                 <LoadingButtonLabel
                   isLoading={isLoading}
                   loadingText="Generating..."
@@ -444,6 +447,7 @@ function YearlyBarChartSection() {
                 {/* Column order matches the header cells above. */}
                 <TableBody>
                   {monthlyTotals.map((entry) => (
+                    // One row per calendar month, including zero-total months.
                     <TableRow key={entry.month}>
                       <TableCell>{entry.label}</TableCell>
                       <TableCell align="right">

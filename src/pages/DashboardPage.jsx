@@ -4,6 +4,7 @@ import AssessmentOutlinedIcon from '@mui/icons-material/AssessmentOutlined';
 import DonutLargeOutlinedIcon from '@mui/icons-material/DonutLargeOutlined';
 import EditNoteOutlinedIcon from '@mui/icons-material/EditNoteOutlined';
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
+// MUI layout/card primitives used by the responsive card grid below.
 import {
   Box,
   Card,

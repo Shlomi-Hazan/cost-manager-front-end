@@ -90,6 +90,7 @@ function SortableReportTable({
               sortKey={sortKey}
               targetSortKey={reportSortKeys.date}
             />
+            {/* Same date/time pairing, just for the Time column. */}
             <SortableHeaderCell
               label="Time"
               onRequestSort={onRequestSort}
@@ -105,6 +106,7 @@ function SortableReportTable({
               sortKey={sortKey}
               targetSortKey={reportSortKeys.description}
             />
+            {/* Same text-column pairing, just for the Category column. */}
             <SortableHeaderCell
               label="Category"
               onRequestSort={onRequestSort}

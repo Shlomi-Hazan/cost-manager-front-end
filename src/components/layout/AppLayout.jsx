@@ -49,6 +49,7 @@ function AppLayout({ activePageId, appTitle, children, navigationItems, onNaviga
             {appTitle}
           </Typography>
 
+          {/* scrollable + auto buttons: many tabs still fit on narrow screens. */}
           <Tabs
             aria-label="Main navigation"
             onChange={(_, nextPageId) => onNavigate(nextPageId)}

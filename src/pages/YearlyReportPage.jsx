@@ -225,6 +225,7 @@ function YearlyReportPage({ headingComponent = 'h1' }) {
         <Stack spacing={3}>
           {errorMessage ? <Alert severity="error">{errorMessage}</Alert> : null}
 
+          {/* Filter fields: year/currency, then the generate button. */}
           <Box
             sx={{
               display: 'grid',
@@ -235,6 +236,7 @@ function YearlyReportPage({ headingComponent = 'h1' }) {
               }
             }}
           >
+            {/* Year: free numeric input, unlike Month's fixed select list elsewhere. */}
             <TextField
               error={Boolean(errors.year)}
               helperText={errors.year ?? ' '}
@@ -292,6 +294,7 @@ function YearlyReportPage({ headingComponent = 'h1' }) {
         </Alert>
       ) : null}
 
+      {/* Generated-report section: totals, exports, then the sortable table. */}
       {report ? (
         <SectionCard>
           <Stack spacing={3}>

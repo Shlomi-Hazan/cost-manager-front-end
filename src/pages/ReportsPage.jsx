@@ -35,6 +35,7 @@ function ReportsPage() {
           value={activeReport}
           sx={{ px: 2, pt: 1 }}
         >
+          {/* Monthly tab: the course-required report (R-050 to R-053). */}
           <Tab
             icon={<CalendarMonthOutlinedIcon aria-hidden="true" fontSize="small" />}
             iconPosition="start"

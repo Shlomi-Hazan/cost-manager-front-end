@@ -42,6 +42,7 @@ const bodyCellStyle = {
   alignVertical: 'top'
 };
 
+// Character widths tuned per column so typical values fit without wrapping.
 const columnWidths = {
   Category: 22,
   Currency: 14,
@@ -100,6 +101,8 @@ function textCell(value, options = {}) {
   };
 }
 
+// type: Number keeps the written cell a real number, not text that merely
+// looks like one, so the exported file stays usable for further calculation.
 function numericCell(value, format = amountFormatPattern, options = {}) {
   return {
     value,

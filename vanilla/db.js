@@ -480,6 +480,7 @@
           currency: cost.currency,
           category: cost.category,
           description: cost.description,
+          // Full internal date/time, unlike toReportCost()'s { day }-only shape.
           date: {
             day: cost.date.day,
             month: cost.date.month,
@@ -548,6 +549,7 @@
           );
         });
 
+        // total is the only converted value; costs keep their own currency (R-036).
         return {
           year: reportYear,
           month: reportMonth,

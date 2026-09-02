@@ -132,6 +132,7 @@ function SettingsPage() {
         severity: 'success'
       });
     } catch {
+      // Restore fails: keep showing the previous input, don't lose it.
       updateSettingsState(settingsState.inputUrl);
       setFeedback({
         message: 'Could not restore the default exchange-rate source. Please try again.',
@@ -199,6 +200,7 @@ function SettingsPage() {
               spacing={1}
               sx={{ alignItems: 'flex-start', minWidth: 0 }}
             >
+              {/* Icon plus URL text, allowed to wrap across lines if long. */}
               <LinkOutlinedIcon
                 aria-hidden="true"
                 color="primary"
@@ -242,6 +244,7 @@ function SettingsPage() {
             }}
           >
             <Button disabled={isBusy} type="submit" variant="contained">
+              {/* Submitting the form calls handleSaveCustomSource above. */}
               <LoadingButtonLabel
                 isLoading={activeAction === 'save'}
                 loadingText="Testing..."

@@ -14,6 +14,7 @@ import {
   DialogContent,
   DialogTitle,
   MenuItem,
+  // Remaining components: the saved-costs table and its containers.
   Stack,
   Table,
   TableBody,
@@ -306,6 +307,7 @@ function ManageCostsPage() {
         <SectionCard sx={{ p: 0 }}>
           <TableContainer>
             <Table aria-label="Saved costs">
+              {/* Column order matches each data row rendered below. */}
               <TableHead>
                 <TableRow>
                   <TableCell>Date</TableCell>
@@ -390,6 +392,7 @@ function ManageCostsPage() {
                     }
                   }}
                 >
+                  {/* Sum: numeric keyboard on mobile, otherwise a plain text input. */}
                   <TextField
                     error={Boolean(editErrors.sum)}
                     helperText={editErrors.sum ?? 'Use a numeric value.'}
@@ -425,6 +428,7 @@ function ManageCostsPage() {
                   onInputChange={handleCategoryInputChange}
                   openOnFocus
                   options={commonCategories}
+                  // MUI Autocomplete requires the text field to be supplied this way.
                   renderInput={(params) => (
                     <TextField
                       {...params}

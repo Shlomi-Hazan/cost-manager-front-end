@@ -292,6 +292,7 @@ function MonthlyReportPage({ headingComponent = 'h1' }) {
               }
             }}
           >
+            {/* Month: fixed 12-entry select, unlike Year's free numeric input. */}
             <TextField
               error={Boolean(errors.month)}
               helperText={errors.month ?? ' '}
@@ -320,6 +321,7 @@ function MonthlyReportPage({ headingComponent = 'h1' }) {
               value={filters.year}
             />
 
+            {/* Currency select, restricted to the four required identifiers. */}
             <TextField
               error={Boolean(errors.currency)}
               helperText={errors.currency ?? ' '}
@@ -346,6 +348,7 @@ function MonthlyReportPage({ headingComponent = 'h1' }) {
                 type="submit"
                 variant="contained"
               >
+                {/* Spinner label swap while the report is being generated. */}
                 <LoadingButtonLabel
                   isLoading={isLoading}
                   loadingText="Generating..."
@@ -364,6 +367,7 @@ function MonthlyReportPage({ headingComponent = 'h1' }) {
         </Alert>
       ) : null}
 
+      {/* Generated-report section: totals, exports, then the sortable table. */}
       {report ? (
         <SectionCard>
           <Stack spacing={3}>

@@ -425,6 +425,7 @@ function ChartsPage() {
                 type="submit"
                 variant="contained"
               >
+                {/* Spinner label swap while the chart is being generated. */}
                 <LoadingButtonLabel
                   isLoading={isLoading}
                   loadingText="Generating..."
@@ -437,12 +438,14 @@ function ChartsPage() {
         </Stack>
       </SectionCard>
 
+      {/* Empty state vs. the generated chart section below. */}
       {!hasGenerated && !errorMessage && !isLoading ? (
         <Alert severity="info">
           Choose filters and generate a monthly category Pie Chart.
         </Alert>
       ) : null}
 
+      {/* Generated-chart section: title/currency, exports, then the chart itself. */}
       {chartResult ? (
         <SectionCard>
           <Stack spacing={3}>
@@ -498,6 +501,7 @@ function ChartsPage() {
               </Button>
             </Stack>
 
+            {/* Two distinct empty states before the actual pie chart. */}
             {!hasChartData ? (
               <Alert severity="info">No costs found for this month.</Alert>
             ) : !hasPositiveChartData ? (
@@ -517,6 +521,7 @@ function ChartsPage() {
               >
                 <ResponsiveContainer height="100%" width="100%">
                   <PieChart>
+                    {/* innerRadius > 0 makes this a donut rather than a solid pie. */}
                     <Pie
                       data={pieDisplayData}
                       dataKey="total"

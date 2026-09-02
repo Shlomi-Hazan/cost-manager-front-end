@@ -69,6 +69,8 @@ export function buildMonthlyReportExportModel({ report, costs }) {
       ['Total', report.total.sum],
       ['Number of Costs', rows.length]
     ],
+    // metadata mirrors summary's values as machine-readable fields, for
+    // exporters that build their own formatting instead of using summary.
     metadata: {
       month: report.month,
       monthLabel: getMonthName(report.month),
@@ -105,6 +107,7 @@ export function buildYearlyReportExportModel({ report, costs }) {
       ['Total', report.total.sum],
       ['Number of Costs', rows.length]
     ],
+    // Same metadata/summary duplication pattern as the monthly model above.
     metadata: {
       numberOfCosts: rows.length,
       year: report.year,
@@ -169,12 +172,15 @@ export function buildBarChartExportModel({ yearlyResult }) {
   return {
     type: 'bar-chart',
     title: 'Yearly 12-Month Bar Chart',
+    // R-080: annualTotal/monthsWithCosts are derived from all 12 months,
+    // including zero-cost ones (see yearlyResult.monthlyTotals above).
     summary: [
       ['Year', yearlyResult.year],
       ['Currency', yearlyResult.currency],
       ['Annual Total', annualTotal],
       ['Months With Costs', monthsWithCosts]
     ],
+    // Same metadata/summary duplication pattern as the report models above.
     metadata: {
       year: yearlyResult.year,
       currency: yearlyResult.currency,

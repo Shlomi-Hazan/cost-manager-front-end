@@ -206,6 +206,7 @@ function AddCostPage() {
               select
               value={formValues.currency}
             >
+              {/* One MenuItem per required currency identifier. */}
               {supportedCurrencies.map((currency) => (
                 <MenuItem key={currency} value={currency}>
                   {currency}
