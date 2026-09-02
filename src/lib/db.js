@@ -157,6 +157,8 @@ function validateCostDate(date) {
     throw new TypeError('cost.date.month must be an integer from 1 to 12.');
   }
 
+  // Range checks above catch obviously-wrong values; this catches values
+  // that are individually in range but don't form a real date (31 Feb).
   if (!isRealCalendarDate(day, month, year)) {
     throw new TypeError('cost.date must be a real calendar date.');
   }
@@ -170,11 +172,13 @@ function validateCostDate(date) {
   }
 }
 
+// TEAM EXTENSION — combines both validators for updateCost()'s full payload.
 function validateEditableCost(cost) {
   validateCost(cost);
   validateCostDate(cost.date);
 }
 
+// Guards the required getReport() arguments once defaults have been applied.
 function validateReportArguments(currency, year, month) {
   if (!isSupportedCurrency(currency)) {
     throw new TypeError('currency must be one of USD, ILS, GBP, EURO.');
@@ -214,6 +218,7 @@ function readCosts(storageKey) {
   }
 }
 
+// Persists the full cost list back to localStorage under storageKey.
 function writeCosts(storageKey, costs) {
   localStorage.setItem(storageKey, JSON.stringify(costs));
 }

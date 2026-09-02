@@ -27,14 +27,18 @@ const monthNames = [
   'December'
 ];
 
+// month is 1-12, matching db.js's month convention.
 export function getMonthName(month) {
   return monthNames[month - 1] ?? String(month);
 }
 
+// Shallow copy so PDF cell formatting never mutates the model's own rows.
 function copyRows(rows) {
   return rows.map((row) => ({ ...row }));
 }
 
+// PDF table cells are plain text, so numeric fields need explicit
+// formatting here rather than relying on a spreadsheet's own number types.
 function formatPdfCell(key, value) {
   if (key === 'sum' || key === 'total') {
     return formatDisplayAmount(value);
@@ -155,6 +159,7 @@ export function buildPieChartExportModel({ report, chartData }) {
   };
 }
 
+// Reshapes yearlyResult's 12 monthly totals into the generic model shape.
 export function buildBarChartExportModel({ yearlyResult }) {
   const rows = yearlyResult.monthlyTotals.map((entry) => ({
     month: entry.label,

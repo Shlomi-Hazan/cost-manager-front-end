@@ -78,6 +78,7 @@ function AppLayout({ activePageId, appTitle, children, navigationItems, onNaviga
         </Toolbar>
       </AppBar>
 
+      {/* Whichever page App.jsx has selected renders here as children. */}
       <Container
         component="main"
         maxWidth="xl"

@@ -157,13 +157,19 @@ taking precedence on any conflict) and brought into compliance:
   reports, exchange-rate fetching) — see `docs/REQUIREMENTS.md` R-120/R-122
   for the reasoning and for why this was not extended to every React
   component.
+- `UPPER_SNAKE_CASE` module-level constants (e.g. `SUPPORTED_CURRENCIES`,
+  `EXCHANGE_RATES_CACHE_KEY`) were renamed to camelCase, matching the style
+  guide's naming-convention rule with no stated exception for constants.
 - `npm run lint`, `npm test` (28 files / 334 tests), and `npm run build`
   all pass, and the official Vanilla `db.js` compatibility sample
   (`openCostsDB`/`addCost`/`getReport`) was re-verified after every change.
 
-This is a large, project-wide diff. It is open for review and has not yet
-been merged into `main`; see `docs/REQUIREMENTS.md` §18.1 for the full audit
-trail.
+This was a large, project-wide diff, merged into `main` across several
+pull requests ([#47](https://github.com/Shlomi-Hazan/cost-manager-front-end/pull/47),
+[#48](https://github.com/Shlomi-Hazan/cost-manager-front-end/pull/48),
+[#49](https://github.com/Shlomi-Hazan/cost-manager-front-end/pull/49)); see
+`docs/REQUIREMENTS.md` §18.1 for the full audit trail. Comment-density
+compliance is an ongoing refinement, tracked in the same section.
 
 ### Milestone 15 — Final Requirements Audit (Issue #13, Stage A)
 

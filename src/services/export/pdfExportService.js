@@ -23,6 +23,7 @@ async function createPdfDocument() {
   };
 }
 
+// App name plus the report/chart title, at a fixed position on every page.
 function addTitle(doc, title) {
   doc.setFontSize(18);
   doc.text('Cost Manager', 40, 44);
@@ -30,6 +31,7 @@ function addTitle(doc, title) {
   doc.text(title, 40, 68);
 }
 
+// Prints each summary line and returns the y position content can resume at.
 function addMetadata(doc, lines, startY = 94) {
   doc.setFontSize(10);
   lines.forEach((line, index) => {
@@ -39,10 +41,14 @@ function addMetadata(doc, lines, startY = 94) {
   return startY + lines.length * 16 + 12;
 }
 
+// jsPDF's own output() call, isolated so callers don't need to know the
+// exact format string ('arraybuffer') used to build the download Blob.
 function outputPdfBytes(doc) {
   return doc.output('arraybuffer');
 }
 
+// Shown instead of a table when there is nothing to render (no rows, no
+// chart image), so the PDF never has a blank, confusing page.
 function addNoDataMessage(doc, message, y) {
   doc.setFontSize(10);
   doc.text(message, 40, y);
@@ -50,6 +56,8 @@ function addNoDataMessage(doc, message, y) {
   return y + 20;
 }
 
+// Chart PDFs use different summary fields than report PDFs (see
+// exportModels.js's buildPieChartExportModel/buildBarChartExportModel).
 function getChartMetadataLines(model) {
   if (model.type === 'pie-chart') {
     return [
@@ -68,6 +76,8 @@ function getChartMetadataLines(model) {
   ];
 }
 
+// Scales an image down (preserving aspect ratio) to fit a maxWidth x
+// maxHeight box; never scales up, so small captures stay their real size.
 export function fitImageWithinBounds({ width, height, maxWidth, maxHeight }) {
   const scale = Math.min(maxWidth / width, maxHeight / height);
 
@@ -108,6 +118,8 @@ function addChartImage(doc, chartImageDataUrl, y) {
   return y + size.height + 20;
 }
 
+// Builds a Monthly/Yearly report PDF: title, summary metadata, then the
+// full data table via jspdf-autotable.
 export async function createReportPdfBuffer(model) {
   const { autoTable, doc } = await createPdfDocument();
 
@@ -125,6 +137,8 @@ export async function createReportPdfBuffer(model) {
     addNoDataMessage(doc, 'No costs found for this period.', nextY);
   }
 
+  // jspdf-autotable draws the actual data grid; startY leaves room for the
+  // no-data message above when there are no rows to show.
   autoTable(doc, {
     head: [model.columns],
     body: getModelRowsForPdf(model),
@@ -136,6 +150,8 @@ export async function createReportPdfBuffer(model) {
   return outputPdfBytes(doc);
 }
 
+// Builds a Pie/Bar chart PDF: title, summary metadata, the chart image
+// (when one was successfully captured), then the underlying data table.
 export async function createChartPdfBuffer(model, chartImageDataUrl = null) {
   const { autoTable, doc } = await createPdfDocument();
 
@@ -163,6 +179,8 @@ export async function createChartPdfBuffer(model, chartImageDataUrl = null) {
   return outputPdfBytes(doc);
 }
 
+// Shared save step: build the PDF bytes, wrap them in a Blob, then trigger
+// the browser download via downloadService.js.
 export async function downloadPdf(createBuffer, filename) {
   const buffer = await createBuffer();
   const blob = new Blob([buffer], { type: 'application/pdf' });
@@ -174,6 +192,8 @@ export function downloadReportPdf(model, filename) {
   return downloadPdf(() => createReportPdfBuffer(model), filename);
 }
 
+// chartImageDataUrl may be null (e.g. an empty/all-zero chart with nothing
+// to rasterize); createChartPdfBuffer() falls back to a text message.
 export function downloadChartPdf(model, filename, chartImageDataUrl) {
   return downloadPdf(
     () => createChartPdfBuffer(model, chartImageDataUrl),

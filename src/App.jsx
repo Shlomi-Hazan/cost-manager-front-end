@@ -70,6 +70,8 @@ const pages = [
 function App() {
   const [activePageId, setActivePageId] = useState(pages[0].id);
 
+  // Falls back to the first page if activePageId ever fails to match (it
+  // shouldn't, since only AppLayout's own tabs can set it).
   const activePage = useMemo(
     () => pages.find((page) => page.id === activePageId) ?? pages[0],
     [activePageId]

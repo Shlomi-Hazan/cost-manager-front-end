@@ -115,6 +115,7 @@ function validateEditValues(values) {
   };
 }
 
+// Translates db.js's date-validation error into a friendlier form message.
 function getDatabaseErrorMessage(error, fallbackMessage) {
   if (error instanceof Error && error.message.includes('real calendar date')) {
     return 'Enter a real calendar date.';
@@ -124,6 +125,9 @@ function getDatabaseErrorMessage(error, fallbackMessage) {
 }
 
 function ManageCostsPage() {
+  // Saved-costs list, a page-level feedback banner, and separate
+  // edit/delete dialog state (each dialog has its own draft values,
+  // errors, and feedback so the two flows never interfere with each other).
   const [costs, setCosts] = useState(() => costsDatabase.getAllCosts());
   const [feedback, setFeedback] = useState(null);
   const [editCost, setEditCost] = useState(null);
@@ -133,6 +137,7 @@ function ManageCostsPage() {
   const [deleteCost, setDeleteCost] = useState(null);
   const [deleteFeedback, setDeleteFeedback] = useState('');
 
+  // Re-reads the full list from db.js after any add/edit/delete elsewhere.
   function loadCosts() {
     setCosts(costsDatabase.getAllCosts());
   }
@@ -146,6 +151,7 @@ function ManageCostsPage() {
     setFeedback(null);
   }
 
+  // Closing without saving discards the in-progress edit entirely.
   function handleCloseEdit() {
     setEditCost(null);
     setEditValues(null);
@@ -153,6 +159,7 @@ function ManageCostsPage() {
     setEditFeedback('');
   }
 
+  // Generic field handler for the edit dialog's plain text/select inputs.
   function handleEditFieldChange(event) {
     const { name, value } = event.target;
 
@@ -181,6 +188,7 @@ function ManageCostsPage() {
     setEditFeedback('');
   }
 
+  // ...and onInputChange for free typing; both update the same field.
   function handleCategoryInputChange(_event, value) {
     setEditValues((currentValues) => ({
       ...currentValues,
@@ -265,6 +273,7 @@ function ManageCostsPage() {
     setDeleteFeedback('');
   }
 
+  // Runs only after the user confirms in the delete dialog.
   function handleConfirmDelete() {
     setDeleteFeedback('');
 
@@ -274,6 +283,8 @@ function ManageCostsPage() {
       loadCosts();
       handleCloseDelete();
 
+      // A null result means the id no longer exists (e.g. deleted from
+      // another tab) — not an error, just a stale row to refresh away.
       if (deletedCost === null) {
         setFeedback({
           severity: 'warning',
@@ -299,6 +310,7 @@ function ManageCostsPage() {
 
       {feedback ? <Alert severity={feedback.severity}>{feedback.message}</Alert> : null}
 
+      {/* Empty state vs. the saved-costs table below. */}
       {costs.length === 0 ? (
         <Alert icon={<InboxOutlinedIcon aria-hidden="true" />} severity="info">
           No costs have been added yet. Add costs from the Add Cost section.
