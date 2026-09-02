@@ -8,9 +8,12 @@ import {
 // the Monthly and Yearly report pages, so both get identical column-header
 // click behavior "for free" instead of reimplementing it twice.
 export function useReportSorting(costs) {
+  // null sortKey means "unsorted" (insertion order); see sortReportCosts().
   const [sortKey, setSortKey] = useState(null);
   const [sortDirection, setSortDirection] = useState(reportSortDirections.asc);
 
+  // Recomputed only when costs/sortKey/sortDirection actually change, not
+  // on every render, since sorting a large list is not free.
   const sortedCosts = useMemo(() => {
     return sortReportCosts(costs, { sortKey, sortDirection });
   }, [costs, sortDirection, sortKey]);
@@ -32,6 +35,8 @@ export function useReportSorting(costs) {
     });
   }
 
+  // Called by report pages whenever the underlying report is regenerated,
+  // so a stale sort from the previous report never carries over.
   function resetSort() {
     setSortKey(null);
     setSortDirection(reportSortDirections.asc);

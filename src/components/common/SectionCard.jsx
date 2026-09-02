@@ -13,6 +13,7 @@ function SectionCard({ children, component = 'section', sx = {}, ...props }) {
       sx={{
         border: '1px solid',
         borderColor: 'divider',
+        // Caller's own sx merges last, so it can override any of these.
         p: 3,
         position: 'relative',
         ...sx

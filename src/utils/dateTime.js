@@ -69,6 +69,7 @@ export function parseDateInput(value) {
     return null;
   }
 
+  // Shape matches db.js's own { day, month, year } internal date fields.
   return {
     day,
     month,
@@ -93,6 +94,7 @@ export function parseTimeInput(value) {
   const hour = Number(hourValue);
   const minute = Number(minuteValue);
 
+  // Same lightweight range check as parseDateInput() above.
   if (
     !Number.isInteger(hour) ||
     !Number.isInteger(minute) ||

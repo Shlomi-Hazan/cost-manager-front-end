@@ -18,11 +18,14 @@ import {
 import { formatDateForDisplay, formatTime } from '../../utils/dateTime.js';
 import { reportSortKeys } from '../../utils/reportSorting.js';
 
+// The only thing that actually varies between the Monthly and Yearly tables.
 const dateModes = {
   monthly: 'monthly',
   yearly: 'yearly'
 };
 
+// Whole numbers display with no decimals; converted amounts keep up to 6
+// fraction digits so small currency differences remain visible.
 function formatAmount(amount) {
   return Number.isInteger(amount)
     ? String(amount)
@@ -31,22 +34,29 @@ function formatAmount(amount) {
       });
 }
 
+// "Day" matches the required getReport() report-item shape; "Date" is used
+// only for the team's own Yearly Report, where rows span 12 months.
 function getDateLabel(dateMode) {
   return dateMode === dateModes.yearly ? 'Date' : 'Day';
 }
 
+// aria-label for the <Table>, read by screen readers.
 function getTableLabel(dateMode) {
   return dateMode === dateModes.yearly
     ? 'Yearly report costs'
     : 'Monthly report costs';
 }
 
+// Yearly rows show the full date; Monthly rows show only the day, matching
+// the required { day } report-item shape they were built from.
 function formatDateCell(cost, dateMode) {
   return dateMode === dateModes.yearly
     ? formatDateForDisplay(cost.date)
     : cost.date.day;
 }
 
+// One sortable header cell: shows the current sort arrow only when this
+// column is the active sort key, and requests a re-sort on click.
 function SortableHeaderCell({
   align,
   label,
@@ -57,6 +67,7 @@ function SortableHeaderCell({
 }) {
   const isActive = sortKey === targetSortKey;
 
+  // sortDirection is only meaningful/shown for the currently active column.
   return (
     <TableCell align={align} sortDirection={isActive ? sortDirection : false}>
       <TableSortLabel
@@ -70,6 +81,7 @@ function SortableHeaderCell({
   );
 }
 
+// Renders one full report table: sortable headers, then the data rows.
 function SortableReportTable({
   costs,
   dateMode,
@@ -90,6 +102,7 @@ function SortableReportTable({
               sortKey={sortKey}
               targetSortKey={reportSortKeys.date}
             />
+            {/* Same date/time pairing, just for the Time column. */}
             <SortableHeaderCell
               label="Time"
               onRequestSort={onRequestSort}
@@ -105,6 +118,7 @@ function SortableReportTable({
               sortKey={sortKey}
               targetSortKey={reportSortKeys.description}
             />
+            {/* Same text-column pairing, just for the Category column. */}
             <SortableHeaderCell
               label="Category"
               onRequestSort={onRequestSort}

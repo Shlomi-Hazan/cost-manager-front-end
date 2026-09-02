@@ -54,6 +54,7 @@ import { formatPositiveBarValueLabel } from '../../utils/chartPresentation.js';
  * filters. Excel/PDF export is a TEAM EXTENSION.
  */
 
+// Defaults the form to the current year in USD on first render.
 function getCurrentFilters() {
   return {
     year: String(new Date().getFullYear()),
@@ -61,6 +62,7 @@ function getCurrentFilters() {
   };
 }
 
+// Validates the filter form before generating a chart.
 function validateFilters(filters) {
   const errors = {};
   const trimmedYear = filters.year.trim();
@@ -84,6 +86,7 @@ function validateFilters(filters) {
   };
 }
 
+// Maps a thrown error to a user-facing message for the chart's error alert.
 function getYearlyErrorMessage(error) {
   if (
     error instanceof Error &&
@@ -97,6 +100,8 @@ function getYearlyErrorMessage(error) {
 }
 
 function YearlyBarChartSection() {
+  // Form/result state: filters the user is editing, plus the last
+  // successfully generated chart (or the error that stopped it).
   const [filters, setFilters] = useState(getCurrentFilters);
   const [errors, setErrors] = useState({});
   const [yearlyResult, setYearlyResult] = useState(null);
@@ -107,6 +112,8 @@ function YearlyBarChartSection() {
   const [hasGenerated, setHasGenerated] = useState(false);
   const chartContainerRef = useRef(null);
 
+  // Editing any filter clears the previous result/errors, so stale output
+  // is never shown next to filters that no longer match it.
   function handleChange(event) {
     const { name, value } = event.target;
 
@@ -124,6 +131,7 @@ function YearlyBarChartSection() {
     setHasGenerated(false);
   }
 
+  // Validates, then fetches rates and builds the 12-month totals.
   async function handleSubmit(event) {
     event.preventDefault();
 
@@ -141,6 +149,8 @@ function YearlyBarChartSection() {
     setIsLoading(true);
 
     try {
+      // Refreshing rates here keeps the cache warm; a same-currency chart
+      // can still succeed below even if this fails.
       try {
         await refreshExchangeRates();
       } catch {
@@ -164,6 +174,8 @@ function YearlyBarChartSection() {
       });
       setHasGenerated(true);
     } catch (error) {
+      // A failed generation clears any previous result rather than leaving
+      // a stale chart on screen next to the new error message.
       setYearlyResult(null);
       setHasGenerated(false);
       setErrorMessage(getYearlyErrorMessage(error));
@@ -172,10 +184,12 @@ function YearlyBarChartSection() {
     }
   }
 
+  // Shared shape for both export functions below.
   function buildCurrentExportModel() {
     return buildBarChartExportModel({ yearlyResult });
   }
 
+  // TEAM EXTENSION: exports the current chart's data as a real .xlsx file.
   async function handleExcelExport() {
     if (!yearlyResult) {
       return;
@@ -200,6 +214,7 @@ function YearlyBarChartSection() {
     }
   }
 
+  // TEAM EXTENSION: exports a PDF with both the chart image and its data.
   async function handlePdfExport() {
     if (!yearlyResult) {
       return;
@@ -209,6 +224,7 @@ function YearlyBarChartSection() {
     setExportingAction('pdf');
 
     try {
+      // Snapshots the rendered SVG chart as a PNG to embed in the PDF.
       const chartImageDataUrl = await captureChartSvgAsPngDataUrl(
         chartContainerRef.current
       );
@@ -233,6 +249,8 @@ function YearlyBarChartSection() {
     }
   }
 
+  // Derived from state rather than stored separately, so they can never
+  // drift out of sync with the last generated yearlyResult.
   const monthlyTotals = yearlyResult?.monthlyTotals ?? [];
   const hasYearlyCosts = monthlyTotals.some((entry) => entry.total > 0);
 
@@ -243,6 +261,7 @@ function YearlyBarChartSection() {
         onSubmit={handleSubmit}
       >
         <Stack spacing={3}>
+          {/* Page title/description, then the filter form below. */}
           <Box>
             <Typography component="h2" variant="h2">
               Yearly 12-Month Bar Chart
@@ -254,6 +273,7 @@ function YearlyBarChartSection() {
 
           {errorMessage ? <Alert severity="error">{errorMessage}</Alert> : null}
 
+          {/* Filter fields: year/currency, then the generate button. */}
           <Box
             sx={{
               display: 'grid',
@@ -264,6 +284,7 @@ function YearlyBarChartSection() {
               }
             }}
           >
+            {/* Year: free numeric input, unlike Month's fixed select list elsewhere. */}
             <TextField
               error={Boolean(errors.year)}
               helperText={errors.year ?? ' '}
@@ -274,6 +295,7 @@ function YearlyBarChartSection() {
               value={filters.year}
             />
 
+            {/* Currency select, restricted to the four required identifiers. */}
             <TextField
               error={Boolean(errors.currency)}
               helperText={errors.currency ?? ' '}
@@ -300,6 +322,7 @@ function YearlyBarChartSection() {
                 type="submit"
                 variant="contained"
               >
+                {/* Spinner label swap while the chart is being generated. */}
                 <LoadingButtonLabel
                   isLoading={isLoading}
                   loadingText="Generating..."
@@ -312,12 +335,14 @@ function YearlyBarChartSection() {
         </Stack>
       </SectionCard>
 
+      {/* Empty/info state shown before the first successful generation. */}
       {!hasGenerated && !errorMessage && !isLoading ? (
         <Alert severity="info">
           Choose filters and generate a yearly 12-month Bar Chart.
         </Alert>
       ) : null}
 
+      {/* Generated-chart section: totals, exports, then the chart itself. */}
       {yearlyResult ? (
         <SectionCard>
           <Stack spacing={3}>
@@ -444,6 +469,7 @@ function YearlyBarChartSection() {
                 {/* Column order matches the header cells above. */}
                 <TableBody>
                   {monthlyTotals.map((entry) => (
+                    // One row per calendar month, including zero-total months.
                     <TableRow key={entry.month}>
                       <TableCell>{entry.label}</TableCell>
                       <TableCell align="right">

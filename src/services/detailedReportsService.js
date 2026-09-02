@@ -47,6 +47,8 @@ export function buildDetailedMonthlyReport(database, currency, year, month) {
     .getAllCosts()
     .filter((cost) => cost.date.year === year && cost.date.month === month)
     .map(copyDetailedCost);
+  // Required total, unmodified: getAllCosts()'s filter above is only for
+  // the team's own row display, never fed back into the total itself.
   const monthlyReport = database.getReport(currency, year, month);
 
   return {

@@ -32,6 +32,8 @@ import {
  * previously working source or the app's cached rates.
  */
 
+// Reads the current custom/default URL split into the shape the page's
+// state uses, so the same logic can seed state and refresh it after saves.
 function getInitialState() {
   const customUrl = getCustomExchangeRatesUrl();
 
@@ -55,6 +57,8 @@ function SettingsPage() {
 
   const isBusy = activeAction !== null;
 
+  // Re-derives settingsState from storage after a save/restore, rather than
+  // guessing the new values, so it always reflects what was actually saved.
   function updateSettingsState(inputUrl) {
     const customUrl = getCustomExchangeRatesUrl();
 
@@ -66,6 +70,8 @@ function SettingsPage() {
     });
   }
 
+  // Typing clears any previous error/feedback, since the candidate URL has
+  // changed and hasn't been validated yet.
   function handleInputChange(event) {
     setSettingsState((currentState) => ({
       ...currentState,
@@ -75,6 +81,8 @@ function SettingsPage() {
     setFeedback(null);
   }
 
+  // Validates non-empty, then fetches to prove the URL is a working source
+  // before ever persisting it (see the fetch-before-persist note above).
   async function handleSaveCustomSource(event) {
     event.preventDefault();
 
@@ -132,6 +140,7 @@ function SettingsPage() {
         severity: 'success'
       });
     } catch {
+      // Restore fails: keep showing the previous input, don't lose it.
       updateSettingsState(settingsState.inputUrl);
       setFeedback({
         message: 'Could not restore the default exchange-rate source. Please try again.',
@@ -148,6 +157,7 @@ function SettingsPage() {
         Manage the exchange-rate source used by reports and charts.
       </PageHeader>
 
+      {/* Custom-URL form: submitting it calls handleSaveCustomSource above. */}
       <SectionCard
         component="form"
         onSubmit={handleSaveCustomSource}
@@ -199,6 +209,7 @@ function SettingsPage() {
               spacing={1}
               sx={{ alignItems: 'flex-start', minWidth: 0 }}
             >
+              {/* Icon plus URL text, allowed to wrap across lines if long. */}
               <LinkOutlinedIcon
                 aria-hidden="true"
                 color="primary"
@@ -242,6 +253,7 @@ function SettingsPage() {
             }}
           >
             <Button disabled={isBusy} type="submit" variant="contained">
+              {/* Submitting the form calls handleSaveCustomSource above. */}
               <LoadingButtonLabel
                 isLoading={activeAction === 'save'}
                 loadingText="Testing..."

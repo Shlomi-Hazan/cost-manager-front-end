@@ -50,6 +50,7 @@ function validateForm(values) {
     nextErrors.sum = 'Enter a valid numeric sum.';
   }
 
+  // Currency/category/description: presence and support checks only.
   if (!supportedCurrencies.includes(values.currency)) {
     nextErrors.currency = 'Select a supported currency.';
   }
@@ -78,6 +79,7 @@ function AddCostPage() {
   const [errors, setErrors] = useState({});
   const [feedback, setFeedback] = useState(null);
 
+  // Generic field handler for the plain text/select inputs.
   function handleChange(event) {
     const { name, value } = event.target;
 
@@ -92,6 +94,7 @@ function AddCostPage() {
     setFeedback(null);
   }
 
+  // Autocomplete fires onChange for a picked suggestion...
   function handleCategoryChange(_event, value) {
     setFormValues((currentValues) => ({
       ...currentValues,
@@ -104,6 +107,7 @@ function AddCostPage() {
     setFeedback(null);
   }
 
+  // ...and onInputChange for free typing; both update the same field.
   function handleCategoryInputChange(_event, value) {
     setFormValues((currentValues) => ({
       ...currentValues,
@@ -116,6 +120,7 @@ function AddCostPage() {
     setFeedback(null);
   }
 
+  // Validates locally first, then calls the required addCost().
   function handleSubmit(event) {
     event.preventDefault();
 
@@ -163,6 +168,7 @@ function AddCostPage() {
         Enter a cost item and save it to your Cost Manager database.
       </PageHeader>
 
+      {/* Add-cost form: submitting it calls handleSubmit above. */}
       <SectionCard
         component="form"
         onSubmit={handleSubmit}
@@ -206,6 +212,7 @@ function AddCostPage() {
               select
               value={formValues.currency}
             >
+              {/* One MenuItem per required currency identifier. */}
               {supportedCurrencies.map((currency) => (
                 <MenuItem key={currency} value={currency}>
                   {currency}

@@ -1,10 +1,12 @@
 import { useMemo, useState } from 'react';
+// One icon per page entry, in the same order as the pages array below.
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutlineOutlined';
 import AssessmentOutlinedIcon from '@mui/icons-material/AssessmentOutlined';
 import DashboardOutlinedIcon from '@mui/icons-material/DashboardOutlined';
 import DonutLargeOutlinedIcon from '@mui/icons-material/DonutLargeOutlined';
 import EditNoteOutlinedIcon from '@mui/icons-material/EditNoteOutlined';
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
+// One page component per navigation entry, plus the shared layout shell.
 import DashboardPage from './pages/DashboardPage.jsx';
 import AddCostPage from './pages/AddCostPage.jsx';
 import ManageCostsPage from './pages/ManageCostsPage.jsx';
@@ -35,6 +37,7 @@ const pages = [
     icon: <AddCircleOutlineIcon aria-hidden="true" fontSize="small" />,
     component: AddCostPage
   },
+  // Manage Costs: view/edit/delete existing entries (X-002/X-003).
   {
     id: 'manage-costs',
     label: 'Manage Costs',
@@ -48,6 +51,7 @@ const pages = [
     icon: <AssessmentOutlinedIcon aria-hidden="true" fontSize="small" />,
     component: ReportsPage
   },
+  // Charts: pie (R-070/R-071) and, nested inside the page, bar (R-080/R-081).
   {
     id: 'charts',
     label: 'Charts',
@@ -66,6 +70,8 @@ const pages = [
 function App() {
   const [activePageId, setActivePageId] = useState(pages[0].id);
 
+  // Falls back to the first page if activePageId ever fails to match (it
+  // shouldn't, since only AppLayout's own tabs can set it).
   const activePage = useMemo(
     () => pages.find((page) => page.id === activePageId) ?? pages[0],
     [activePageId]

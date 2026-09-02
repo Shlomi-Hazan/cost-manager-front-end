@@ -90,6 +90,7 @@ const chartColors = [
   '#0891b2'
 ];
 
+// Defaults the form to the current month/year in USD on first render.
 function getCurrentFilters() {
   const now = new Date();
 
@@ -104,6 +105,7 @@ function getMonthLabel(month) {
   return months.find((option) => option.value === month)?.label ?? String(month);
 }
 
+// Validates the filter form before generating a chart.
 function validateFilters(filters) {
   const errors = {};
   const chartMonth = Number(filters.month);
@@ -120,6 +122,7 @@ function validateFilters(filters) {
     errors.year = 'Enter a whole chart year.';
   }
 
+  // Currency: must be one of the four required identifiers.
   if (!supportedCurrencies.includes(filters.currency)) {
     errors.currency = 'Select a supported currency.';
   }
@@ -132,6 +135,7 @@ function validateFilters(filters) {
   };
 }
 
+// Maps a thrown error to a user-facing message for the chart's error alert.
 function getChartErrorMessage(error) {
   if (
     error instanceof Error &&
@@ -165,6 +169,7 @@ function renderPieLabel(labelProps) {
   const x = labelProps.cx + radius * Math.cos(radians);
   const y = labelProps.cy + radius * Math.sin(radians);
 
+  // Dark stroke outline keeps the white label text readable on any slice color.
   return (
     <text
       dominantBaseline="central"
@@ -184,6 +189,8 @@ function renderPieLabel(labelProps) {
 }
 
 function ChartsPage() {
+  // Form/result state: filters the user is editing, plus the last
+  // successfully generated chart (or the error that stopped it).
   const [filters, setFilters] = useState(getCurrentFilters);
   const [errors, setErrors] = useState({});
   const [chartResult, setChartResult] = useState(null);
@@ -197,6 +204,8 @@ function ChartsPage() {
   // reason a ref is needed here.
   const chartContainerRef = useRef(null);
 
+  // Editing any filter clears the previous result/errors, so stale output
+  // is never shown next to filters that no longer match it.
   function handleChange(event) {
     const { name, value } = event.target;
 
@@ -214,6 +223,7 @@ function ChartsPage() {
     setHasGenerated(false);
   }
 
+  // Validates, then fetches rates and builds the category aggregation.
   async function handleSubmit(event) {
     event.preventDefault();
 
@@ -259,12 +269,15 @@ function ChartsPage() {
       });
       setHasGenerated(true);
     } catch (error) {
+      // A failed generation clears any previous result rather than leaving
+      // a stale chart on screen next to the new error message.
       setErrorMessage(getChartErrorMessage(error));
     } finally {
       setIsLoading(false);
     }
   }
 
+  // Shared shape for both export functions below.
   function buildCurrentExportModel() {
     return buildPieChartExportModel({
       chartData,
@@ -272,6 +285,7 @@ function ChartsPage() {
     });
   }
 
+  // TEAM EXTENSION: exports the current chart's data as a real .xlsx file.
   async function handleExcelExport() {
     if (!chartResult) {
       return;
@@ -297,6 +311,7 @@ function ChartsPage() {
     }
   }
 
+  // TEAM EXTENSION: exports a PDF with both the chart image and its data.
   async function handlePdfExport() {
     if (!chartResult) {
       return;
@@ -334,6 +349,8 @@ function ChartsPage() {
     }
   }
 
+  // Derived from state rather than stored separately, so they can never
+  // drift out of sync with the last generated chartResult.
   const chartData = chartResult?.chartData ?? [];
   const pieDisplayData = addCategoryShare(chartData);
   const hasChartData = chartData.length > 0;
@@ -350,6 +367,7 @@ function ChartsPage() {
         onSubmit={handleSubmit}
       >
         <Stack spacing={3}>
+          {/* Page title/description, then the filter form below. */}
           <Box>
             <Typography component="h2" variant="h2">
               Monthly Category Pie Chart
@@ -361,6 +379,7 @@ function ChartsPage() {
 
           {errorMessage ? <Alert severity="error">{errorMessage}</Alert> : null}
 
+          {/* Filter fields: month/year/currency, then the generate button. */}
           <Box
             sx={{
               display: 'grid',
@@ -425,6 +444,7 @@ function ChartsPage() {
                 type="submit"
                 variant="contained"
               >
+                {/* Spinner label swap while the chart is being generated. */}
                 <LoadingButtonLabel
                   isLoading={isLoading}
                   loadingText="Generating..."
@@ -437,12 +457,14 @@ function ChartsPage() {
         </Stack>
       </SectionCard>
 
+      {/* Empty state vs. the generated chart section below. */}
       {!hasGenerated && !errorMessage && !isLoading ? (
         <Alert severity="info">
           Choose filters and generate a monthly category Pie Chart.
         </Alert>
       ) : null}
 
+      {/* Generated-chart section: title/currency, exports, then the chart itself. */}
       {chartResult ? (
         <SectionCard>
           <Stack spacing={3}>
@@ -498,6 +520,7 @@ function ChartsPage() {
               </Button>
             </Stack>
 
+            {/* Two distinct empty states before the actual pie chart. */}
             {!hasChartData ? (
               <Alert severity="info">No costs found for this month.</Alert>
             ) : !hasPositiveChartData ? (
@@ -517,6 +540,7 @@ function ChartsPage() {
               >
                 <ResponsiveContainer height="100%" width="100%">
                   <PieChart>
+                    {/* innerRadius > 0 makes this a donut rather than a solid pie. */}
                     <Pie
                       data={pieDisplayData}
                       dataKey="total"

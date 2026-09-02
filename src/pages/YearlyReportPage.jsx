@@ -41,6 +41,7 @@ import { formatDisplayAmount } from '../utils/amountFormat.js';
  * comments on the shared pattern (rate refresh, sortable table, exports).
  */
 
+// Defaults the form to the current year in USD on first render.
 function getCurrentFilters() {
   return {
     year: String(new Date().getFullYear()),
@@ -48,6 +49,7 @@ function getCurrentFilters() {
   };
 }
 
+// Validates the filter form before generating a report.
 function validateFilters(filters) {
   const errors = {};
   const trimmedYear = filters.year.trim();
@@ -59,6 +61,7 @@ function validateFilters(filters) {
     errors.year = 'Enter a whole report year.';
   }
 
+  // Currency: must be one of the four required identifiers.
   if (!supportedCurrencies.includes(filters.currency)) {
     errors.currency = 'Select a supported currency.';
   }
@@ -70,6 +73,7 @@ function validateFilters(filters) {
   };
 }
 
+// Maps a thrown error to a user-facing message for the report's error alert.
 function getReportErrorMessage(error) {
   if (
     error instanceof Error &&
@@ -83,6 +87,8 @@ function getReportErrorMessage(error) {
 }
 
 function YearlyReportPage({ headingComponent = 'h1' }) {
+  // Form/result state: filters the user is editing, plus the last
+  // successfully generated report (or the error that stopped it).
   const [filters, setFilters] = useState(getCurrentFilters);
   const [errors, setErrors] = useState({});
   const [report, setReport] = useState(null);
@@ -91,6 +97,7 @@ function YearlyReportPage({ headingComponent = 'h1' }) {
   const [exportingAction, setExportingAction] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [hasGenerated, setHasGenerated] = useState(false);
+  // TEAM EXTENSION (X-006): shared sorting state for the report table below.
   const {
     sortedCosts,
     sortDirection,
@@ -99,6 +106,8 @@ function YearlyReportPage({ headingComponent = 'h1' }) {
     resetSort
   } = useReportSorting(report?.costs ?? []);
 
+  // Editing any filter clears the previous result/errors, so stale output
+  // is never shown next to filters that no longer match it.
   function handleChange(event) {
     const { name, value } = event.target;
 
@@ -117,6 +126,7 @@ function YearlyReportPage({ headingComponent = 'h1' }) {
     resetSort();
   }
 
+  // Validates, then fetches rates and builds the detailed yearly report.
   async function handleSubmit(event) {
     event.preventDefault();
 
@@ -136,6 +146,8 @@ function YearlyReportPage({ headingComponent = 'h1' }) {
     setIsLoading(true);
 
     try {
+      // Refreshing rates here keeps the cache warm; a same-currency report
+      // can still succeed below even if this fails.
       try {
         await refreshExchangeRates();
       } catch {
@@ -151,12 +163,15 @@ function YearlyReportPage({ headingComponent = 'h1' }) {
       setReport(nextReport);
       setHasGenerated(true);
     } catch (error) {
+      // A failed generation clears any previous result rather than leaving
+      // a stale report on screen next to the new error message.
       setErrorMessage(getReportErrorMessage(error));
     } finally {
       setIsLoading(false);
     }
   }
 
+  // Shared shape for both export functions below.
   function buildCurrentExportModel() {
     return buildYearlyReportExportModel({
       costs: sortedCosts,
@@ -164,6 +179,7 @@ function YearlyReportPage({ headingComponent = 'h1' }) {
     });
   }
 
+  // TEAM EXTENSION: exports the current report as a real .xlsx file.
   async function handleExcelExport() {
     if (!report) {
       return;
@@ -188,6 +204,7 @@ function YearlyReportPage({ headingComponent = 'h1' }) {
     }
   }
 
+  // TEAM EXTENSION: exports the current report as a PDF.
   async function handlePdfExport() {
     if (!report) {
       return;
@@ -196,6 +213,8 @@ function YearlyReportPage({ headingComponent = 'h1' }) {
     setExportErrorMessage('');
     setExportingAction('pdf');
 
+    // Reuses buildCurrentExportModel() so the PDF and Excel exports always
+    // agree on which rows/summary they're built from.
     try {
       await pdfExportService.downloadReportPdf(
         buildCurrentExportModel(),
@@ -218,6 +237,7 @@ function YearlyReportPage({ headingComponent = 'h1' }) {
         Select a year and currency to review all cost entries for that year.
       </PageHeader>
 
+      {/* Filter form: submitting it calls handleSubmit above. */}
       <SectionCard
         component="form"
         onSubmit={handleSubmit}
@@ -225,6 +245,7 @@ function YearlyReportPage({ headingComponent = 'h1' }) {
         <Stack spacing={3}>
           {errorMessage ? <Alert severity="error">{errorMessage}</Alert> : null}
 
+          {/* Filter fields: year/currency, then the generate button. */}
           <Box
             sx={{
               display: 'grid',
@@ -235,6 +256,7 @@ function YearlyReportPage({ headingComponent = 'h1' }) {
               }
             }}
           >
+            {/* Year: free numeric input, unlike Month's fixed select list elsewhere. */}
             <TextField
               error={Boolean(errors.year)}
               helperText={errors.year ?? ' '}
@@ -292,6 +314,7 @@ function YearlyReportPage({ headingComponent = 'h1' }) {
         </Alert>
       ) : null}
 
+      {/* Generated-report section: totals, exports, then the sortable table. */}
       {report ? (
         <SectionCard>
           <Stack spacing={3}>

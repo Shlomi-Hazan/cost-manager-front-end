@@ -6,6 +6,8 @@
  * the canvas back out as a PNG.
  */
 
+// Prefers the SVG's actual rendered size; falls back to its width/height
+// attributes, then a hardcoded default, if the element isn't laid out yet.
 function getSvgSize(svg) {
   const rect = svg.getBoundingClientRect();
   const width = rect.width || Number(svg.getAttribute('width')) || 800;
@@ -33,6 +35,8 @@ export function findChartSvgForCapture(container) {
   });
 }
 
+// Wraps the browser's Image loading callbacks in a Promise so the caller
+// can simply await the decoded image.
 function loadImage(url) {
   return new Promise((resolve, reject) => {
     const image = new Image();
@@ -43,6 +47,8 @@ function loadImage(url) {
   });
 }
 
+// Returns a PNG data URL of the chart, or null if no SVG was found to
+// capture (e.g. an empty/all-zero chart that rendered no visualization).
 export async function captureChartSvgAsPngDataUrl(container) {
   const svg = findChartSvgForCapture(container);
 
@@ -50,6 +56,8 @@ export async function captureChartSvgAsPngDataUrl(container) {
     return null;
   }
 
+  // Clone rather than capture the live SVG directly, so the on-screen
+  // chart is never touched by this export process.
   const { height, width } = getSvgSize(svg);
   const clone = svg.cloneNode(true);
 
@@ -64,6 +72,8 @@ export async function captureChartSvgAsPngDataUrl(container) {
   const url = URL.createObjectURL(blob);
 
   try {
+    // devicePixelRatio scaling keeps the exported PNG sharp on high-DPI
+    // screens instead of capturing at the SVG's raw CSS pixel size.
     const image = await loadImage(url);
     const canvas = document.createElement('canvas');
     const scale = window.devicePixelRatio || 1;
@@ -84,6 +94,7 @@ export async function captureChartSvgAsPngDataUrl(container) {
 
     return canvas.toDataURL('image/png');
   } finally {
+    // Always release the object URL, even if capture failed partway through.
     URL.revokeObjectURL(url);
   }
 }

@@ -73,6 +73,7 @@ function getMonthLabel(month) {
   return months.find((option) => option.value === month)?.label ?? String(month);
 }
 
+// Validates the filter form before generating a report.
 function validateFilters(filters) {
   const errors = {};
   const reportMonth = Number(filters.month);
@@ -93,6 +94,7 @@ function validateFilters(filters) {
     errors.year = 'Enter a whole report year.';
   }
 
+  // Currency: must be one of the four required identifiers.
   if (!supportedCurrencies.includes(filters.currency)) {
     errors.currency = 'Select a supported currency.';
   }
@@ -142,6 +144,8 @@ function MonthlyReportPage({ headingComponent = 'h1' }) {
     resetSort
   } = useReportSorting(report?.costs ?? []);
 
+  // Editing any filter clears the previous result/errors, so stale output
+  // is never shown next to filters that no longer match it.
   function handleChange(event) {
     const { name, value } = event.target;
 
@@ -160,6 +164,7 @@ function MonthlyReportPage({ headingComponent = 'h1' }) {
     resetSort();
   }
 
+  // Validates, then fetches rates and builds the detailed monthly report.
   async function handleSubmit(event) {
     event.preventDefault();
 
@@ -202,6 +207,8 @@ function MonthlyReportPage({ headingComponent = 'h1' }) {
       setReport(nextReport);
       setHasGenerated(true);
     } catch (error) {
+      // A failed generation clears any previous result rather than leaving
+      // a stale report on screen next to the new error message.
       setErrorMessage(getReportErrorMessage(error));
     } finally {
       setIsLoading(false);
@@ -218,6 +225,7 @@ function MonthlyReportPage({ headingComponent = 'h1' }) {
     });
   }
 
+  // TEAM EXTENSION: exports the current report as a real .xlsx file.
   async function handleExcelExport() {
     if (!report) {
       return;
@@ -243,6 +251,7 @@ function MonthlyReportPage({ headingComponent = 'h1' }) {
     }
   }
 
+  // TEAM EXTENSION: exports the current report as a PDF.
   async function handlePdfExport() {
     if (!report) {
       return;
@@ -251,6 +260,8 @@ function MonthlyReportPage({ headingComponent = 'h1' }) {
     setExportErrorMessage('');
     setExportingAction('pdf');
 
+    // Reuses buildCurrentExportModel() so the PDF and Excel exports always
+    // agree on which rows/summary they're built from.
     try {
       await pdfExportService.downloadReportPdf(
         buildCurrentExportModel(),
@@ -274,6 +285,7 @@ function MonthlyReportPage({ headingComponent = 'h1' }) {
         Select a month, year, and currency to review detailed cost entries.
       </PageHeader>
 
+      {/* Filter form: submitting it calls handleSubmit above. */}
       <SectionCard
         component="form"
         onSubmit={handleSubmit}
@@ -292,6 +304,7 @@ function MonthlyReportPage({ headingComponent = 'h1' }) {
               }
             }}
           >
+            {/* Month: fixed 12-entry select, unlike Year's free numeric input. */}
             <TextField
               error={Boolean(errors.month)}
               helperText={errors.month ?? ' '}
@@ -320,6 +333,7 @@ function MonthlyReportPage({ headingComponent = 'h1' }) {
               value={filters.year}
             />
 
+            {/* Currency select, restricted to the four required identifiers. */}
             <TextField
               error={Boolean(errors.currency)}
               helperText={errors.currency ?? ' '}
@@ -346,6 +360,7 @@ function MonthlyReportPage({ headingComponent = 'h1' }) {
                 type="submit"
                 variant="contained"
               >
+                {/* Spinner label swap while the report is being generated. */}
                 <LoadingButtonLabel
                   isLoading={isLoading}
                   loadingText="Generating..."
@@ -364,6 +379,7 @@ function MonthlyReportPage({ headingComponent = 'h1' }) {
         </Alert>
       ) : null}
 
+      {/* Generated-report section: totals, exports, then the sortable table. */}
       {report ? (
         <SectionCard>
           <Stack spacing={3}>

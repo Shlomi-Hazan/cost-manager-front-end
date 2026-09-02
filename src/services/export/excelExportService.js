@@ -8,6 +8,7 @@
  */
 import { downloadBlob } from './downloadService.js';
 
+// One sheet name per export type; also used as this module's rowsSheetName.
 const sheetNames = {
   summary: 'Summary',
   reportCosts: 'Costs',
@@ -15,10 +16,12 @@ const sheetNames = {
   monthlyTotals: 'Monthly Totals'
 };
 
+// Excel number-format strings, applied via numericCell() below.
 const amountFormatPattern = '#,##0.######';
 const percentageFormatPattern = '0.0%';
 const yearFormatPattern = '0';
 
+// Shared color palette for every cell style in this file.
 const colors = {
   primary: '#2563EB',
   darkText: '#1E293B',
@@ -42,6 +45,7 @@ const bodyCellStyle = {
   alignVertical: 'top'
 };
 
+// Character widths tuned per column so typical values fit without wrapping.
 const columnWidths = {
   Category: 22,
   Currency: 14,
@@ -64,6 +68,7 @@ async function loadWriter() {
   return module.default;
 }
 
+// Spans both summary columns; used for the two title rows at the top.
 function titleCell(value, options = {}) {
   return {
     value,
@@ -74,6 +79,7 @@ function titleCell(value, options = {}) {
   };
 }
 
+// Column header cell, shared by both the summary and data-rows sheets.
 function headerCell(value) {
   return {
     value,
@@ -81,6 +87,7 @@ function headerCell(value) {
   };
 }
 
+// The "Field" column of the summary sheet, e.g. "Total".
 function metadataLabelCell(value, isEmphasized = false) {
   return {
     value,
@@ -91,6 +98,7 @@ function metadataLabelCell(value, isEmphasized = false) {
   };
 }
 
+// Default cell type for plain string data (description, category, etc).
 function textCell(value, options = {}) {
   return {
     value,
@@ -100,6 +108,8 @@ function textCell(value, options = {}) {
   };
 }
 
+// type: Number keeps the written cell a real number, not text that merely
+// looks like one, so the exported file stays usable for further calculation.
 function numericCell(value, format = amountFormatPattern, options = {}) {
   return {
     value,
@@ -112,6 +122,8 @@ function numericCell(value, format = amountFormatPattern, options = {}) {
   };
 }
 
+// Picks the right cell type/format for one summary row's value, and
+// highlights Total/Annual Total rows so they stand out from the rest.
 function createValueCell(label, value) {
   const isEmphasized = label === 'Total' || label === 'Annual Total';
 
@@ -132,6 +144,8 @@ function createValueCell(label, value) {
   });
 }
 
+// The first sheet in every export: title rows, then a Field/Value table
+// built from the export model's `summary` array.
 function createSummarySheet(model) {
   return {
     sheet: sheetNames.summary,
@@ -153,6 +167,7 @@ function createSummarySheet(model) {
   };
 }
 
+// Picks the right cell type/format per column for one data row.
 function createDataCell(column, value) {
   if (column === 'Sum' || column === 'Total') {
     return numericCell(value);
@@ -187,6 +202,7 @@ function createRowsSheet(sheetName, columns, rows) {
   };
 }
 
+// Every export has exactly two sheets: a summary, then the detail rows.
 export function createWorkbookSheets({ model, rowsSheetName }) {
   return [
     createSummarySheet(model),
@@ -201,6 +217,8 @@ async function createWorkbookBlob({ model, rowsSheetName }) {
   return writeExcelFile(sheets).toBlob();
 }
 
+// One thin wrapper per export type, so each caller only needs to name the
+// sheet its detail rows belong on.
 export function createReportWorkbookBlob(model) {
   return createWorkbookBlob({
     model,
@@ -222,6 +240,8 @@ export function createBarChartWorkbookBlob(model) {
   });
 }
 
+// Shared save step: build the workbook Blob, then trigger the browser
+// download via downloadService.js.
 export async function downloadWorkbook(model, filename, createBlob) {
   const blob = await createBlob(model);
 
