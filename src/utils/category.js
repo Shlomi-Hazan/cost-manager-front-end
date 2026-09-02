@@ -5,27 +5,35 @@
  * and the display-name normalization used whenever a category is shown or
  * grouped, without ever rejecting a category db.js would otherwise accept.
  */
-import { COMMON_CATEGORIES } from "../constants/categories.js";
+import { COMMON_CATEGORIES } from '../constants/categories.js';
 
 function cleanCategory(category) {
-  if (typeof category !== "string") {
-    throw new TypeError("category must be a string.");
+  if (typeof category !== 'string') {
+    throw new TypeError('category must be a string.');
   }
 
-  return category.trim().replace(/\s+/g, " ");
+  return category.trim().replace(/\s+/g, ' ');
 }
 
-// The grouping key used by chart aggregation: trimmed, whitespace-collapsed,
-// lowercased. Two categories with the same key are treated as the same
-// category for totals, even if their original casing/spacing differed.
+/**
+ * The grouping key used by chart aggregation: trimmed, whitespace-collapsed,
+ * lowercased. Two categories with the same key are treated as the same
+ * category for totals, even if their original casing/spacing differed.
+ * @param {string} category - Raw category text.
+ * @returns {string} Normalized grouping key.
+ */
 export function getCategoryKey(category) {
-  return cleanCategory(category).toLocaleLowerCase("en-US");
+  return cleanCategory(category).toLocaleLowerCase('en-US');
 }
 
-// The label actually shown to the user. If the cleaned category matches one
-// of the common suggestions (case-insensitively), its canonical suggestion
-// spelling is used ("food" -> "Food"); otherwise the user's own free-text
-// spelling is preserved as-is.
+/**
+ * The label actually shown to the user. If the cleaned category matches one
+ * of the common suggestions (case-insensitively), its canonical suggestion
+ * spelling is used ("food" -> "Food"); otherwise the user's own free-text
+ * spelling is preserved as-is.
+ * @param {string} category - Raw category text.
+ * @returns {string} Display-ready category label.
+ */
 export function getCategoryDisplayName(category) {
   const cleanedCategory = cleanCategory(category);
   const categoryKey = getCategoryKey(cleanedCategory);

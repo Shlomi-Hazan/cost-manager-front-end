@@ -6,7 +6,7 @@
  */
 
 function padMonth(month) {
-  return String(month).padStart(2, "0");
+  return String(month).padStart(2, '0');
 }
 
 function normalizeCurrency(currency) {

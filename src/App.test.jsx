@@ -1,10 +1,10 @@
-import { describe, expect, it } from "vitest";
-import { render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import { ThemeProvider } from "@mui/material/styles";
-import { CssBaseline } from "@mui/material";
-import App from "./App.jsx";
-import theme from "./theme.js";
+import { describe, expect, it } from 'vitest';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { ThemeProvider } from '@mui/material/styles';
+import { CssBaseline } from '@mui/material';
+import App from './App.jsx';
+import theme from './theme.js';
 
 // Smoke test: confirms the app shell (navigation + default page) renders
 // and that switching pages via the nav tabs actually swaps content.
@@ -17,119 +17,119 @@ function renderApp() {
   );
 }
 
-describe("App", () => {
-  it("renders the Cost Manager application shell", () => {
+describe('App', () => {
+  it('renders the Cost Manager application shell', () => {
     renderApp();
 
-    expect(screen.getByText("Cost Manager")).toBeInTheDocument();
+    expect(screen.getByText('Cost Manager')).toBeInTheDocument();
     expect(
-      screen.getAllByRole("tab").map((tab) => tab.textContent.trim())
+      screen.getAllByRole('tab').map((tab) => tab.textContent.trim())
     ).toEqual([
-      "Dashboard",
-      "Add Cost",
-      "Manage Costs",
-      "Reports",
-      "Charts",
-      "Settings"
+      'Dashboard',
+      'Add Cost',
+      'Manage Costs',
+      'Reports',
+      'Charts',
+      'Settings'
     ]);
-    expect(screen.getByRole("heading", { name: "Dashboard" })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Dashboard' })).toBeInTheDocument();
     expect(
-      screen.getByText("Track, review, and visualize your expenses.")
+      screen.getByText('Track, review, and visualize your expenses.')
     ).toBeInTheDocument();
   });
 
-  it("renders the ambient shell layer behind the application content", () => {
+  it('renders the ambient shell layer behind the application content', () => {
     const { container } = renderApp();
 
-    expect(container.querySelector(".app-shell")).toBeInTheDocument();
-    expect(container.querySelector(".ambient-background")).toBeInTheDocument();
+    expect(container.querySelector('.app-shell')).toBeInTheDocument();
+    expect(container.querySelector('.ambient-background')).toBeInTheDocument();
   });
 
-  it("marks the active page context for ambient background intensity", async () => {
+  it('marks the active page context for ambient background intensity', async () => {
     const user = userEvent.setup();
     const { container } = renderApp();
 
-    expect(container.querySelector(".app-shell")).toHaveAttribute(
-      "data-page",
-      "dashboard"
+    expect(container.querySelector('.app-shell')).toHaveAttribute(
+      'data-page',
+      'dashboard'
     );
 
-    await user.click(screen.getByRole("tab", { name: "Manage Costs" }));
+    await user.click(screen.getByRole('tab', { name: 'Manage Costs' }));
 
-    expect(container.querySelector(".app-shell")).toHaveAttribute(
-      "data-page",
-      "manage-costs"
+    expect(container.querySelector('.app-shell')).toHaveAttribute(
+      'data-page',
+      'manage-costs'
     );
   });
 
-  it("switches to the Manage Costs view without reloading", async () => {
+  it('switches to the Manage Costs view without reloading', async () => {
     const user = userEvent.setup();
     renderApp();
 
-    await user.click(screen.getByRole("tab", { name: "Manage Costs" }));
+    await user.click(screen.getByRole('tab', { name: 'Manage Costs' }));
 
     expect(
-      screen.getByRole("heading", { name: "Manage Costs" })
+      screen.getByRole('heading', { name: 'Manage Costs' })
     ).toBeInTheDocument();
     expect(
-      screen.getByText("Review, edit, or delete your saved expenses.")
+      screen.getByText('Review, edit, or delete your saved expenses.')
     ).toBeInTheDocument();
   });
 
-  it("switches to the Reports view without reloading", async () => {
+  it('switches to the Reports view without reloading', async () => {
     const user = userEvent.setup();
     renderApp();
 
-    await user.click(screen.getByRole("tab", { name: "Reports" }));
+    await user.click(screen.getByRole('tab', { name: 'Reports' }));
 
-    expect(screen.getByRole("heading", { name: "Reports" })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Reports' })).toBeInTheDocument();
     expect(
-      screen.getByRole("heading", { name: "Monthly Report" })
+      screen.getByRole('heading', { name: 'Monthly Report' })
     ).toBeInTheDocument();
-    expect(screen.getByRole("tab", { name: "Monthly" })).toHaveAttribute(
-      "aria-selected",
-      "true"
+    expect(screen.getByRole('tab', { name: 'Monthly' })).toHaveAttribute(
+      'aria-selected',
+      'true'
     );
-    expect(screen.getByRole("tab", { name: "Yearly" })).toBeInTheDocument();
-    expect(screen.getByRole("combobox", { name: "Month" })).toBeInTheDocument();
-    expect(screen.getByLabelText("Year")).toBeInTheDocument();
-    expect(screen.getByRole("combobox", { name: "Currency" })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: 'Yearly' })).toBeInTheDocument();
+    expect(screen.getByRole('combobox', { name: 'Month' })).toBeInTheDocument();
+    expect(screen.getByLabelText('Year')).toBeInTheDocument();
+    expect(screen.getByRole('combobox', { name: 'Currency' })).toBeInTheDocument();
   });
 
-  it("switches to the Charts view without reloading", async () => {
+  it('switches to the Charts view without reloading', async () => {
     const user = userEvent.setup();
     renderApp();
 
-    await user.click(screen.getByRole("tab", { name: "Charts" }));
+    await user.click(screen.getByRole('tab', { name: 'Charts' }));
 
-    expect(screen.getByRole("heading", { name: "Charts" })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Charts' })).toBeInTheDocument();
     expect(
-      screen.getByRole("heading", { name: "Monthly Category Pie Chart" })
+      screen.getByRole('heading', { name: 'Monthly Category Pie Chart' })
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("heading", { name: "Yearly 12-Month Bar Chart" })
+      screen.getByRole('heading', { name: 'Yearly 12-Month Bar Chart' })
     ).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Generate Chart" })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Generate Chart' })).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: "Generate Yearly Chart" })
+      screen.getByRole('button', { name: 'Generate Yearly Chart' })
     ).toBeInTheDocument();
   });
 
-  it("switches to the Settings view without reloading", async () => {
+  it('switches to the Settings view without reloading', async () => {
     const user = userEvent.setup();
     renderApp();
 
-    await user.click(screen.getByRole("tab", { name: "Settings" }));
+    await user.click(screen.getByRole('tab', { name: 'Settings' }));
 
-    expect(screen.getByRole("heading", { name: "Settings" })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Settings' })).toBeInTheDocument();
     expect(
-      screen.getByRole("heading", { name: "Exchange Rate Source" })
+      screen.getByRole('heading', { name: 'Exchange Rate Source' })
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: "Save & Test Source" })
+      screen.getByRole('button', { name: 'Save & Test Source' })
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: "Use Default Source" })
+      screen.getByRole('button', { name: 'Use Default Source' })
     ).toBeInTheDocument();
   });
 });

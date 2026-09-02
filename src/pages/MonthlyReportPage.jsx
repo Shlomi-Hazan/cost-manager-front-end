@@ -1,7 +1,8 @@
-import { useState } from "react";
-import AssessmentOutlinedIcon from "@mui/icons-material/AssessmentOutlined";
-import PictureAsPdfOutlinedIcon from "@mui/icons-material/PictureAsPdfOutlined";
-import TableChartOutlinedIcon from "@mui/icons-material/TableChartOutlined";
+import { useState } from 'react';
+// Icons for the generate button and the two export buttons below.
+import AssessmentOutlinedIcon from '@mui/icons-material/AssessmentOutlined';
+import PictureAsPdfOutlinedIcon from '@mui/icons-material/PictureAsPdfOutlined';
+import TableChartOutlinedIcon from '@mui/icons-material/TableChartOutlined';
 import {
   Alert,
   Box,
@@ -10,25 +11,27 @@ import {
   Stack,
   TextField,
   Typography
-} from "@mui/material";
-import LoadingButtonLabel from "../components/common/LoadingButtonLabel.jsx";
-import PageHeader from "../components/common/PageHeader.jsx";
-import SectionCard from "../components/common/SectionCard.jsx";
-import SortableReportTable from "../components/reports/SortableReportTable.jsx";
-import { SUPPORTED_CURRENCIES } from "../constants/currencies.js";
-import { useReportSorting } from "../hooks/useReportSorting.js";
-import { costsDatabase } from "../lib/costsDatabase.js";
-import { buildDetailedMonthlyReport } from "../services/detailedReportsService.js";
-import { refreshExchangeRates } from "../services/exchangeRatesService.js";
-import * as excelExportService from "../services/export/excelExportService.js";
+} from '@mui/material';
+// Shared UI components, then the required report/currency/db modules.
+import LoadingButtonLabel from '../components/common/LoadingButtonLabel.jsx';
+import PageHeader from '../components/common/PageHeader.jsx';
+import SectionCard from '../components/common/SectionCard.jsx';
+import SortableReportTable from '../components/reports/SortableReportTable.jsx';
+import { SUPPORTED_CURRENCIES } from '../constants/currencies.js';
+import { useReportSorting } from '../hooks/useReportSorting.js';
+import { costsDatabase } from '../lib/costsDatabase.js';
+import { buildDetailedMonthlyReport } from '../services/detailedReportsService.js';
+import { refreshExchangeRates } from '../services/exchangeRatesService.js';
+// TEAM EXTENSION: Excel/PDF export helpers for this monthly report.
+import * as excelExportService from '../services/export/excelExportService.js';
 import {
   buildMonthlyReportExportModel
-} from "../services/export/exportModels.js";
-import * as pdfExportService from "../services/export/pdfExportService.js";
+} from '../services/export/exportModels.js';
+import * as pdfExportService from '../services/export/pdfExportService.js';
 import {
   getMonthlyReportExportFilename
-} from "../utils/exportFilenames.js";
-import { formatDisplayAmount } from "../utils/amountFormat.js";
+} from '../utils/exportFilenames.js';
+import { formatDisplayAmount } from '../utils/amountFormat.js';
 
 /*
  * Course requirement: the detailed monthly report (R-050 to R-053) — pick a
@@ -39,18 +42,18 @@ import { formatDisplayAmount } from "../utils/amountFormat.js";
  */
 
 const MONTHS = [
-  { value: 1, label: "January" },
-  { value: 2, label: "February" },
-  { value: 3, label: "March" },
-  { value: 4, label: "April" },
-  { value: 5, label: "May" },
-  { value: 6, label: "June" },
-  { value: 7, label: "July" },
-  { value: 8, label: "August" },
-  { value: 9, label: "September" },
-  { value: 10, label: "October" },
-  { value: 11, label: "November" },
-  { value: 12, label: "December" }
+  { value: 1, label: 'January' },
+  { value: 2, label: 'February' },
+  { value: 3, label: 'March' },
+  { value: 4, label: 'April' },
+  { value: 5, label: 'May' },
+  { value: 6, label: 'June' },
+  { value: 7, label: 'July' },
+  { value: 8, label: 'August' },
+  { value: 9, label: 'September' },
+  { value: 10, label: 'October' },
+  { value: 11, label: 'November' },
+  { value: 12, label: 'December' }
 ];
 
 // R-052: the report defaults to the current month/year on first render,
@@ -62,7 +65,7 @@ function getCurrentFilters() {
   return {
     month: String(now.getMonth() + 1),
     year: String(now.getFullYear()),
-    currency: "USD"
+    currency: 'USD'
   };
 }
 
@@ -81,17 +84,17 @@ function validateFilters(filters) {
     reportMonth < 1 ||
     reportMonth > 12
   ) {
-    errors.month = "Select a report month.";
+    errors.month = 'Select a report month.';
   }
 
-  if (trimmedYear === "") {
-    errors.year = "Enter a report year.";
+  if (trimmedYear === '') {
+    errors.year = 'Enter a report year.';
   } else if (!Number.isFinite(reportYear) || !Number.isInteger(reportYear)) {
-    errors.year = "Enter a whole report year.";
+    errors.year = 'Enter a whole report year.';
   }
 
   if (!SUPPORTED_CURRENCIES.includes(filters.currency)) {
-    errors.currency = "Select a supported currency.";
+    errors.currency = 'Select a supported currency.';
   }
 
   return {
@@ -110,15 +113,15 @@ function validateFilters(filters) {
 function getReportErrorMessage(error) {
   if (
     error instanceof Error &&
-    error.message.includes("cached exchange rates")
+    error.message.includes('cached exchange rates')
   ) {
-    return "Exchange rates are unavailable for converting this report. Please try again.";
+    return 'Exchange rates are unavailable for converting this report. Please try again.';
   }
 
-  return "Could not generate the monthly report. Please try again.";
+  return 'Could not generate the monthly report. Please try again.';
 }
 
-function MonthlyReportPage({ headingComponent = "h1" }) {
+function MonthlyReportPage({ headingComponent = 'h1' }) {
   // Filter form state (month/year/currency + validation errors), the last
   // generated report (or null before/while generating), and separate error
   // banners for report generation vs. export, since both can fail
@@ -126,8 +129,8 @@ function MonthlyReportPage({ headingComponent = "h1" }) {
   const [filters, setFilters] = useState(getCurrentFilters);
   const [errors, setErrors] = useState({});
   const [report, setReport] = useState(null);
-  const [errorMessage, setErrorMessage] = useState("");
-  const [exportErrorMessage, setExportErrorMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState('');
+  const [exportErrorMessage, setExportErrorMessage] = useState('');
   const [exportingAction, setExportingAction] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [hasGenerated, setHasGenerated] = useState(false);
@@ -150,8 +153,8 @@ function MonthlyReportPage({ headingComponent = "h1" }) {
       ...currentErrors,
       [name]: undefined
     }));
-    setErrorMessage("");
-    setExportErrorMessage("");
+    setErrorMessage('');
+    setExportErrorMessage('');
     setReport(null);
     setHasGenerated(false);
     resetSort();
@@ -163,13 +166,13 @@ function MonthlyReportPage({ headingComponent = "h1" }) {
     const validation = validateFilters(filters);
 
     setErrors(validation.errors);
-    setErrorMessage("");
-    setExportErrorMessage("");
+    setErrorMessage('');
+    setExportErrorMessage('');
     setReport(null);
     setHasGenerated(false);
 
     if (!validation.isValid) {
-      setErrorMessage("Please correct the highlighted report filters.");
+      setErrorMessage('Please correct the highlighted report filters.');
       return;
     }
 
@@ -220,8 +223,8 @@ function MonthlyReportPage({ headingComponent = "h1" }) {
       return;
     }
 
-    setExportErrorMessage("");
-    setExportingAction("excel");
+    setExportErrorMessage('');
+    setExportingAction('excel');
 
     try {
       await excelExportService.downloadReportWorkbook(
@@ -230,11 +233,11 @@ function MonthlyReportPage({ headingComponent = "h1" }) {
           year: report.year,
           month: report.month,
           currency: report.total.currency,
-          extension: "xlsx"
+          extension: 'xlsx'
         })
       );
     } catch {
-      setExportErrorMessage("Could not export the Excel file. Please try again.");
+      setExportErrorMessage('Could not export the Excel file. Please try again.');
     } finally {
       setExportingAction(null);
     }
@@ -245,8 +248,8 @@ function MonthlyReportPage({ headingComponent = "h1" }) {
       return;
     }
 
-    setExportErrorMessage("");
-    setExportingAction("pdf");
+    setExportErrorMessage('');
+    setExportingAction('pdf');
 
     try {
       await pdfExportService.downloadReportPdf(
@@ -255,11 +258,11 @@ function MonthlyReportPage({ headingComponent = "h1" }) {
           year: report.year,
           month: report.month,
           currency: report.total.currency,
-          extension: "pdf"
+          extension: 'pdf'
         })
       );
     } catch {
-      setExportErrorMessage("Could not export the PDF file. Please try again.");
+      setExportErrorMessage('Could not export the PDF file. Please try again.');
     } finally {
       setExportingAction(null);
     }
@@ -278,25 +281,27 @@ function MonthlyReportPage({ headingComponent = "h1" }) {
         <Stack spacing={3}>
           {errorMessage ? <Alert severity="error">{errorMessage}</Alert> : null}
 
+          {/* Filter fields: month/year/currency, then the generate button. */}
           <Box
             sx={{
-              display: "grid",
+              display: 'grid',
               gap: 2,
               gridTemplateColumns: {
-                xs: "1fr",
-                md: "220px 180px 180px auto"
+                xs: '1fr',
+                md: '220px 180px 180px auto'
               }
             }}
           >
             <TextField
               error={Boolean(errors.month)}
-              helperText={errors.month ?? " "}
+              helperText={errors.month ?? ' '}
               label="Month"
               name="month"
               onChange={handleChange}
               select
               value={filters.month}
             >
+              {/* Fixed 12-month list, unlike Year's free numeric input. */}
               {MONTHS.map((month) => (
                 <MenuItem key={month.value} value={String(month.value)}>
                   {month.label}
@@ -304,9 +309,10 @@ function MonthlyReportPage({ headingComponent = "h1" }) {
               ))}
             </TextField>
 
+            {/* Year: free numeric input, unlike Month's fixed select list. */}
             <TextField
               error={Boolean(errors.year)}
-              helperText={errors.year ?? " "}
+              helperText={errors.year ?? ' '}
               inputMode="numeric"
               label="Year"
               name="year"
@@ -316,7 +322,7 @@ function MonthlyReportPage({ headingComponent = "h1" }) {
 
             <TextField
               error={Boolean(errors.currency)}
-              helperText={errors.currency ?? " "}
+              helperText={errors.currency ?? ' '}
               label="Currency"
               name="currency"
               onChange={handleChange}
@@ -330,7 +336,8 @@ function MonthlyReportPage({ headingComponent = "h1" }) {
               ))}
             </TextField>
 
-            <Box sx={{ alignSelf: "start", pt: { md: 1 } }}>
+            {/* Submitting the form calls handleSubmit further up. */}
+            <Box sx={{ alignSelf: 'start', pt: { md: 1 } }}>
               <Button
                 disabled={isLoading}
                 startIcon={
@@ -368,7 +375,7 @@ function MonthlyReportPage({ headingComponent = "h1" }) {
                 Report currency: {report.total.currency}
               </Typography>
               <Typography fontWeight={700} variant="body1">
-                Total: {formatDisplayAmount(report.total.sum)}{" "}
+                Total: {formatDisplayAmount(report.total.sum)}{' '}
                 {report.total.currency}
               </Typography>
             </Box>
@@ -377,36 +384,38 @@ function MonthlyReportPage({ headingComponent = "h1" }) {
               <Alert severity="error">{exportErrorMessage}</Alert>
             ) : null}
 
-            <Stack direction={{ xs: "column", sm: "row" }} spacing={1}>
+            {/* TEAM EXTENSION: Excel/PDF export of this monthly report. */}
+            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1}>
               <Button
                 disabled={Boolean(exportingAction)}
                 onClick={handleExcelExport}
                 startIcon={
-                  exportingAction === "excel" ? null : (
+                  exportingAction === 'excel' ? null : (
                     <TableChartOutlinedIcon aria-hidden="true" />
                   )
                 }
                 variant="outlined"
               >
                 <LoadingButtonLabel
-                  isLoading={exportingAction === "excel"}
+                  isLoading={exportingAction === 'excel'}
                   loadingText="Exporting..."
                 >
                   Export Excel
                 </LoadingButtonLabel>
               </Button>
+              {/* PDF export mirrors the Excel button, different action/icon. */}
               <Button
                 disabled={Boolean(exportingAction)}
                 onClick={handlePdfExport}
                 startIcon={
-                  exportingAction === "pdf" ? null : (
+                  exportingAction === 'pdf' ? null : (
                     <PictureAsPdfOutlinedIcon aria-hidden="true" />
                   )
                 }
                 variant="outlined"
               >
                 <LoadingButtonLabel
-                  isLoading={exportingAction === "pdf"}
+                  isLoading={exportingAction === 'pdf'}
                   loadingText="Exporting..."
                 >
                   Export PDF
@@ -414,6 +423,7 @@ function MonthlyReportPage({ headingComponent = "h1" }) {
               </Button>
             </Stack>
 
+            {/* Empty state vs. the shared sortable table (X-006). */}
             {report.costs.length === 0 ? (
               <Alert severity="info">No costs found for this month.</Alert>
             ) : (

@@ -1,12 +1,12 @@
-import { describe, expect, it } from "vitest";
-import { findChartSvgForCapture } from "../../src/utils/chartCapture.js";
+import { describe, expect, it } from 'vitest';
+import { findChartSvgForCapture } from '../../src/utils/chartCapture.js';
 
 // TEAM EXTENSION test: a chart container also contains small legend-icon
 // SVGs, so PDF export must pick the actual chart (largest SVG by area), not
 // the first SVG it happens to find in the DOM.
-describe("chartCapture", () => {
-  it("selects the largest chart SVG instead of small legend icons", () => {
-    const container = document.createElement("div");
+describe('chartCapture', () => {
+  it('selects the largest chart SVG instead of small legend icons', () => {
+    const container = document.createElement('div');
 
     container.innerHTML = `
       <svg class="recharts-surface" aria-label="Food legend icon" width="14" height="14"></svg>
@@ -15,12 +15,12 @@ describe("chartCapture", () => {
     `;
 
     expect(findChartSvgForCapture(container)).toBe(
-      container.querySelectorAll("svg")[2]
+      container.querySelectorAll('svg')[2]
     );
   });
 
-  it("returns null when no SVG is available", () => {
-    const container = document.createElement("div");
+  it('returns null when no SVG is available', () => {
+    const container = document.createElement('div');
 
     expect(findChartSvgForCapture(container)).toBeNull();
   });

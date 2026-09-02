@@ -1,5 +1,5 @@
-import { describe, expect, it } from "vitest";
-import { aggregateCostsByCategory } from "../../src/utils/chartAggregation.js";
+import { describe, expect, it } from 'vitest';
+import { aggregateCostsByCategory } from '../../src/utils/chartAggregation.js';
 
 /*
  * Course requirement (R-070/R-071): protects Pie Chart category grouping
@@ -14,115 +14,115 @@ const validRates = {
   ILS: 4
 };
 
-describe("chart aggregation", () => {
-  it("returns empty aggregation for an empty cost array", () => {
-    expect(aggregateCostsByCategory([], "USD")).toEqual([]);
+describe('chart aggregation', () => {
+  it('returns empty aggregation for an empty cost array', () => {
+    expect(aggregateCostsByCategory([], 'USD')).toEqual([]);
   });
 
-  it("aggregates one category in one currency", () => {
+  it('aggregates one category in one currency', () => {
     expect(
       aggregateCostsByCategory(
         [
           {
             sum: 100,
-            currency: "USD",
-            category: "Food"
+            currency: 'USD',
+            category: 'Food'
           }
         ],
-        "USD"
+        'USD'
       )
     ).toEqual([
       {
-        category: "Food",
+        category: 'Food',
         total: 100
       }
     ]);
   });
 
-  it("sums multiple costs in the same category", () => {
+  it('sums multiple costs in the same category', () => {
     expect(
       aggregateCostsByCategory(
         [
           {
             sum: 100,
-            currency: "USD",
-            category: "Food"
+            currency: 'USD',
+            category: 'Food'
           },
           {
             sum: 25,
-            currency: "USD",
-            category: "Food"
+            currency: 'USD',
+            category: 'Food'
           }
         ],
-        "USD"
+        'USD'
       )
     ).toEqual([
       {
-        category: "Food",
+        category: 'Food',
         total: 125
       }
     ]);
   });
 
-  it("keeps multiple category identities separate", () => {
+  it('keeps multiple category identities separate', () => {
     expect(
       aggregateCostsByCategory(
         [
           {
             sum: 100,
-            currency: "USD",
-            category: "Food"
+            currency: 'USD',
+            category: 'Food'
           },
           {
             sum: 25,
-            currency: "USD",
-            category: "Travel"
+            currency: 'USD',
+            category: 'Travel'
           }
         ],
-        "USD"
+        'USD'
       )
     ).toEqual([
       {
-        category: "Food",
+        category: 'Food',
         total: 100
       },
       {
-        category: "Travel",
+        category: 'Travel',
         total: 25
       }
     ]);
   });
 
-  it("converts mixed currencies with shared rates", () => {
+  it('converts mixed currencies with shared rates', () => {
     const aggregation = aggregateCostsByCategory(
       [
         {
           sum: 100,
-          currency: "USD",
-          category: "Food"
+          currency: 'USD',
+          category: 'Food'
         },
         {
           sum: 50,
-          currency: "GBP",
-          category: "Food"
+          currency: 'GBP',
+          category: 'Food'
         },
         {
           sum: 25,
-          currency: "USD",
-          category: "Travel"
+          currency: 'USD',
+          category: 'Travel'
         }
       ],
-      "USD",
+      'USD',
       validRates
     );
 
     expect(aggregation).toEqual([
       {
-        category: "Food",
+        category: 'Food',
         total: 200
       },
       {
-        category: "Travel",
+        category: 'Travel',
         total: 25
       }
     ]);
@@ -131,217 +131,217 @@ describe("chart aggregation", () => {
     );
   });
 
-  it("aggregates same-currency costs without rates", () => {
+  it('aggregates same-currency costs without rates', () => {
     expect(
       aggregateCostsByCategory(
         [
           {
             sum: 40,
-            currency: "EURO",
-            category: "BOOKS"
+            currency: 'EURO',
+            category: 'BOOKS'
           }
         ],
-        "EURO"
+        'EURO'
       )
     ).toEqual([
       {
-        category: "BOOKS",
+        category: 'BOOKS',
         total: 40
       }
     ]);
   });
 
-  it("fails when rates are missing and conversion is required", () => {
+  it('fails when rates are missing and conversion is required', () => {
     expect(() =>
       aggregateCostsByCategory(
         [
           {
             sum: 50,
-            currency: "GBP",
-            category: "Travel"
+            currency: 'GBP',
+            category: 'Travel'
           }
         ],
-        "USD"
+        'USD'
       )
-    ).toThrow("Exchange rates");
+    ).toThrow('Exchange rates');
   });
 
-  it("preserves decimal precision without rounding", () => {
+  it('preserves decimal precision without rounding', () => {
     expect(
       aggregateCostsByCategory(
         [
           {
             sum: 0.1,
-            currency: "USD",
-            category: "Food"
+            currency: 'USD',
+            category: 'Food'
           },
           {
             sum: 0.2,
-            currency: "USD",
-            category: "Food"
+            currency: 'USD',
+            category: 'Food'
           }
         ],
-        "USD"
+        'USD'
       )
     ).toEqual([
       {
-        category: "Food",
+        category: 'Food',
         total: 0.30000000000000004
       }
     ]);
   });
 
-  it("does not mutate input costs", () => {
+  it('does not mutate input costs', () => {
     const costs = [
       {
         sum: 50,
-        currency: "GBP",
-        category: "Food"
+        currency: 'GBP',
+        category: 'Food'
       }
     ];
 
-    aggregateCostsByCategory(costs, "USD", validRates);
+    aggregateCostsByCategory(costs, 'USD', validRates);
 
     expect(costs).toEqual([
       {
         sum: 50,
-        currency: "GBP",
-        category: "Food"
+        currency: 'GBP',
+        category: 'Food'
       }
     ]);
   });
 
-  it("merges common category case variants into the canonical display category", () => {
+  it('merges common category case variants into the canonical display category', () => {
     expect(
       aggregateCostsByCategory(
         [
           {
             sum: 35,
-            currency: "USD",
-            category: "food"
+            currency: 'USD',
+            category: 'food'
           },
           {
             sum: 10,
-            currency: "USD",
-            category: "Food"
+            currency: 'USD',
+            category: 'Food'
           },
           {
             sum: 5,
-            currency: "USD",
-            category: "FOOD"
+            currency: 'USD',
+            category: 'FOOD'
           }
         ],
-        "USD"
+        'USD'
       )
     ).toEqual([
       {
-        category: "Food",
+        category: 'Food',
         total: 50
       }
     ]);
   });
 
-  it("merges common category whitespace variants", () => {
+  it('merges common category whitespace variants', () => {
     expect(
       aggregateCostsByCategory(
         [
           {
             sum: 35,
-            currency: "USD",
-            category: " Food "
+            currency: 'USD',
+            category: ' Food '
           },
           {
             sum: 10,
-            currency: "USD",
-            category: "food"
+            currency: 'USD',
+            category: 'food'
           }
         ],
-        "USD"
+        'USD'
       )
     ).toEqual([
       {
-        category: "Food",
+        category: 'Food',
         total: 45
       }
     ]);
   });
 
-  it("merges custom category case variants using the first cleaned display label", () => {
+  it('merges custom category case variants using the first cleaned display label', () => {
     expect(
       aggregateCostsByCategory(
         [
           {
             sum: 10,
-            currency: "USD",
-            category: "My Pets"
+            currency: 'USD',
+            category: 'My Pets'
           },
           {
             sum: 20,
-            currency: "USD",
-            category: "my pets"
+            currency: 'USD',
+            category: 'my pets'
           },
           {
             sum: 30,
-            currency: "USD",
-            category: "MY PETS"
+            currency: 'USD',
+            category: 'MY PETS'
           }
         ],
-        "USD"
+        'USD'
       )
     ).toEqual([
       {
-        category: "My Pets",
+        category: 'My Pets',
         total: 60
       }
     ]);
   });
 
-  it("merges custom category whitespace variants", () => {
+  it('merges custom category whitespace variants', () => {
     expect(
       aggregateCostsByCategory(
         [
           {
             sum: 10,
-            currency: "USD",
-            category: "Pet   Supplies"
+            currency: 'USD',
+            category: 'Pet   Supplies'
           },
           {
             sum: 20,
-            currency: "USD",
-            category: " pet supplies "
+            currency: 'USD',
+            category: ' pet supplies '
           }
         ],
-        "USD"
+        'USD'
       )
     ).toEqual([
       {
-        category: "Pet Supplies",
+        category: 'Pet Supplies',
         total: 30
       }
     ]);
   });
 
-  it("merges mixed-case mixed-currency categories while preserving conversion behavior", () => {
+  it('merges mixed-case mixed-currency categories while preserving conversion behavior', () => {
     expect(
       aggregateCostsByCategory(
         [
           {
             sum: 100,
-            currency: "USD",
-            category: "food"
+            currency: 'USD',
+            category: 'food'
           },
           {
             sum: 50,
-            currency: "GBP",
-            category: " Food "
+            currency: 'GBP',
+            category: ' Food '
           }
         ],
-        "USD",
+        'USD',
         validRates
       )
     ).toEqual([
       {
-        category: "Food",
+        category: 'Food',
         total: 200
       }
     ]);

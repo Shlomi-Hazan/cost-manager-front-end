@@ -1,8 +1,8 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState } from 'react';
 import {
   REPORT_SORT_DIRECTIONS,
   sortReportCosts
-} from "../utils/reportSorting.js";
+} from '../utils/reportSorting.js';
 
 // TEAM EXTENSION: React state wrapper around sortReportCosts() shared by
 // the Monthly and Yearly report pages, so both get identical column-header

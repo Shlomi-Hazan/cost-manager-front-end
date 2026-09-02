@@ -1,14 +1,14 @@
-import { CssBaseline } from "@mui/material";
-import { ThemeProvider } from "@mui/material/styles";
-import { render, screen, within } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { setCachedExchangeRates } from "../lib/exchangeRatesCache.js";
-import { costsDatabase } from "../lib/costsDatabase.js";
-import * as excelExportService from "../services/export/excelExportService.js";
-import * as pdfExportService from "../services/export/pdfExportService.js";
-import YearlyReportPage from "./YearlyReportPage.jsx";
-import theme from "../theme.js";
+import { CssBaseline } from '@mui/material';
+import { ThemeProvider } from '@mui/material/styles';
+import { render, screen, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { setCachedExchangeRates } from '../lib/exchangeRatesCache.js';
+import { costsDatabase } from '../lib/costsDatabase.js';
+import * as excelExportService from '../services/export/excelExportService.js';
+import * as pdfExportService from '../services/export/pdfExportService.js';
+import YearlyReportPage from './YearlyReportPage.jsx';
+import theme from '../theme.js';
 
 /*
  * TEAM EXTENSION tests (X-005): drives the real Yearly Report page end to
@@ -51,7 +51,7 @@ function mockSuccessfulRatesFetch(rates = validRates) {
 }
 
 function mockFailedRatesFetch() {
-  globalThis.fetch = vi.fn().mockRejectedValue(new TypeError("Network error"));
+  globalThis.fetch = vi.fn().mockRejectedValue(new TypeError('Network error'));
 }
 
 function addCostOnDate({
@@ -67,21 +67,21 @@ function addCostOnDate({
 }
 
 async function chooseCurrency(user, currency) {
-  await user.click(screen.getByRole("combobox", { name: "Currency" }));
-  await user.click(screen.getByRole("option", { name: currency }));
+  await user.click(screen.getByRole('combobox', { name: 'Currency' }));
+  await user.click(screen.getByRole('option', { name: currency }));
 }
 
 async function setYear(user, year) {
-  await user.clear(screen.getByLabelText("Year"));
-  await user.type(screen.getByLabelText("Year"), year);
+  await user.clear(screen.getByLabelText('Year'));
+  await user.type(screen.getByLabelText('Year'), year);
 }
 
 async function generateReport(user) {
-  await user.click(screen.getByRole("button", { name: "Generate Yearly Report" }));
+  await user.click(screen.getByRole('button', { name: 'Generate Yearly Report' }));
 }
 
 function getReportTable() {
-  return screen.getByRole("table", { name: "Yearly report costs" });
+  return screen.getByRole('table', { name: 'Yearly report costs' });
 }
 
 function expectYearlyRow({
@@ -92,7 +92,7 @@ function expectYearlyRow({
   date,
   time
 }) {
-  const row = within(getReportTable()).getByRole("row", {
+  const row = within(getReportTable()).getByRole('row', {
     name: new RegExp(description)
   });
 
@@ -105,8 +105,8 @@ function expectYearlyRow({
 }
 
 function getYearlyRows() {
-  return within(screen.getByRole("table", { name: "Yearly report costs" }))
-    .getAllByRole("row")
+  return within(screen.getByRole('table', { name: 'Yearly report costs' }))
+    .getAllByRole('row')
     .slice(1);
 }
 
@@ -115,7 +115,7 @@ function getColumnValues(columnIndex) {
 }
 
 async function sortBy(user, columnName) {
-  await user.click(screen.getByRole("button", { name: columnName }));
+  await user.click(screen.getByRole('button', { name: columnName }));
 }
 
 function addSortableYearlyCosts() {
@@ -126,9 +126,9 @@ function addSortableYearlyCosts() {
     minute: 14,
     cost: {
       sum: 25.5,
-      currency: "EURO",
-      category: "Shopping",
-      description: "car"
+      currency: 'EURO',
+      category: 'Shopping',
+      description: 'car'
     }
   });
   addCostOnDate({
@@ -138,9 +138,9 @@ function addSortableYearlyCosts() {
     minute: 37,
     cost: {
       sum: 100,
-      currency: "USD",
-      category: "Food",
-      description: "banana"
+      currency: 'USD',
+      category: 'Food',
+      description: 'banana'
     }
   });
   addCostOnDate({
@@ -150,18 +150,18 @@ function addSortableYearlyCosts() {
     minute: 5,
     cost: {
       sum: 2,
-      currency: "GBP",
-      category: "Travel",
-      description: "Apple"
+      currency: 'GBP',
+      category: 'Travel',
+      description: 'Apple'
     }
   });
 }
 
-describe("YearlyReportPage", () => {
+describe('YearlyReportPage', () => {
   beforeEach(() => {
     localStorage.clear();
     vi.useFakeTimers({
-      toFake: ["Date"]
+      toFake: ['Date']
     });
     setLocalDate(2026, 8, 22);
   });
@@ -178,20 +178,20 @@ describe("YearlyReportPage", () => {
     }
   });
 
-  it("renders yearly filters with current year default and USD currency", () => {
+  it('renders yearly filters with current year default and USD currency', () => {
     renderYearlyReportPage();
 
-    expect(screen.getByRole("heading", { name: "Yearly Report" })).toBeInTheDocument();
-    expect(screen.getByLabelText("Year")).toHaveValue("2026");
-    expect(screen.getByRole("combobox", { name: "Currency" })).toHaveTextContent(
-      "USD"
+    expect(screen.getByRole('heading', { name: 'Yearly Report' })).toBeInTheDocument();
+    expect(screen.getByLabelText('Year')).toHaveValue('2026');
+    expect(screen.getByRole('combobox', { name: 'Currency' })).toHaveTextContent(
+      'USD'
     );
     expect(
-      screen.getByRole("button", { name: "Generate Yearly Report" })
+      screen.getByRole('button', { name: 'Generate Yearly Report' })
     ).toBeInTheDocument();
   });
 
-  it("displays matching yearly detail rows with dates and times in insertion order", async () => {
+  it('displays matching yearly detail rows with dates and times in insertion order', async () => {
     const user = setupUser();
     mockSuccessfulRatesFetch();
     addCostOnDate({
@@ -201,9 +201,9 @@ describe("YearlyReportPage", () => {
       minute: 5,
       cost: {
         sum: 100,
-        currency: "USD",
-        category: "Food",
-        description: "January groceries"
+        currency: 'USD',
+        category: 'Food',
+        description: 'January groceries'
       }
     });
     addCostOnDate({
@@ -213,9 +213,9 @@ describe("YearlyReportPage", () => {
       minute: 37,
       cost: {
         sum: 50,
-        currency: "GBP",
-        category: "Travel",
-        description: "August train"
+        currency: 'GBP',
+        category: 'Travel',
+        description: 'August train'
       }
     });
     addCostOnDate({
@@ -225,9 +225,9 @@ describe("YearlyReportPage", () => {
       minute: 14,
       cost: {
         sum: 80,
-        currency: "USD",
-        category: "Shopping",
-        description: "December gift"
+        currency: 'USD',
+        category: 'Shopping',
+        description: 'December gift'
       }
     });
     addCostOnDate({
@@ -238,9 +238,9 @@ describe("YearlyReportPage", () => {
       minute: 20,
       cost: {
         sum: 40,
-        currency: "USD",
-        category: "Other",
-        description: "Previous year"
+        currency: 'USD',
+        category: 'Other',
+        description: 'Previous year'
       }
     });
     setLocalDate(2026, 8, 22);
@@ -248,55 +248,55 @@ describe("YearlyReportPage", () => {
     renderYearlyReportPage();
     await generateReport(user);
 
-    expect(screen.getByRole("heading", { name: "2026 Yearly Report" })).toBeInTheDocument();
-    expect(screen.getByText("Total: 280 USD")).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: '2026 Yearly Report' })).toBeInTheDocument();
+    expect(screen.getByText('Total: 280 USD')).toBeInTheDocument();
     expectYearlyRow({
-      description: "January groceries",
-      category: "Food",
+      description: 'January groceries',
+      category: 'Food',
       sum: 100,
-      currency: "USD",
-      date: "10/01/2026",
-      time: "09:05"
+      currency: 'USD',
+      date: '10/01/2026',
+      time: '09:05'
     });
     expectYearlyRow({
-      description: "August train",
-      category: "Travel",
+      description: 'August train',
+      category: 'Travel',
       sum: 50,
-      currency: "GBP",
-      date: "24/08/2026",
-      time: "16:37"
+      currency: 'GBP',
+      date: '24/08/2026',
+      time: '16:37'
     });
     expectYearlyRow({
-      description: "December gift",
-      category: "Shopping",
+      description: 'December gift',
+      category: 'Shopping',
       sum: 80,
-      currency: "USD",
-      date: "05/12/2026",
-      time: "21:14"
+      currency: 'USD',
+      date: '05/12/2026',
+      time: '21:14'
     });
-    expect(screen.queryByText("Previous year")).not.toBeInTheDocument();
+    expect(screen.queryByText('Previous year')).not.toBeInTheDocument();
     expect(
-      within(getReportTable()).getAllByRole("row").slice(1).map((row) => row.cells[2].textContent)
-    ).toEqual(["January groceries", "August train", "December gift"]);
+      within(getReportTable()).getAllByRole('row').slice(1).map((row) => row.cells[2].textContent)
+    ).toEqual(['January groceries', 'August train', 'December gift']);
   });
 
-  it("shows an empty state and zero selected-currency total for an empty year", async () => {
+  it('shows an empty state and zero selected-currency total for an empty year', async () => {
     const user = setupUser();
     mockSuccessfulRatesFetch();
     renderYearlyReportPage();
 
-    await setYear(user, "2031");
+    await setYear(user, '2031');
     await generateReport(user);
 
-    expect(screen.getByRole("heading", { name: "2031 Yearly Report" })).toBeInTheDocument();
-    expect(screen.getByText("Total: 0 USD")).toBeInTheDocument();
-    expect(screen.getByText("No costs found for this year.")).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: '2031 Yearly Report' })).toBeInTheDocument();
+    expect(screen.getByText('Total: 0 USD')).toBeInTheDocument();
+    expect(screen.getByText('No costs found for this year.')).toBeInTheDocument();
     expect(
-      screen.queryByRole("table", { name: "Yearly report costs" })
+      screen.queryByRole('table', { name: 'Yearly report costs' })
     ).not.toBeInTheDocument();
   });
 
-  it("displays a converted yearly total while preserving original item currencies", async () => {
+  it('displays a converted yearly total while preserving original item currencies', async () => {
     const user = setupUser();
     mockSuccessfulRatesFetch();
     addCostOnDate({
@@ -304,9 +304,9 @@ describe("YearlyReportPage", () => {
       day: 1,
       cost: {
         sum: 100,
-        currency: "USD",
-        category: "Food",
-        description: "Groceries"
+        currency: 'USD',
+        category: 'Food',
+        description: 'Groceries'
       }
     });
     addCostOnDate({
@@ -314,29 +314,29 @@ describe("YearlyReportPage", () => {
       day: 2,
       cost: {
         sum: 50,
-        currency: "GBP",
-        category: "Travel",
-        description: "Train"
+        currency: 'GBP',
+        category: 'Travel',
+        description: 'Train'
       }
     });
 
     renderYearlyReportPage();
-    await chooseCurrency(user, "ILS");
+    await chooseCurrency(user, 'ILS');
     await generateReport(user);
 
-    expect(screen.getByText("Report currency: ILS")).toBeInTheDocument();
-    expect(screen.getByText("Total: 800 ILS")).toBeInTheDocument();
+    expect(screen.getByText('Report currency: ILS')).toBeInTheDocument();
+    expect(screen.getByText('Total: 800 ILS')).toBeInTheDocument();
     expectYearlyRow({
-      description: "Train",
-      category: "Travel",
+      description: 'Train',
+      category: 'Travel',
       sum: 50,
-      currency: "GBP",
-      date: "02/08/2026",
-      time: "12:00"
+      currency: 'GBP',
+      date: '02/08/2026',
+      time: '12:00'
     });
   });
 
-  it("uses existing valid cached rates when refresh fails", async () => {
+  it('uses existing valid cached rates when refresh fails', async () => {
     const user = setupUser();
     setCachedExchangeRates(validRates);
     mockFailedRatesFetch();
@@ -345,9 +345,9 @@ describe("YearlyReportPage", () => {
       day: 1,
       cost: {
         sum: 100,
-        currency: "USD",
-        category: "Food",
-        description: "Cached groceries"
+        currency: 'USD',
+        category: 'Food',
+        description: 'Cached groceries'
       }
     });
     addCostOnDate({
@@ -355,20 +355,20 @@ describe("YearlyReportPage", () => {
       day: 2,
       cost: {
         sum: 50,
-        currency: "GBP",
-        category: "Travel",
-        description: "Cached train"
+        currency: 'GBP',
+        category: 'Travel',
+        description: 'Cached train'
       }
     });
 
     renderYearlyReportPage();
     await generateReport(user);
 
-    expect(screen.getByText("Total: 200 USD")).toBeInTheDocument();
-    expect(screen.getByText("Cached train")).toBeInTheDocument();
+    expect(screen.getByText('Total: 200 USD')).toBeInTheDocument();
+    expect(screen.getByText('Cached train')).toBeInTheDocument();
   });
 
-  it("still generates same-currency yearly reports when refresh fails and no cache exists", async () => {
+  it('still generates same-currency yearly reports when refresh fails and no cache exists', async () => {
     const user = setupUser();
     mockFailedRatesFetch();
     addCostOnDate({
@@ -376,20 +376,20 @@ describe("YearlyReportPage", () => {
       day: 1,
       cost: {
         sum: 75,
-        currency: "USD",
-        category: "Food",
-        description: "Same currency lunch"
+        currency: 'USD',
+        category: 'Food',
+        description: 'Same currency lunch'
       }
     });
 
     renderYearlyReportPage();
     await generateReport(user);
 
-    expect(screen.getByText("Same currency lunch")).toBeInTheDocument();
-    expect(screen.getByText("Total: 75 USD")).toBeInTheDocument();
+    expect(screen.getByText('Same currency lunch')).toBeInTheDocument();
+    expect(screen.getByText('Total: 75 USD')).toBeInTheDocument();
   });
 
-  it("shows a conversion error when mixed-currency yearly rates are unavailable", async () => {
+  it('shows a conversion error when mixed-currency yearly rates are unavailable', async () => {
     const user = setupUser();
     mockFailedRatesFetch();
     addCostOnDate({
@@ -397,9 +397,9 @@ describe("YearlyReportPage", () => {
       day: 1,
       cost: {
         sum: 100,
-        currency: "USD",
-        category: "Food",
-        description: "No-rate groceries"
+        currency: 'USD',
+        category: 'Food',
+        description: 'No-rate groceries'
       }
     });
     addCostOnDate({
@@ -407,9 +407,9 @@ describe("YearlyReportPage", () => {
       day: 2,
       cost: {
         sum: 50,
-        currency: "GBP",
-        category: "Travel",
-        description: "No-rate train"
+        currency: 'GBP',
+        category: 'Travel',
+        description: 'No-rate train'
       }
     });
 
@@ -418,40 +418,40 @@ describe("YearlyReportPage", () => {
 
     expect(
       screen.getByText(
-        "Exchange rates are unavailable for converting this yearly report. Please try again."
+        'Exchange rates are unavailable for converting this yearly report. Please try again.'
       )
     ).toBeInTheDocument();
-    expect(screen.queryByText("No-rate groceries")).not.toBeInTheDocument();
+    expect(screen.queryByText('No-rate groceries')).not.toBeInTheDocument();
   });
 
-  it("rejects invalid report years before requesting rates", async () => {
+  it('rejects invalid report years before requesting rates', async () => {
     const user = setupUser();
     mockSuccessfulRatesFetch();
     renderYearlyReportPage();
 
-    await setYear(user, "2026.5");
+    await setYear(user, '2026.5');
     await generateReport(user);
 
-    expect(screen.getByText("Enter a whole report year.")).toBeInTheDocument();
+    expect(screen.getByText('Enter a whole report year.')).toBeInTheDocument();
     expect(
-      screen.getByText("Please correct the highlighted report filters.")
+      screen.getByText('Please correct the highlighted report filters.')
     ).toBeInTheDocument();
     expect(globalThis.fetch).not.toHaveBeenCalled();
   });
 
-  it("rejects an empty report year before requesting rates", async () => {
+  it('rejects an empty report year before requesting rates', async () => {
     const user = setupUser();
     mockSuccessfulRatesFetch();
     renderYearlyReportPage();
 
-    await user.clear(screen.getByLabelText("Year"));
+    await user.clear(screen.getByLabelText('Year'));
     await generateReport(user);
 
-    expect(screen.getByText("Enter a report year.")).toBeInTheDocument();
+    expect(screen.getByText('Enter a report year.')).toBeInTheDocument();
     expect(globalThis.fetch).not.toHaveBeenCalled();
   });
 
-  it("disables the generate button and shows loading feedback while rates load", async () => {
+  it('disables the generate button and shows loading feedback while rates load', async () => {
     const user = setupUser();
     let resolveFetch;
 
@@ -464,7 +464,7 @@ describe("YearlyReportPage", () => {
 
     await generateReport(user);
 
-    const loadingButton = screen.getByRole("button", { name: "Generating..." });
+    const loadingButton = screen.getByRole('button', { name: 'Generating...' });
 
     expect(loadingButton).toBeDisabled();
 
@@ -474,13 +474,13 @@ describe("YearlyReportPage", () => {
       json: vi.fn().mockResolvedValue(validRates)
     });
 
-    expect(await screen.findByText("No costs found for this year.")).toBeInTheDocument();
+    expect(await screen.findByText('No costs found for this year.')).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: "Generate Yearly Report" })
+      screen.getByRole('button', { name: 'Generate Yearly Report' })
     ).toBeEnabled();
   });
 
-  it("clears stale generated report data when filters change", async () => {
+  it('clears stale generated report data when filters change', async () => {
     const user = setupUser();
     mockSuccessfulRatesFetch();
     addCostOnDate({
@@ -488,25 +488,25 @@ describe("YearlyReportPage", () => {
       day: 1,
       cost: {
         sum: 75,
-        currency: "USD",
-        category: "Food",
-        description: "Stale lunch"
+        currency: 'USD',
+        category: 'Food',
+        description: 'Stale lunch'
       }
     });
 
     renderYearlyReportPage();
     await generateReport(user);
-    expect(screen.getByText("Stale lunch")).toBeInTheDocument();
+    expect(screen.getByText('Stale lunch')).toBeInTheDocument();
 
-    await setYear(user, "2025");
+    await setYear(user, '2025');
 
-    expect(screen.queryByText("Stale lunch")).not.toBeInTheDocument();
+    expect(screen.queryByText('Stale lunch')).not.toBeInTheDocument();
     expect(
-      screen.getByText("Choose filters and generate a detailed yearly report.")
+      screen.getByText('Choose filters and generate a detailed yearly report.')
     ).toBeInTheDocument();
   });
 
-  it("sorts by Date ascending and descending without changing the total", async () => {
+  it('sorts by Date ascending and descending without changing the total', async () => {
     const user = setupUser();
     mockSuccessfulRatesFetch();
     addSortableYearlyCosts();
@@ -514,87 +514,87 @@ describe("YearlyReportPage", () => {
     renderYearlyReportPage();
     await generateReport(user);
 
-    expect(getColumnValues(2)).toEqual(["car", "banana", "Apple"]);
-    expect(screen.getByText("Total: 135.875 USD")).toBeInTheDocument();
+    expect(getColumnValues(2)).toEqual(['car', 'banana', 'Apple']);
+    expect(screen.getByText('Total: 135.875 USD')).toBeInTheDocument();
 
-    await sortBy(user, "Date");
+    await sortBy(user, 'Date');
 
-    expect(screen.getByRole("columnheader", { name: "Date" })).toHaveAttribute(
-      "aria-sort",
-      "ascending"
+    expect(screen.getByRole('columnheader', { name: 'Date' })).toHaveAttribute(
+      'aria-sort',
+      'ascending'
     );
     expect(getColumnValues(0)).toEqual([
-      "10/01/2026",
-      "24/08/2026",
-      "05/12/2026"
+      '10/01/2026',
+      '24/08/2026',
+      '05/12/2026'
     ]);
-    expect(getColumnValues(2)).toEqual(["banana", "Apple", "car"]);
-    expect(screen.getByText("Total: 135.875 USD")).toBeInTheDocument();
+    expect(getColumnValues(2)).toEqual(['banana', 'Apple', 'car']);
+    expect(screen.getByText('Total: 135.875 USD')).toBeInTheDocument();
 
-    await sortBy(user, "Date");
+    await sortBy(user, 'Date');
 
-    expect(screen.getByRole("columnheader", { name: "Date" })).toHaveAttribute(
-      "aria-sort",
-      "descending"
+    expect(screen.getByRole('columnheader', { name: 'Date' })).toHaveAttribute(
+      'aria-sort',
+      'descending'
     );
     expect(getColumnValues(0)).toEqual([
-      "05/12/2026",
-      "24/08/2026",
-      "10/01/2026"
+      '05/12/2026',
+      '24/08/2026',
+      '10/01/2026'
     ]);
-    expect(getColumnValues(2)).toEqual(["car", "Apple", "banana"]);
+    expect(getColumnValues(2)).toEqual(['car', 'Apple', 'banana']);
   });
 
-  it("sorts by Time chronologically", async () => {
+  it('sorts by Time chronologically', async () => {
     const user = setupUser();
     mockSuccessfulRatesFetch();
     addSortableYearlyCosts();
 
     renderYearlyReportPage();
     await generateReport(user);
-    await sortBy(user, "Time");
+    await sortBy(user, 'Time');
 
-    expect(getColumnValues(1)).toEqual(["09:05", "16:37", "21:14"]);
-    expect(getColumnValues(2)).toEqual(["Apple", "banana", "car"]);
+    expect(getColumnValues(1)).toEqual(['09:05', '16:37', '21:14']);
+    expect(getColumnValues(2)).toEqual(['Apple', 'banana', 'car']);
   });
 
-  it("sorts Sum numerically while preserving original currencies", async () => {
+  it('sorts Sum numerically while preserving original currencies', async () => {
     const user = setupUser();
     mockSuccessfulRatesFetch();
     addSortableYearlyCosts();
 
     renderYearlyReportPage();
     await generateReport(user);
-    await sortBy(user, "Sum");
+    await sortBy(user, 'Sum');
 
-    expect(getColumnValues(4)).toEqual(["2", "25.5", "100"]);
-    expect(getColumnValues(5)).toEqual(["GBP", "EURO", "USD"]);
+    expect(getColumnValues(4)).toEqual(['2', '25.5', '100']);
+    expect(getColumnValues(5)).toEqual(['GBP', 'EURO', 'USD']);
 
-    await sortBy(user, "Sum");
+    await sortBy(user, 'Sum');
 
-    expect(getColumnValues(4)).toEqual(["100", "25.5", "2"]);
-    expect(getColumnValues(5)).toEqual(["USD", "EURO", "GBP"]);
+    expect(getColumnValues(4)).toEqual(['100', '25.5', '2']);
+    expect(getColumnValues(5)).toEqual(['USD', 'EURO', 'GBP']);
   });
 
-  it("sorts Category and Currency alphabetically", async () => {
+  it('sorts Category and Currency alphabetically', async () => {
     const user = setupUser();
     mockSuccessfulRatesFetch();
     addSortableYearlyCosts();
 
     renderYearlyReportPage();
     await generateReport(user);
-    await sortBy(user, "Category");
+    await sortBy(user, 'Category');
 
-    expect(getColumnValues(3)).toEqual(["Food", "Shopping", "Travel"]);
-    expect(getColumnValues(2)).toEqual(["banana", "car", "Apple"]);
+    expect(getColumnValues(3)).toEqual(['Food', 'Shopping', 'Travel']);
+    expect(getColumnValues(2)).toEqual(['banana', 'car', 'Apple']);
 
-    await sortBy(user, "Currency");
+    await sortBy(user, 'Currency');
 
-    expect(getColumnValues(5)).toEqual(["EURO", "GBP", "USD"]);
-    expect(getColumnValues(2)).toEqual(["car", "Apple", "banana"]);
+    expect(getColumnValues(5)).toEqual(['EURO', 'GBP', 'USD']);
+    expect(getColumnValues(2)).toEqual(['car', 'Apple', 'banana']);
   });
 
-  it("resets sorting when filters change and the report is regenerated", async () => {
+  it('resets sorting when filters change and the report is regenerated', async () => {
     const user = setupUser();
     mockSuccessfulRatesFetch();
     addSortableYearlyCosts();
@@ -604,9 +604,9 @@ describe("YearlyReportPage", () => {
       day: 3,
       cost: {
         sum: 100,
-        currency: "USD",
-        category: "Food",
-        description: "Previous first"
+        currency: 'USD',
+        category: 'Food',
+        description: 'Previous first'
       }
     });
     addCostOnDate({
@@ -615,42 +615,42 @@ describe("YearlyReportPage", () => {
       day: 4,
       cost: {
         sum: 2,
-        currency: "USD",
-        category: "Travel",
-        description: "Previous second"
+        currency: 'USD',
+        category: 'Travel',
+        description: 'Previous second'
       }
     });
     setLocalDate(2026, 8, 22);
 
     renderYearlyReportPage();
     await generateReport(user);
-    await sortBy(user, "Date");
-    await sortBy(user, "Date");
+    await sortBy(user, 'Date');
+    await sortBy(user, 'Date');
 
-    expect(getColumnValues(2)).toEqual(["car", "Apple", "banana"]);
+    expect(getColumnValues(2)).toEqual(['car', 'Apple', 'banana']);
 
-    await setYear(user, "2025");
+    await setYear(user, '2025');
 
-    expect(screen.queryByText("banana")).not.toBeInTheDocument();
+    expect(screen.queryByText('banana')).not.toBeInTheDocument();
     expect(
-      screen.getByText("Choose filters and generate a detailed yearly report.")
+      screen.getByText('Choose filters and generate a detailed yearly report.')
     ).toBeInTheDocument();
 
     await generateReport(user);
 
-    expect(getColumnValues(2)).toEqual(["Previous first", "Previous second"]);
-    expect(screen.getByRole("columnheader", { name: "Date" })).not.toHaveAttribute(
-      "aria-sort"
+    expect(getColumnValues(2)).toEqual(['Previous first', 'Previous second']);
+    expect(screen.getByRole('columnheader', { name: 'Date' })).not.toHaveAttribute(
+      'aria-sort'
     );
   });
 
-  it("exports the current visible Yearly sort order", async () => {
+  it('exports the current visible Yearly sort order', async () => {
     const user = setupUser();
     const excelSpy = vi
-      .spyOn(excelExportService, "downloadReportWorkbook")
+      .spyOn(excelExportService, 'downloadReportWorkbook')
       .mockResolvedValue(undefined);
     const pdfSpy = vi
-      .spyOn(pdfExportService, "downloadReportPdf")
+      .spyOn(pdfExportService, 'downloadReportPdf')
       .mockResolvedValue(undefined);
 
     mockSuccessfulRatesFetch();
@@ -658,51 +658,51 @@ describe("YearlyReportPage", () => {
 
     renderYearlyReportPage();
     await generateReport(user);
-    await sortBy(user, "Date");
-    await sortBy(user, "Date");
-    await user.click(screen.getByRole("button", { name: "Export Excel" }));
+    await sortBy(user, 'Date');
+    await sortBy(user, 'Date');
+    await user.click(screen.getByRole('button', { name: 'Export Excel' }));
 
     expect(excelSpy.mock.calls[0][0].rows.map((row) => row.description)).toEqual([
-      "car",
-      "Apple",
-      "banana"
+      'car',
+      'Apple',
+      'banana'
     ]);
     expect(excelSpy.mock.calls[0][0].metadata).toMatchObject({
       year: 2026,
-      currency: "USD",
+      currency: 'USD',
       total: 135.875
     });
     expect(excelSpy.mock.calls[0][1]).toBe(
-      "cost-manager-yearly-report-2026-usd.xlsx"
+      'cost-manager-yearly-report-2026-usd.xlsx'
     );
 
-    await user.click(screen.getByRole("button", { name: "Export PDF" }));
+    await user.click(screen.getByRole('button', { name: 'Export PDF' }));
 
     expect(pdfSpy.mock.calls[0][0].rows.map((row) => row.description)).toEqual([
-      "car",
-      "Apple",
-      "banana"
+      'car',
+      'Apple',
+      'banana'
     ]);
     expect(pdfSpy.mock.calls[0][1]).toBe(
-      "cost-manager-yearly-report-2026-usd.pdf"
+      'cost-manager-yearly-report-2026-usd.pdf'
     );
   });
 
-  it("displays Yearly export errors", async () => {
+  it('displays Yearly export errors', async () => {
     const user = setupUser();
 
-    vi.spyOn(pdfExportService, "downloadReportPdf").mockRejectedValue(
-      new Error("download failed")
+    vi.spyOn(pdfExportService, 'downloadReportPdf').mockRejectedValue(
+      new Error('download failed')
     );
     mockSuccessfulRatesFetch();
     addSortableYearlyCosts();
 
     renderYearlyReportPage();
     await generateReport(user);
-    await user.click(screen.getByRole("button", { name: "Export PDF" }));
+    await user.click(screen.getByRole('button', { name: 'Export PDF' }));
 
     expect(
-      await screen.findByText("Could not export the PDF file. Please try again.")
+      await screen.findByText('Could not export the PDF file. Please try again.')
     ).toBeInTheDocument();
   });
 });

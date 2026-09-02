@@ -8,14 +8,19 @@
 import {
   getCachedExchangeRates as readCachedExchangeRates,
   setCachedExchangeRates
-} from "../lib/exchangeRatesCache.js";
-import { getExchangeRatesUrl } from "./settingsService.js";
-import { validateExchangeRates } from "../utils/currency.js";
+} from '../lib/exchangeRatesCache.js';
+import { getExchangeRatesUrl } from './settingsService.js';
+import { validateExchangeRates } from '../utils/currency.js';
 
-// Defaults to whichever URL Settings currently resolves to (custom if set,
-// otherwise the project default) so most call sites can omit the argument.
-// A non-OK HTTP status and a malformed/incomplete JSON payload are both
-// treated as failures here rather than allowed to reach the cache.
+/**
+ * Fetches and validates exchange rates from url (R-090). A non-OK HTTP
+ * status and a malformed/incomplete JSON payload are both treated as
+ * failures here rather than allowed to reach the cache.
+ * @param {string} [url] - Rates source URL; defaults to whichever URL
+ *   Settings currently resolves to (custom if set, otherwise the project
+ *   default).
+ * @returns {Promise<object>} Validated exchange rates.
+ */
 export async function fetchExchangeRates(url = getExchangeRatesUrl()) {
   const response = await fetch(url);
 
@@ -28,10 +33,14 @@ export async function fetchExchangeRates(url = getExchangeRatesUrl()) {
   return validateExchangeRates(payload);
 }
 
-// Fetches, validates, and persists rates in one step. This is the function
-// the application calls on load/refresh so that db.js's synchronous
-// getReport() has a populated cache to read from (see exchangeRatesCache.js
-// for why the cache exists at all).
+/**
+ * Fetches, validates, and persists rates in one step. This is the function
+ * the application calls on load/refresh so that db.js's synchronous
+ * getReport() has a populated cache to read from.
+ * @param {string} [url] - Rates source URL; defaults to the current
+ *   effective Settings URL.
+ * @returns {Promise<object>} The validated rates that were cached.
+ */
 export async function refreshExchangeRates(url = getExchangeRatesUrl()) {
   const rates = await fetchExchangeRates(url);
 

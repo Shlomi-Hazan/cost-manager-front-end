@@ -6,7 +6,7 @@ import {
   Tabs,
   Toolbar,
   Typography
-} from "@mui/material";
+} from '@mui/material';
 
 /*
  * The application shell: top navigation bar plus a content area that
@@ -20,26 +20,29 @@ function AppLayout({ activePageId, appTitle, children, navigationItems, onNaviga
     <Box
       className="app-shell"
       data-page={activePageId}
-      sx={{ minHeight: "100vh", bgcolor: "background.default" }}
+      sx={{ minHeight: '100vh', bgcolor: 'background.default' }}
     >
+      {/* Decorative background layer, not part of the accessibility tree. */}
       <Box aria-hidden="true" className="ambient-background">
         <span />
       </Box>
+      {/* App title on the left, scrollable tab bar filling the rest. */}
       <AppBar position="static" color="inherit" elevation={0}>
         <Toolbar
           sx={{
             borderBottom: 1,
-            borderColor: "divider",
+            borderColor: 'divider',
             gap: 4,
             minHeight: 72
           }}
         >
+          {/* App name, fixed width so it never gets squeezed by the tabs. */}
           <Typography
             component="div"
             sx={{
-              color: "primary.main",
+              color: 'primary.main',
               flexShrink: 0,
-              fontSize: "1.25rem",
+              fontSize: '1.25rem',
               fontWeight: 800
             }}
           >
@@ -54,12 +57,13 @@ function AppLayout({ activePageId, appTitle, children, navigationItems, onNaviga
             scrollButtons="auto"
             sx={{
               minHeight: 48,
-              ".MuiTab-root": {
+              '.MuiTab-root': {
                 gap: 0.75,
                 minHeight: 48
               }
             }}
           >
+            {/* One tab per top-level page; App.jsx supplies the list. */}
             {navigationItems.map((item) => (
               <Tab
                 icon={item.icon}
@@ -76,7 +80,7 @@ function AppLayout({ activePageId, appTitle, children, navigationItems, onNaviga
       <Container
         component="main"
         maxWidth="xl"
-        sx={{ position: "relative", py: 5, zIndex: 1 }}
+        sx={{ position: 'relative', py: 5, zIndex: 1 }}
       >
         {children}
       </Container>

@@ -9,7 +9,7 @@
  * getting the required total from getReport() itself — the required
  * getReport() contract and its return shape are never modified.
  */
-import { buildYearlyMonthlyTotals } from "../utils/yearlyAggregation.js";
+import { buildYearlyMonthlyTotals } from '../utils/yearlyAggregation.js';
 
 // Full-detail copy (all date/time fields) for the app's own report tables,
 // as opposed to db.js's own toReportCost() which intentionally exposes only
@@ -21,6 +21,7 @@ function copyDetailedCost(cost) {
     currency: cost.currency,
     category: cost.category,
     description: cost.description,
+    // Full internal date/time, needed for display/sorting in report tables.
     date: {
       day: cost.date.day,
       month: cost.date.month,
@@ -31,9 +32,16 @@ function copyDetailedCost(cost) {
   };
 }
 
-// Course-required total (R-050 to R-053), presented with team-extension row
-// detail. `total` is copied straight from the required getReport() output,
-// so the required conversion/rounding behavior is never duplicated here.
+/**
+ * Course-required total (R-050 to R-053), presented with team-extension row
+ * detail. `total` is copied straight from the required getReport() output,
+ * so the required conversion/rounding behavior is never duplicated here.
+ * @param {object} database - db.js database object (from openCostsDB()).
+ * @param {string} currency - Currency to report the total in.
+ * @param {number} year - Report year.
+ * @param {number} month - Report month (1-12).
+ * @returns {{year: number, month: number, costs: object[], total: object}}
+ */
 export function buildDetailedMonthlyReport(database, currency, year, month) {
   const costs = database
     .getAllCosts()
@@ -52,10 +60,15 @@ export function buildDetailedMonthlyReport(database, currency, year, month) {
   };
 }
 
-// TEAM EXTENSION (X-005): a full-year report, built on top of the required
-// per-month getReport() calls rather than as a separate parallel
-// implementation — the yearly total is just the sum of 12 required monthly
-// totals, each already correctly converted to `currency`.
+/**
+ * TEAM EXTENSION (X-005): a full-year report, built on top of the required
+ * per-month getReport() calls — the yearly total is just the sum of 12
+ * required monthly totals, each already correctly converted to `currency`.
+ * @param {object} database - db.js database object (from openCostsDB()).
+ * @param {string} currency - Currency to report the total in.
+ * @param {number} year - Report year.
+ * @returns {{year: number, costs: object[], total: object}}
+ */
 export function buildDetailedYearlyReport(database, currency, year) {
   const costs = database
     .getAllCosts()
@@ -67,6 +80,7 @@ export function buildDetailedYearlyReport(database, currency, year) {
     currency,
     year
   );
+  // Sum the 12 already-converted monthly totals into one yearly figure.
   const yearlyTotal = monthlyTotals.reduce((total, month) => {
     return total + month.total;
   }, 0);

@@ -1,8 +1,8 @@
-import { useState } from "react";
-import LinkOutlinedIcon from "@mui/icons-material/LinkOutlined";
-import PublicOutlinedIcon from "@mui/icons-material/PublicOutlined";
-import RestartAltOutlinedIcon from "@mui/icons-material/RestartAltOutlined";
-import SaveOutlinedIcon from "@mui/icons-material/SaveOutlined";
+import { useState } from 'react';
+import LinkOutlinedIcon from '@mui/icons-material/LinkOutlined';
+import PublicOutlinedIcon from '@mui/icons-material/PublicOutlined';
+import RestartAltOutlinedIcon from '@mui/icons-material/RestartAltOutlined';
+import SaveOutlinedIcon from '@mui/icons-material/SaveOutlined';
 import {
   Alert,
   Box,
@@ -10,18 +10,19 @@ import {
   Stack,
   TextField,
   Typography
-} from "@mui/material";
-import LoadingButtonLabel from "../components/common/LoadingButtonLabel.jsx";
-import PageHeader from "../components/common/PageHeader.jsx";
-import SectionCard from "../components/common/SectionCard.jsx";
-import { refreshExchangeRates } from "../services/exchangeRatesService.js";
+} from '@mui/material';
+// Shared UI components, then the exchange-rate service/settings modules.
+import LoadingButtonLabel from '../components/common/LoadingButtonLabel.jsx';
+import PageHeader from '../components/common/PageHeader.jsx';
+import SectionCard from '../components/common/SectionCard.jsx';
+import { refreshExchangeRates } from '../services/exchangeRatesService.js';
 import {
   DEFAULT_EXCHANGE_RATES_URL,
   clearCustomExchangeRatesUrl,
   getCustomExchangeRatesUrl,
   getExchangeRatesUrl,
   setCustomExchangeRatesUrl
-} from "../services/settingsService.js";
+} from '../services/settingsService.js';
 
 /*
  * Course requirement: lets the user configure a custom exchange-rate URL,
@@ -37,18 +38,18 @@ function getInitialState() {
   return {
     customUrl,
     effectiveUrl: getExchangeRatesUrl(),
-    inputUrl: customUrl ?? "",
-    sourceType: customUrl === null ? "Default" : "Custom"
+    inputUrl: customUrl ?? '',
+    sourceType: customUrl === null ? 'Default' : 'Custom'
   };
 }
 
 function getValidationErrorMessage() {
-  return "Could not validate this exchange-rate source. Check the URL and try again.";
+  return 'Could not validate this exchange-rate source. Check the URL and try again.';
 }
 
 function SettingsPage() {
   const [settingsState, setSettingsState] = useState(getInitialState);
-  const [inputError, setInputError] = useState("");
+  const [inputError, setInputError] = useState('');
   const [feedback, setFeedback] = useState(null);
   const [activeAction, setActiveAction] = useState(null);
 
@@ -60,8 +61,8 @@ function SettingsPage() {
     setSettingsState({
       customUrl,
       effectiveUrl: getExchangeRatesUrl(),
-      inputUrl: inputUrl ?? customUrl ?? "",
-      sourceType: customUrl === null ? "Default" : "Custom"
+      inputUrl: inputUrl ?? customUrl ?? '',
+      sourceType: customUrl === null ? 'Default' : 'Custom'
     });
   }
 
@@ -70,7 +71,7 @@ function SettingsPage() {
       ...currentState,
       inputUrl: event.target.value
     }));
-    setInputError("");
+    setInputError('');
     setFeedback(null);
   }
 
@@ -79,15 +80,15 @@ function SettingsPage() {
 
     const candidateUrl = settingsState.inputUrl.trim();
 
-    setInputError("");
+    setInputError('');
     setFeedback(null);
 
-    if (candidateUrl === "") {
-      setInputError("Enter an exchange-rate source.");
+    if (candidateUrl === '') {
+      setInputError('Enter an exchange-rate source.');
       return;
     }
 
-    setActiveAction("save");
+    setActiveAction('save');
 
     try {
       // Validate-then-persist: only fetch + validate succeeding causes the
@@ -99,14 +100,14 @@ function SettingsPage() {
 
       updateSettingsState(savedUrl);
       setFeedback({
-        message: "Exchange-rate source saved and validated successfully.",
-        severity: "success"
+        message: 'Exchange-rate source saved and validated successfully.',
+        severity: 'success'
       });
     } catch {
       updateSettingsState(settingsState.inputUrl);
       setFeedback({
         message: getValidationErrorMessage(),
-        severity: "error"
+        severity: 'error'
       });
     } finally {
       setActiveAction(null);
@@ -117,23 +118,24 @@ function SettingsPage() {
   // never silently leave the app pointed at a source that turns out to be
   // unreachable — the same fetch-before-persist guarantee as Save & Test.
   async function handleUseDefaultSource() {
-    setInputError("");
+    setInputError('');
     setFeedback(null);
-    setActiveAction("default");
+    setActiveAction('default');
 
     try {
+      // Same fetch-before-persist guarantee as handleSaveCustomSource above.
       await refreshExchangeRates(DEFAULT_EXCHANGE_RATES_URL);
       clearCustomExchangeRatesUrl();
-      updateSettingsState("");
+      updateSettingsState('');
       setFeedback({
-        message: "Default exchange-rate source restored successfully.",
-        severity: "success"
+        message: 'Default exchange-rate source restored successfully.',
+        severity: 'success'
       });
     } catch {
       updateSettingsState(settingsState.inputUrl);
       setFeedback({
-        message: "Could not restore the default exchange-rate source. Please try again.",
-        severity: "error"
+        message: 'Could not restore the default exchange-rate source. Please try again.',
+        severity: 'error'
       });
     } finally {
       setActiveAction(null);
@@ -164,35 +166,38 @@ function SettingsPage() {
             <Alert severity={feedback.severity}>{feedback.message}</Alert>
           ) : null}
 
+          {/* Read-only status grid: current type/source, then the default URL. */}
           <Box
             sx={{
-              display: "grid",
+              display: 'grid',
               gap: 2,
               gridTemplateColumns: {
-                xs: "1fr",
-                md: "220px 1fr"
+                xs: '1fr',
+                md: '220px 1fr'
               }
             }}
           >
+            {/* "Default" vs "Custom", derived from whether a custom URL is saved. */}
             <Typography color="text.secondary" variant="body2">
               Current source type
             </Typography>
-            <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
+            <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
               <PublicOutlinedIcon
                 aria-hidden="true"
-                color={settingsState.sourceType === "Default" ? "primary" : "secondary"}
+                color={settingsState.sourceType === 'Default' ? 'primary' : 'secondary'}
                 fontSize="small"
               />
               <Typography>{settingsState.sourceType}</Typography>
             </Stack>
 
+            {/* Effective source: whichever URL requests actually use right now. */}
             <Typography color="text.secondary" variant="body2">
               Current effective source
             </Typography>
             <Stack
               direction="row"
               spacing={1}
-              sx={{ alignItems: "flex-start", minWidth: 0 }}
+              sx={{ alignItems: 'flex-start', minWidth: 0 }}
             >
               <LinkOutlinedIcon
                 aria-hidden="true"
@@ -200,19 +205,21 @@ function SettingsPage() {
                 fontSize="small"
                 sx={{ mt: 0.25 }}
               />
-              <Typography sx={{ overflowWrap: "anywhere" }}>
+              <Typography sx={{ overflowWrap: 'anywhere' }}>
                 {settingsState.effectiveUrl}
               </Typography>
             </Stack>
 
+            {/* The built-in fallback URL, always shown for reference. */}
             <Typography color="text.secondary" variant="body2">
               Default source
             </Typography>
-            <Typography sx={{ overflowWrap: "anywhere" }}>
+            <Typography sx={{ overflowWrap: 'anywhere' }}>
               {DEFAULT_EXCHANGE_RATES_URL}
             </Typography>
           </Box>
 
+          {/* Custom URL input, validated on submit before being saved. */}
           <TextField
             error={Boolean(inputError)}
             fullWidth
@@ -226,16 +233,17 @@ function SettingsPage() {
             value={settingsState.inputUrl}
           />
 
+          {/* Save (custom URL) and restore-default actions, side by side. */}
           <Box
             sx={{
-              display: "flex",
-              flexWrap: "wrap",
+              display: 'flex',
+              flexWrap: 'wrap',
               gap: 2
             }}
           >
             <Button disabled={isBusy} type="submit" variant="contained">
               <LoadingButtonLabel
-                isLoading={activeAction === "save"}
+                isLoading={activeAction === 'save'}
                 loadingText="Testing..."
               >
                 <Stack component="span" direction="row" spacing={1}>
@@ -244,6 +252,7 @@ function SettingsPage() {
                 </Stack>
               </LoadingButtonLabel>
             </Button>
+            {/* type="button": this one bypasses the form's onSubmit entirely. */}
             <Button
               disabled={isBusy}
               onClick={handleUseDefaultSource}
@@ -251,9 +260,10 @@ function SettingsPage() {
               variant="outlined"
             >
               <LoadingButtonLabel
-                isLoading={activeAction === "default"}
+                isLoading={activeAction === 'default'}
                 loadingText="Restoring..."
               >
+                {/* Icon + label wrapped together so they never wrap separately. */}
                 <Stack component="span" direction="row" spacing={1}>
                   <RestartAltOutlinedIcon aria-hidden="true" fontSize="small" />
                   <span>Use Default Source</span>

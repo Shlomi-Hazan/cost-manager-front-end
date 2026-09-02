@@ -1,7 +1,9 @@
-import { useRef, useState } from "react";
-import DonutLargeOutlinedIcon from "@mui/icons-material/DonutLargeOutlined";
-import PictureAsPdfOutlinedIcon from "@mui/icons-material/PictureAsPdfOutlined";
-import TableChartOutlinedIcon from "@mui/icons-material/TableChartOutlined";
+import { useRef, useState } from 'react';
+// Icons for the generate button and the two export buttons below.
+import DonutLargeOutlinedIcon from '@mui/icons-material/DonutLargeOutlined';
+import PictureAsPdfOutlinedIcon from '@mui/icons-material/PictureAsPdfOutlined';
+import TableChartOutlinedIcon from '@mui/icons-material/TableChartOutlined';
+// MUI layout/form/table primitives used by the filters bar and data table.
 import {
   Alert,
   Box,
@@ -16,7 +18,8 @@ import {
   TableRow,
   TextField,
   Typography
-} from "@mui/material";
+} from '@mui/material';
+// Recharts primitives for the required monthly category pie chart itself.
 import {
   Cell,
   Legend,
@@ -24,31 +27,34 @@ import {
   PieChart,
   ResponsiveContainer,
   Tooltip
-} from "recharts";
-import LoadingButtonLabel from "../components/common/LoadingButtonLabel.jsx";
-import PageHeader from "../components/common/PageHeader.jsx";
-import SectionCard from "../components/common/SectionCard.jsx";
-import { SUPPORTED_CURRENCIES } from "../constants/currencies.js";
-import { costsDatabase } from "../lib/costsDatabase.js";
+} from 'recharts';
+// Shared UI components, then local constants/db/services/utils below.
+import LoadingButtonLabel from '../components/common/LoadingButtonLabel.jsx';
+import PageHeader from '../components/common/PageHeader.jsx';
+import SectionCard from '../components/common/SectionCard.jsx';
+import { SUPPORTED_CURRENCIES } from '../constants/currencies.js';
+import { costsDatabase } from '../lib/costsDatabase.js';
+// Exchange-rate cache/refresh and the required Pie Chart aggregation logic.
 import {
   getCachedExchangeRates,
   refreshExchangeRates
-} from "../services/exchangeRatesService.js";
-import { aggregateCostsByCategory } from "../utils/chartAggregation.js";
-import YearlyBarChartSection from "../components/charts/YearlyBarChartSection.jsx";
-import * as excelExportService from "../services/export/excelExportService.js";
-import { buildPieChartExportModel } from "../services/export/exportModels.js";
-import * as pdfExportService from "../services/export/pdfExportService.js";
-import { captureChartSvgAsPngDataUrl } from "../utils/chartCapture.js";
+} from '../services/exchangeRatesService.js';
+import { aggregateCostsByCategory } from '../utils/chartAggregation.js';
+import YearlyBarChartSection from '../components/charts/YearlyBarChartSection.jsx';
+// TEAM EXTENSION: Excel/PDF export helpers for the Pie Chart data.
+import * as excelExportService from '../services/export/excelExportService.js';
+import { buildPieChartExportModel } from '../services/export/exportModels.js';
+import * as pdfExportService from '../services/export/pdfExportService.js';
+import { captureChartSvgAsPngDataUrl } from '../utils/chartCapture.js';
 import {
   addCategoryShare,
   shouldShowPieSliceLabel
-} from "../utils/chartPresentation.js";
-import { getPieChartExportFilename } from "../utils/exportFilenames.js";
+} from '../utils/chartPresentation.js';
+import { getPieChartExportFilename } from '../utils/exportFilenames.js';
 import {
   formatDisplayAmount,
   formatDisplayPercentage
-} from "../utils/amountFormat.js";
+} from '../utils/amountFormat.js';
 
 /*
  * Course requirement: the monthly category Pie Chart (R-070/R-071). Renders
@@ -60,27 +66,28 @@ import {
  */
 
 const MONTHS = [
-  { value: 1, label: "January" },
-  { value: 2, label: "February" },
-  { value: 3, label: "March" },
-  { value: 4, label: "April" },
-  { value: 5, label: "May" },
-  { value: 6, label: "June" },
-  { value: 7, label: "July" },
-  { value: 8, label: "August" },
-  { value: 9, label: "September" },
-  { value: 10, label: "October" },
-  { value: 11, label: "November" },
-  { value: 12, label: "December" }
+  { value: 1, label: 'January' },
+  { value: 2, label: 'February' },
+  { value: 3, label: 'March' },
+  { value: 4, label: 'April' },
+  { value: 5, label: 'May' },
+  { value: 6, label: 'June' },
+  { value: 7, label: 'July' },
+  { value: 8, label: 'August' },
+  { value: 9, label: 'September' },
+  { value: 10, label: 'October' },
+  { value: 11, label: 'November' },
+  { value: 12, label: 'December' }
 ];
 
+// Fixed palette cycled across pie slices, independent of category count.
 const CHART_COLORS = [
-  "#2563eb",
-  "#0f766e",
-  "#f59e0b",
-  "#dc2626",
-  "#7c3aed",
-  "#0891b2"
+  '#2563eb',
+  '#0f766e',
+  '#f59e0b',
+  '#dc2626',
+  '#7c3aed',
+  '#0891b2'
 ];
 
 function getCurrentFilters() {
@@ -89,7 +96,7 @@ function getCurrentFilters() {
   return {
     month: String(now.getMonth() + 1),
     year: String(now.getFullYear()),
-    currency: "USD"
+    currency: 'USD'
   };
 }
 
@@ -104,17 +111,17 @@ function validateFilters(filters) {
   const chartYear = Number(trimmedYear);
 
   if (!Number.isInteger(chartMonth) || chartMonth < 1 || chartMonth > 12) {
-    errors.month = "Select a chart month.";
+    errors.month = 'Select a chart month.';
   }
 
-  if (trimmedYear === "") {
-    errors.year = "Enter a chart year.";
+  if (trimmedYear === '') {
+    errors.year = 'Enter a chart year.';
   } else if (!Number.isFinite(chartYear) || !Number.isInteger(chartYear)) {
-    errors.year = "Enter a whole chart year.";
+    errors.year = 'Enter a whole chart year.';
   }
 
   if (!SUPPORTED_CURRENCIES.includes(filters.currency)) {
-    errors.currency = "Select a supported currency.";
+    errors.currency = 'Select a supported currency.';
   }
 
   return {
@@ -128,13 +135,13 @@ function validateFilters(filters) {
 function getChartErrorMessage(error) {
   if (
     error instanceof Error &&
-    (error.message.includes("cached exchange rates") ||
-      error.message.includes("Exchange rates"))
+    (error.message.includes('cached exchange rates') ||
+      error.message.includes('Exchange rates'))
   ) {
-    return "Exchange rates are unavailable for converting this chart. Please try again.";
+    return 'Exchange rates are unavailable for converting this chart. Please try again.';
   }
 
-  return "Could not generate the monthly category chart. Please try again.";
+  return 'Could not generate the monthly category chart. Please try again.';
 }
 
 // Recharts calls this per slice with the slice's geometry (angle/radius) and
@@ -180,8 +187,8 @@ function ChartsPage() {
   const [filters, setFilters] = useState(getCurrentFilters);
   const [errors, setErrors] = useState({});
   const [chartResult, setChartResult] = useState(null);
-  const [errorMessage, setErrorMessage] = useState("");
-  const [exportErrorMessage, setExportErrorMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState('');
+  const [exportErrorMessage, setExportErrorMessage] = useState('');
   const [exportingAction, setExportingAction] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [hasGenerated, setHasGenerated] = useState(false);
@@ -201,8 +208,8 @@ function ChartsPage() {
       ...currentErrors,
       [name]: undefined
     }));
-    setErrorMessage("");
-    setExportErrorMessage("");
+    setErrorMessage('');
+    setExportErrorMessage('');
     setChartResult(null);
     setHasGenerated(false);
   }
@@ -213,13 +220,13 @@ function ChartsPage() {
     const validation = validateFilters(filters);
 
     setErrors(validation.errors);
-    setErrorMessage("");
-    setExportErrorMessage("");
+    setErrorMessage('');
+    setExportErrorMessage('');
     setChartResult(null);
     setHasGenerated(false);
 
     if (!validation.isValid) {
-      setErrorMessage("Please correct the highlighted chart filters.");
+      setErrorMessage('Please correct the highlighted chart filters.');
       return;
     }
 
@@ -270,8 +277,8 @@ function ChartsPage() {
       return;
     }
 
-    setExportErrorMessage("");
-    setExportingAction("excel");
+    setExportErrorMessage('');
+    setExportingAction('excel');
 
     try {
       await excelExportService.downloadPieChartWorkbook(
@@ -280,11 +287,11 @@ function ChartsPage() {
           year: chartResult.report.year,
           month: chartResult.report.month,
           currency: chartResult.report.total.currency,
-          extension: "xlsx"
+          extension: 'xlsx'
         })
       );
     } catch {
-      setExportErrorMessage("Could not export the Excel file. Please try again.");
+      setExportErrorMessage('Could not export the Excel file. Please try again.');
     } finally {
       setExportingAction(null);
     }
@@ -295,8 +302,8 @@ function ChartsPage() {
       return;
     }
 
-    setExportErrorMessage("");
-    setExportingAction("pdf");
+    setExportErrorMessage('');
+    setExportingAction('pdf');
 
     try {
       // Only attempt to rasterize the chart when it actually rendered a
@@ -307,7 +314,7 @@ function ChartsPage() {
         : null;
 
       if (hasPositiveChartData && chartImageDataUrl === null) {
-        throw new Error("Pie chart image capture failed.");
+        throw new Error('Pie chart image capture failed.');
       }
 
       await pdfExportService.downloadChartPdf(
@@ -316,12 +323,12 @@ function ChartsPage() {
           year: chartResult.report.year,
           month: chartResult.report.month,
           currency: chartResult.report.total.currency,
-          extension: "pdf"
+          extension: 'pdf'
         }),
         chartImageDataUrl
       );
     } catch {
-      setExportErrorMessage("Could not export the chart PDF. Please try again.");
+      setExportErrorMessage('Could not export the chart PDF. Please try again.');
     } finally {
       setExportingAction(null);
     }
@@ -356,23 +363,24 @@ function ChartsPage() {
 
           <Box
             sx={{
-              display: "grid",
+              display: 'grid',
               gap: 2,
               gridTemplateColumns: {
-                xs: "1fr",
-                md: "220px 180px 180px auto"
+                xs: '1fr',
+                md: '220px 180px 180px auto'
               }
             }}
           >
             <TextField
               error={Boolean(errors.month)}
-              helperText={errors.month ?? " "}
+              helperText={errors.month ?? ' '}
               label="Month"
               name="month"
               onChange={handleChange}
               select
               value={filters.month}
             >
+              {/* Fixed 12-month list, unlike Year's free numeric input. */}
               {MONTHS.map((month) => (
                 <MenuItem key={month.value} value={String(month.value)}>
                   {month.label}
@@ -380,9 +388,10 @@ function ChartsPage() {
               ))}
             </TextField>
 
+            {/* Year: free numeric input, unlike Month's fixed select list. */}
             <TextField
               error={Boolean(errors.year)}
-              helperText={errors.year ?? " "}
+              helperText={errors.year ?? ' '}
               inputMode="numeric"
               label="Year"
               name="year"
@@ -392,7 +401,7 @@ function ChartsPage() {
 
             <TextField
               error={Boolean(errors.currency)}
-              helperText={errors.currency ?? " "}
+              helperText={errors.currency ?? ' '}
               label="Currency"
               name="currency"
               onChange={handleChange}
@@ -406,7 +415,8 @@ function ChartsPage() {
               ))}
             </TextField>
 
-            <Box sx={{ alignSelf: "start", pt: { md: 1 } }}>
+            {/* Submitting the form calls handleSubmit further up. */}
+            <Box sx={{ alignSelf: 'start', pt: { md: 1 } }}>
               <Button
                 disabled={isLoading}
                 startIcon={
@@ -449,36 +459,38 @@ function ChartsPage() {
               <Alert severity="error">{exportErrorMessage}</Alert>
             ) : null}
 
-            <Stack direction={{ xs: "column", sm: "row" }} spacing={1}>
+            {/* TEAM EXTENSION: Excel/PDF export of this pie chart. */}
+            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1}>
               <Button
                 disabled={Boolean(exportingAction)}
                 onClick={handleExcelExport}
                 startIcon={
-                  exportingAction === "excel" ? null : (
+                  exportingAction === 'excel' ? null : (
                     <TableChartOutlinedIcon aria-hidden="true" />
                   )
                 }
                 variant="outlined"
               >
                 <LoadingButtonLabel
-                  isLoading={exportingAction === "excel"}
+                  isLoading={exportingAction === 'excel'}
                   loadingText="Exporting..."
                 >
                   Export Excel
                 </LoadingButtonLabel>
               </Button>
+              {/* PDF export mirrors the Excel button, different action/icon. */}
               <Button
                 disabled={Boolean(exportingAction)}
                 onClick={handlePdfExport}
                 startIcon={
-                  exportingAction === "pdf" ? null : (
+                  exportingAction === 'pdf' ? null : (
                     <PictureAsPdfOutlinedIcon aria-hidden="true" />
                   )
                 }
                 variant="outlined"
               >
                 <LoadingButtonLabel
-                  isLoading={exportingAction === "pdf"}
+                  isLoading={exportingAction === 'pdf'}
                   loadingText="Exporting..."
                 >
                   Export PDF
@@ -493,13 +505,14 @@ function ChartsPage() {
                 Category totals are zero for this month.
               </Alert>
             ) : (
+              // R-070/R-071: category totals for the selected month/year/currency.
               <Box
                 aria-label="Monthly category pie chart"
                 ref={chartContainerRef}
                 role="img"
                 sx={{
                   height: 360,
-                  width: "100%"
+                  width: '100%'
                 }}
               >
                 <ResponsiveContainer height="100%" width="100%">
@@ -516,6 +529,7 @@ function ChartsPage() {
                       nameKey="category"
                       outerRadius={120}
                     >
+                      {/* One Cell per slice, colors cycling through CHART_COLORS. */}
                       {pieDisplayData.map((entry, index) => (
                         <Cell
                           fill={CHART_COLORS[index % CHART_COLORS.length]}
@@ -529,6 +543,7 @@ function ChartsPage() {
                         name
                       ]}
                     />
+                    {/* Legend rows show name, amount, and share percentage. */}
                     <Legend
                       formatter={(value, entry) => {
                         const item = entry.payload;
@@ -541,6 +556,7 @@ function ChartsPage() {
               </Box>
             )}
 
+            {/* Same category totals as the chart, in a sortable-by-eye table form. */}
             {hasChartData ? (
               <TableContainer>
                 <Table aria-label="Monthly category totals">
@@ -552,6 +568,7 @@ function ChartsPage() {
                       <TableCell>Currency</TableCell>
                     </TableRow>
                   </TableHead>
+                  {/* Column order matches the header cells above. */}
                   <TableBody>
                     {pieDisplayData.map((entry) => (
                       <TableRow key={entry.category}>
@@ -573,6 +590,7 @@ function ChartsPage() {
         </SectionCard>
       ) : null}
 
+      {/* R-080/R-081: the yearly bar chart, always rendered below the pie chart. */}
       <YearlyBarChartSection />
     </Stack>
   );

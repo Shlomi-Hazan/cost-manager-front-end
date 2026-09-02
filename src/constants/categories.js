@@ -12,14 +12,15 @@
  * db.js itself requires non-empty content.
  */
 export const COMMON_CATEGORIES = [
-  "Food",
-  "Transportation",
-  "Housing",
-  "Bills",
-  "Shopping",
-  "Health",
-  "Entertainment",
-  "Education",
-  "Travel",
-  "Other"
+  'Food',
+  'Transportation',
+  'Housing',
+  'Bills',
+  // Remaining suggestions, alphabetically unordered on purpose (most-used first).
+  'Shopping',
+  'Health',
+  'Entertainment',
+  'Education',
+  'Travel',
+  'Other'
 ];

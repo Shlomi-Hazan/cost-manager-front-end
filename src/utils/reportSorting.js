@@ -7,21 +7,21 @@
  */
 
 export const REPORT_SORT_DIRECTIONS = {
-  asc: "asc",
-  desc: "desc"
+  asc: 'asc',
+  desc: 'desc'
 };
 
 export const REPORT_SORT_KEYS = {
-  date: "date",
-  time: "time",
-  description: "description",
-  category: "category",
-  sum: "sum",
-  currency: "currency"
+  date: 'date',
+  time: 'time',
+  description: 'description',
+  category: 'category',
+  sum: 'sum',
+  currency: 'currency'
 };
 
 const textCompareOptions = {
-  sensitivity: "base"
+  sensitivity: 'base'
 };
 
 function compareNumbers(left, right) {
@@ -40,9 +40,11 @@ function getTimeValue(cost) {
 }
 
 function compareText(left, right) {
-  return left.localeCompare(right, "en", textCompareOptions);
+  return left.localeCompare(right, 'en', textCompareOptions);
 }
 
+// Dispatches to the right comparator for one sort key; direction/tie-break
+// are applied by the caller (sortReportCosts) so this stays a pure compare.
 function compareByKey(leftCost, rightCost, sortKey) {
   switch (sortKey) {
     case REPORT_SORT_KEYS.date:
@@ -51,6 +53,7 @@ function compareByKey(leftCost, rightCost, sortKey) {
       return compareNumbers(getTimeValue(leftCost), getTimeValue(rightCost));
     case REPORT_SORT_KEYS.description:
       return compareText(leftCost.description, rightCost.description);
+    // Remaining text/numeric columns follow the same pattern above.
     case REPORT_SORT_KEYS.category:
       return compareText(leftCost.category, rightCost.category);
     case REPORT_SORT_KEYS.sum:
@@ -58,20 +61,26 @@ function compareByKey(leftCost, rightCost, sortKey) {
     case REPORT_SORT_KEYS.currency:
       return compareText(leftCost.currency, rightCost.currency);
     default:
-      throw new TypeError("Unsupported report sort key.");
+      throw new TypeError('Unsupported report sort key.');
   }
 }
 
-// Returns a NEW sorted array; `costs` itself is never reordered in place.
-// No sortKey means "no sorting requested yet" and returns a shallow copy in
-// original (insertion) order.
-export function sortReportCosts(costs, { sortKey = null, sortDirection = "asc" } = {}) {
+/**
+ * Returns a NEW sorted array; `costs` itself is never reordered in place.
+ * @param {object[]} costs - Costs to sort.
+ * @param {object} [options]
+ * @param {?string} [options.sortKey] - One of REPORT_SORT_KEYS, or null for
+ *   "no sorting requested yet" (returns a shallow copy in insertion order).
+ * @param {string} [options.sortDirection] - One of REPORT_SORT_DIRECTIONS.
+ * @returns {object[]} A new, sorted (or copied) array.
+ */
+export function sortReportCosts(costs, { sortKey = null, sortDirection = 'asc' } = {}) {
   if (sortKey === null) {
     return [...costs];
   }
 
   if (!Object.values(REPORT_SORT_DIRECTIONS).includes(sortDirection)) {
-    throw new TypeError("Unsupported report sort direction.");
+    throw new TypeError('Unsupported report sort direction.');
   }
 
   const directionFactor =

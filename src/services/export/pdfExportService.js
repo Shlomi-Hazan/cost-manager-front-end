@@ -5,27 +5,27 @@
  * chartCapture.js). Never reads storage directly — everything printed here
  * comes from an already-built export model (see exportModels.js).
  */
-import { getModelRowsForPdf } from "./exportModels.js";
-import { downloadBlob } from "./downloadService.js";
+import { getModelRowsForPdf } from './exportModels.js';
+import { downloadBlob } from './downloadService.js';
 
 // jsPDF/jspdf-autotable are dynamically imported so they only load into the
 // bundle when a PDF export is actually requested.
 async function createPdfDocument() {
   const [{ jsPDF }, autoTableModule] = await Promise.all([
-    import("jspdf"),
-    import("jspdf-autotable")
+    import('jspdf'),
+    import('jspdf-autotable')
   ]);
   const autoTable = autoTableModule.autoTable ?? autoTableModule.default;
 
   return {
     autoTable,
-    doc: new jsPDF({ compress: false, unit: "pt", format: "a4" })
+    doc: new jsPDF({ compress: false, unit: 'pt', format: 'a4' })
   };
 }
 
 function addTitle(doc, title) {
   doc.setFontSize(18);
-  doc.text("Cost Manager", 40, 44);
+  doc.text('Cost Manager', 40, 44);
   doc.setFontSize(14);
   doc.text(title, 40, 68);
 }
@@ -40,7 +40,7 @@ function addMetadata(doc, lines, startY = 94) {
 }
 
 function outputPdfBytes(doc) {
-  return doc.output("arraybuffer");
+  return doc.output('arraybuffer');
 }
 
 function addNoDataMessage(doc, message, y) {
@@ -51,7 +51,7 @@ function addNoDataMessage(doc, message, y) {
 }
 
 function getChartMetadataLines(model) {
-  if (model.type === "pie-chart") {
+  if (model.type === 'pie-chart') {
     return [
       `Period: ${model.metadata.periodLabel}`,
       `Currency: ${model.metadata.currency}`,
@@ -77,11 +77,14 @@ export function fitImageWithinBounds({ width, height, maxWidth, maxHeight }) {
   };
 }
 
+// Draws the captured chart PNG onto the page, scaled down to fit within
+// the page margins while preserving its aspect ratio.
 function addChartImage(doc, chartImageDataUrl, y) {
   const horizontalMargin = 40;
   const pageWidth = doc.internal.pageSize.getWidth();
   const maxWidth = pageWidth - horizontalMargin * 2;
   const maxHeight = 260;
+  // jsPDF exposes the image's natural pixel size via getImageProperties().
   const imageProperties = doc.getImageProperties(chartImageDataUrl);
   const size = fitImageWithinBounds({
     width: imageProperties.width,
@@ -93,13 +96,13 @@ function addChartImage(doc, chartImageDataUrl, y) {
 
   doc.addImage(
     chartImageDataUrl,
-    "PNG",
+    'PNG',
     x,
     y,
     size.width,
     size.height,
     undefined,
-    "FAST"
+    'FAST'
   );
 
   return y + size.height + 20;
@@ -110,7 +113,7 @@ export async function createReportPdfBuffer(model) {
 
   addTitle(doc, model.title);
   const nextY = addMetadata(doc, [
-    model.type === "monthly-report"
+    model.type === 'monthly-report'
       ? `Period: ${model.metadata.periodLabel}`
       : `Year: ${model.metadata.year}`,
     `Report currency: ${model.metadata.currency}`,
@@ -119,7 +122,7 @@ export async function createReportPdfBuffer(model) {
   ]);
 
   if (model.rows.length === 0) {
-    addNoDataMessage(doc, "No costs found for this period.", nextY);
+    addNoDataMessage(doc, 'No costs found for this period.', nextY);
   }
 
   autoTable(doc, {
@@ -142,11 +145,11 @@ export async function createChartPdfBuffer(model, chartImageDataUrl = null) {
   if (chartImageDataUrl) {
     nextY = addChartImage(doc, chartImageDataUrl, nextY);
   } else {
-    nextY = addNoDataMessage(doc, "No chart visualization is available for this data.", nextY);
+    nextY = addNoDataMessage(doc, 'No chart visualization is available for this data.', nextY);
   }
 
   if (model.rows.length === 0) {
-    nextY = addNoDataMessage(doc, "No data rows are available.", nextY);
+    nextY = addNoDataMessage(doc, 'No data rows are available.', nextY);
   }
 
   autoTable(doc, {
@@ -162,7 +165,7 @@ export async function createChartPdfBuffer(model, chartImageDataUrl = null) {
 
 export async function downloadPdf(createBuffer, filename) {
   const buffer = await createBuffer();
-  const blob = new Blob([buffer], { type: "application/pdf" });
+  const blob = new Blob([buffer], { type: 'application/pdf' });
 
   downloadBlob(blob, filename);
 }
