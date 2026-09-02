@@ -4,7 +4,7 @@ Final project for the **Front-End Development** course.
 
 This repository is intentionally being built from the project requirements outward: requirements, architecture, AI-agent instructions, testing strategy, Git/GitHub workflow, implementation, deployment, audit, and submission.
 
-> **Current status:** Milestone 16 — Style Guide Compliance (code brought in line with the official Professional JavaScript Style Guide and a course-supplied common-rejects checklist; pending review/merge; final submission artifacts still not generated, not submission-ready).
+> **Current status:** Milestone 15.5 — Style Guide Compliance (code brought in line with the official Professional JavaScript Style Guide and a course-supplied common-rejects checklist; pending review/merge; Milestone 16, final submission artifact generation, has not started — not submission-ready).
 
 ## Project Goal
 
@@ -134,7 +134,7 @@ Public.
 
 ## Current Milestone
 
-### Milestone 16 — Style Guide Compliance
+### Milestone 15.5 — Style Guide Compliance
 
 The official course document now directly names and links the required
 style reference, *"The Professional JavaScript Style Guide"* by Haim
