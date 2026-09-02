@@ -17,13 +17,13 @@
  */
 import { validateExchangeRates } from '../utils/currency.js';
 
-export const EXCHANGE_RATES_CACHE_KEY = 'cost-manager:exchange-rates-cache';
+export const exchangeRatesCacheKey = 'cost-manager:exchange-rates-cache';
 
 // Returns null (rather than throwing) for "no cache yet" AND for corrupted/
 // invalid cached data, since both cases mean the same thing to a caller:
 // there are no rates it can safely convert with right now.
 export function getCachedExchangeRates() {
-  const storedValue = localStorage.getItem(EXCHANGE_RATES_CACHE_KEY);
+  const storedValue = localStorage.getItem(exchangeRatesCacheKey);
 
   if (storedValue === null) {
     return null;
@@ -42,11 +42,11 @@ export function getCachedExchangeRates() {
 export function setCachedExchangeRates(rates) {
   const validatedRates = validateExchangeRates(rates);
 
-  localStorage.setItem(EXCHANGE_RATES_CACHE_KEY, JSON.stringify(validatedRates));
+  localStorage.setItem(exchangeRatesCacheKey, JSON.stringify(validatedRates));
 
   return validatedRates;
 }
 
 export function clearCachedExchangeRates() {
-  localStorage.removeItem(EXCHANGE_RATES_CACHE_KEY);
+  localStorage.removeItem(exchangeRatesCacheKey);
 }

@@ -17,7 +17,7 @@ import PageHeader from '../components/common/PageHeader.jsx';
 import SectionCard from '../components/common/SectionCard.jsx';
 import { refreshExchangeRates } from '../services/exchangeRatesService.js';
 import {
-  DEFAULT_EXCHANGE_RATES_URL,
+  defaultExchangeRatesUrl,
   clearCustomExchangeRatesUrl,
   getCustomExchangeRatesUrl,
   getExchangeRatesUrl,
@@ -124,7 +124,7 @@ function SettingsPage() {
 
     try {
       // Same fetch-before-persist guarantee as handleSaveCustomSource above.
-      await refreshExchangeRates(DEFAULT_EXCHANGE_RATES_URL);
+      await refreshExchangeRates(defaultExchangeRatesUrl);
       clearCustomExchangeRatesUrl();
       updateSettingsState('');
       setFeedback({
@@ -215,7 +215,7 @@ function SettingsPage() {
               Default source
             </Typography>
             <Typography sx={{ overflowWrap: 'anywhere' }}>
-              {DEFAULT_EXCHANGE_RATES_URL}
+              {defaultExchangeRatesUrl}
             </Typography>
           </Box>
 
@@ -225,7 +225,7 @@ function SettingsPage() {
             fullWidth
             helperText={
               inputError ||
-              `Use a relative path such as ${DEFAULT_EXCHANGE_RATES_URL} or an absolute URL.`
+              `Use a relative path such as ${defaultExchangeRatesUrl} or an absolute URL.`
             }
             label="Custom exchange-rate source"
             name="exchangeRatesUrl"

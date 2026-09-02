@@ -25,15 +25,15 @@
 (function exposeDb(global) {
   'use strict';
 
-  const SUPPORTED_CURRENCIES = ['USD', 'ILS', 'GBP', 'EURO'];
-  const STORAGE_PREFIX = 'cost-manager';
+  const supportedCurrencies = ['USD', 'ILS', 'GBP', 'EURO'];
+  const storagePrefix = 'cost-manager';
   // Must match the key used by src/lib/exchangeRatesCache.js exactly, since
   // this is how a standalone-loaded page and the React app would ever share
   // the same cached rates if they ran against the same localStorage origin.
-  const EXCHANGE_RATES_CACHE_KEY = 'cost-manager:exchange-rates-cache';
+  const exchangeRatesCacheKey = 'cost-manager:exchange-rates-cache';
 
   function isSupportedCurrency(currency) {
-    return SUPPORTED_CURRENCIES.indexOf(currency) !== -1;
+    return supportedCurrencies.indexOf(currency) !== -1;
   }
 
   // R-035: every cost gets its "added on" date automatically. Day/month/year
@@ -74,7 +74,7 @@
   // version's behavior.
   function getStorageKey(databaseName, databaseVersion) {
     return (
-      STORAGE_PREFIX +
+      storagePrefix +
       ':' +
       encodeURIComponent(databaseName) +
       ':v' +
@@ -262,7 +262,7 @@
       throw new TypeError('Exchange rates must be an object.');
     }
 
-    SUPPORTED_CURRENCIES.forEach(function validateRate(currency) {
+    supportedCurrencies.forEach(function validateRate(currency) {
       if (!Object.hasOwn(rates, currency)) {
         throw new TypeError('Exchange rates must include ' + currency + '.');
       }
@@ -284,7 +284,7 @@
       throw new TypeError('Exchange rate for USD must be exactly 1.');
     }
 
-    return SUPPORTED_CURRENCIES.reduce(function copyRate(validatedRates, currency) {
+    return supportedCurrencies.reduce(function copyRate(validatedRates, currency) {
       validatedRates[currency] = rates[currency];
 
       return validatedRates;
@@ -297,7 +297,7 @@
   // below, and src/lib/exchangeRatesCache.js for the full rationale shared
   // with the module version.
   function getCachedExchangeRates() {
-    const storedValue = localStorage.getItem(EXCHANGE_RATES_CACHE_KEY);
+    const storedValue = localStorage.getItem(exchangeRatesCacheKey);
 
     if (storedValue === null) {
       return null;

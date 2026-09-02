@@ -1,7 +1,7 @@
 import { act, renderHook } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import { useReportSorting } from './useReportSorting.js';
-import { REPORT_SORT_KEYS } from '../utils/reportSorting.js';
+import { reportSortKeys } from '../utils/reportSorting.js';
 
 // TEAM EXTENSION test (X-006): protects the hook's own state machine
 // (which column is active, which direction, reset behavior) independently
@@ -50,9 +50,9 @@ describe('useReportSorting', () => {
 
     const { result } = renderHook(() => useReportSorting(costs));
 
-    act(() => result.current.requestSort(REPORT_SORT_KEYS.sum));
+    act(() => result.current.requestSort(reportSortKeys.sum));
 
-    expect(result.current.sortKey).toBe(REPORT_SORT_KEYS.sum);
+    expect(result.current.sortKey).toBe(reportSortKeys.sum);
     expect(result.current.sortDirection).toBe('asc');
     expect(sortedIds(result)).toEqual(['sum-2', 'sum-100']);
   });
@@ -65,13 +65,13 @@ describe('useReportSorting', () => {
 
     const { result } = renderHook(() => useReportSorting(costs));
 
-    act(() => result.current.requestSort(REPORT_SORT_KEYS.sum));
-    act(() => result.current.requestSort(REPORT_SORT_KEYS.sum));
+    act(() => result.current.requestSort(reportSortKeys.sum));
+    act(() => result.current.requestSort(reportSortKeys.sum));
 
     expect(result.current.sortDirection).toBe('desc');
     expect(sortedIds(result)).toEqual(['sum-100', 'sum-2']);
 
-    act(() => result.current.requestSort(REPORT_SORT_KEYS.sum));
+    act(() => result.current.requestSort(reportSortKeys.sum));
 
     expect(result.current.sortDirection).toBe('asc');
     expect(sortedIds(result)).toEqual(['sum-2', 'sum-100']);
@@ -85,11 +85,11 @@ describe('useReportSorting', () => {
 
     const { result } = renderHook(() => useReportSorting(costs));
 
-    act(() => result.current.requestSort(REPORT_SORT_KEYS.sum));
-    act(() => result.current.requestSort(REPORT_SORT_KEYS.sum));
-    act(() => result.current.requestSort(REPORT_SORT_KEYS.description));
+    act(() => result.current.requestSort(reportSortKeys.sum));
+    act(() => result.current.requestSort(reportSortKeys.sum));
+    act(() => result.current.requestSort(reportSortKeys.description));
 
-    expect(result.current.sortKey).toBe(REPORT_SORT_KEYS.description);
+    expect(result.current.sortKey).toBe(reportSortKeys.description);
     expect(result.current.sortDirection).toBe('asc');
     expect(sortedIds(result)).toEqual(['Apple', 'banana']);
   });
@@ -102,7 +102,7 @@ describe('useReportSorting', () => {
 
     const { result } = renderHook(() => useReportSorting(costs));
 
-    act(() => result.current.requestSort(REPORT_SORT_KEYS.sum));
+    act(() => result.current.requestSort(reportSortKeys.sum));
     act(() => result.current.resetSort());
 
     expect(result.current.sortKey).toBeNull();
@@ -119,7 +119,7 @@ describe('useReportSorting', () => {
 
     const { result } = renderHook(() => useReportSorting(costs));
 
-    act(() => result.current.requestSort(REPORT_SORT_KEYS.sum));
+    act(() => result.current.requestSort(reportSortKeys.sum));
 
     expect(costs).toEqual(originalSnapshot);
   });

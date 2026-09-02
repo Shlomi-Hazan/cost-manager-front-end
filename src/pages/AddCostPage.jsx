@@ -12,8 +12,8 @@ import {
 // Shared UI components, then local constants/db/utils below.
 import PageHeader from '../components/common/PageHeader.jsx';
 import SectionCard from '../components/common/SectionCard.jsx';
-import { COMMON_CATEGORIES } from '../constants/categories.js';
-import { SUPPORTED_CURRENCIES } from '../constants/currencies.js';
+import { commonCategories } from '../constants/categories.js';
+import { supportedCurrencies } from '../constants/currencies.js';
 import { costsDatabase } from '../lib/costsDatabase.js';
 import { normalizeCategoryInput } from '../utils/category.js';
 
@@ -50,7 +50,7 @@ function validateForm(values) {
     nextErrors.sum = 'Enter a valid numeric sum.';
   }
 
-  if (!SUPPORTED_CURRENCIES.includes(values.currency)) {
+  if (!supportedCurrencies.includes(values.currency)) {
     nextErrors.currency = 'Select a supported currency.';
   }
 
@@ -206,7 +206,7 @@ function AddCostPage() {
               select
               value={formValues.currency}
             >
-              {SUPPORTED_CURRENCIES.map((currency) => (
+              {supportedCurrencies.map((currency) => (
                 <MenuItem key={currency} value={currency}>
                   {currency}
                 </MenuItem>
@@ -214,14 +214,14 @@ function AddCostPage() {
             </TextField>
           </Box>
 
-          {/* freeSolo: COMMON_CATEGORIES are only suggestions (R-033, OQ-004). */}
+          {/* freeSolo: commonCategories are only suggestions (R-033, OQ-004). */}
           <Autocomplete
             freeSolo
             inputValue={formValues.category}
             onChange={handleCategoryChange}
             onInputChange={handleCategoryInputChange}
             openOnFocus
-            options={COMMON_CATEGORIES}
+            options={commonCategories}
             // MUI Autocomplete requires the text field to be supplied this way.
             renderInput={(params) => (
               <TextField

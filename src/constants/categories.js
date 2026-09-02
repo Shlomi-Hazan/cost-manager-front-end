@@ -11,7 +11,7 @@
  * whitespace-only category input) as a project/UI decision, not because
  * db.js itself requires non-empty content.
  */
-export const COMMON_CATEGORIES = [
+export const commonCategories = [
   'Food',
   'Transportation',
   'Housing',

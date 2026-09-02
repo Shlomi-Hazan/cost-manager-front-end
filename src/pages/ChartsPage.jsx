@@ -32,7 +32,7 @@ import {
 import LoadingButtonLabel from '../components/common/LoadingButtonLabel.jsx';
 import PageHeader from '../components/common/PageHeader.jsx';
 import SectionCard from '../components/common/SectionCard.jsx';
-import { SUPPORTED_CURRENCIES } from '../constants/currencies.js';
+import { supportedCurrencies } from '../constants/currencies.js';
 import { costsDatabase } from '../lib/costsDatabase.js';
 // Exchange-rate cache/refresh and the required Pie Chart aggregation logic.
 import {
@@ -65,7 +65,7 @@ import {
  * TEAM EXTENSION.
  */
 
-const MONTHS = [
+const months = [
   { value: 1, label: 'January' },
   { value: 2, label: 'February' },
   { value: 3, label: 'March' },
@@ -81,7 +81,7 @@ const MONTHS = [
 ];
 
 // Fixed palette cycled across pie slices, independent of category count.
-const CHART_COLORS = [
+const chartColors = [
   '#2563eb',
   '#0f766e',
   '#f59e0b',
@@ -101,7 +101,7 @@ function getCurrentFilters() {
 }
 
 function getMonthLabel(month) {
-  return MONTHS.find((option) => option.value === month)?.label ?? String(month);
+  return months.find((option) => option.value === month)?.label ?? String(month);
 }
 
 function validateFilters(filters) {
@@ -120,7 +120,7 @@ function validateFilters(filters) {
     errors.year = 'Enter a whole chart year.';
   }
 
-  if (!SUPPORTED_CURRENCIES.includes(filters.currency)) {
+  if (!supportedCurrencies.includes(filters.currency)) {
     errors.currency = 'Select a supported currency.';
   }
 
@@ -381,7 +381,7 @@ function ChartsPage() {
               value={filters.month}
             >
               {/* Fixed 12-month list, unlike Year's free numeric input. */}
-              {MONTHS.map((month) => (
+              {months.map((month) => (
                 <MenuItem key={month.value} value={String(month.value)}>
                   {month.label}
                 </MenuItem>
@@ -408,7 +408,7 @@ function ChartsPage() {
               select
               value={filters.currency}
             >
-              {SUPPORTED_CURRENCIES.map((currency) => (
+              {supportedCurrencies.map((currency) => (
                 <MenuItem key={currency} value={currency}>
                   {currency}
                 </MenuItem>
@@ -529,10 +529,10 @@ function ChartsPage() {
                       nameKey="category"
                       outerRadius={120}
                     >
-                      {/* One Cell per slice, colors cycling through CHART_COLORS. */}
+                      {/* One Cell per slice, colors cycling through chartColors. */}
                       {pieDisplayData.map((entry, index) => (
                         <Cell
-                          fill={CHART_COLORS[index % CHART_COLORS.length]}
+                          fill={chartColors[index % chartColors.length]}
                           key={entry.category}
                         />
                       ))}

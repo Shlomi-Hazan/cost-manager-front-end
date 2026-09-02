@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
-  EXCHANGE_RATES_CACHE_KEY,
+  exchangeRatesCacheKey,
   getCachedExchangeRates,
   setCachedExchangeRates
 } from '../../src/lib/exchangeRatesCache.js';
@@ -9,8 +9,8 @@ import {
   refreshExchangeRates
 } from '../../src/services/exchangeRatesService.js';
 import {
-  DEFAULT_EXCHANGE_RATES_URL,
-  SETTINGS_STORAGE_KEY,
+  defaultExchangeRatesUrl,
+  settingsStorageKey,
   setCustomExchangeRatesUrl
 } from '../../src/services/settingsService.js';
 
@@ -59,7 +59,7 @@ describe('exchangeRatesService', () => {
 
     await refreshExchangeRates();
 
-    expect(globalThis.fetch).toHaveBeenCalledWith(DEFAULT_EXCHANGE_RATES_URL);
+    expect(globalThis.fetch).toHaveBeenCalledWith(defaultExchangeRatesUrl);
   });
 
   it('uses a configured custom URL', async () => {
@@ -95,7 +95,7 @@ describe('exchangeRatesService', () => {
 
     expect(globalThis.fetch).toHaveBeenCalledWith('/candidate-rates.json');
     expect(getCachedExchangeRates()).toEqual(validRates);
-    expect(localStorage.getItem(SETTINGS_STORAGE_KEY)).toContain(
+    expect(localStorage.getItem(settingsStorageKey)).toContain(
       '/active-rates.json'
     );
   });
@@ -162,17 +162,17 @@ describe('exchangeRatesService', () => {
   });
 
   it('treats a malformed cache as missing', () => {
-    localStorage.setItem(EXCHANGE_RATES_CACHE_KEY, '{not-json');
+    localStorage.setItem(exchangeRatesCacheKey, '{not-json');
 
     expect(getCachedExchangeRates()).toBeNull();
   });
 
   it('ignores malformed settings and falls back to the default URL', async () => {
     globalThis.fetch = mockFetchResponse(validRates);
-    localStorage.setItem(SETTINGS_STORAGE_KEY, '{not-json');
+    localStorage.setItem(settingsStorageKey, '{not-json');
 
     await refreshExchangeRates();
 
-    expect(globalThis.fetch).toHaveBeenCalledWith(DEFAULT_EXCHANGE_RATES_URL);
+    expect(globalThis.fetch).toHaveBeenCalledWith(defaultExchangeRatesUrl);
   });
 });

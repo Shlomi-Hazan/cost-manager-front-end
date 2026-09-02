@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import {
-  YEARLY_MONTHS,
+  yearlyMonths,
   buildYearlyMonthlyTotals
 } from '../../src/utils/yearlyAggregation.js';
 
@@ -116,7 +116,7 @@ describe('yearly aggregation', () => {
     const result = buildYearlyMonthlyTotals(() => createReport(0), 'USD', 2026);
 
     expect(result).toEqual(
-      YEARLY_MONTHS.map((monthOption) => ({
+      yearlyMonths.map((monthOption) => ({
         ...monthOption,
         total: 0,
         currency: 'USD'

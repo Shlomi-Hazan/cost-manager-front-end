@@ -3,23 +3,23 @@
  * write-excel-file, not a renamed CSV) for the Monthly/Yearly reports and
  * Pie/Bar charts. All styling constants below only affect how the exported
  * spreadsheet looks — numeric cells are still written as real numbers (see
- * AMOUNT_FORMAT), so the exported file remains usable for further
+ * amountFormatPattern), so the exported file remains usable for further
  * calculation, not just visual inspection.
  */
 import { downloadBlob } from './downloadService.js';
 
-const SHEET_NAMES = {
+const sheetNames = {
   summary: 'Summary',
   reportCosts: 'Costs',
   categoryTotals: 'Category Totals',
   monthlyTotals: 'Monthly Totals'
 };
 
-const AMOUNT_FORMAT = '#,##0.######';
-const PERCENTAGE_FORMAT = '0.0%';
-const YEAR_FORMAT = '0';
+const amountFormatPattern = '#,##0.######';
+const percentageFormatPattern = '0.0%';
+const yearFormatPattern = '0';
 
-const COLORS = {
+const colors = {
   primary: '#2563EB',
   darkText: '#1E293B',
   secondaryText: '#64748B',
@@ -28,21 +28,21 @@ const COLORS = {
   white: '#FFFFFF'
 };
 
-const HEADER_STYLE = {
-  backgroundColor: COLORS.primary,
-  borderColor: COLORS.border,
+const headerStyle = {
+  backgroundColor: colors.primary,
+  borderColor: colors.border,
   borderStyle: 'thin',
   fontWeight: 'bold',
-  textColor: COLORS.white
+  textColor: colors.white
 };
 
-const BODY_CELL_STYLE = {
-  borderColor: COLORS.border,
+const bodyCellStyle = {
+  borderColor: colors.border,
   borderStyle: 'thin',
   alignVertical: 'top'
 };
 
-const COLUMN_WIDTHS = {
+const columnWidths = {
   Category: 22,
   Currency: 14,
   Date: 14,
@@ -69,7 +69,7 @@ function titleCell(value, options = {}) {
     value,
     columnSpan: 2,
     fontWeight: 'bold',
-    textColor: COLORS.darkText,
+    textColor: colors.darkText,
     ...options
   };
 }
@@ -77,37 +77,37 @@ function titleCell(value, options = {}) {
 function headerCell(value) {
   return {
     value,
-    ...HEADER_STYLE
+    ...headerStyle
   };
 }
 
 function metadataLabelCell(value, isEmphasized = false) {
   return {
     value,
-    ...BODY_CELL_STYLE,
-    backgroundColor: isEmphasized ? '#DBEAFE' : COLORS.lightBackground,
+    ...bodyCellStyle,
+    backgroundColor: isEmphasized ? '#DBEAFE' : colors.lightBackground,
     fontWeight: 'bold',
-    textColor: COLORS.darkText
+    textColor: colors.darkText
   };
 }
 
 function textCell(value, options = {}) {
   return {
     value,
-    ...BODY_CELL_STYLE,
-    textColor: COLORS.darkText,
+    ...bodyCellStyle,
+    textColor: colors.darkText,
     ...options
   };
 }
 
-function numericCell(value, format = AMOUNT_FORMAT, options = {}) {
+function numericCell(value, format = amountFormatPattern, options = {}) {
   return {
     value,
     type: Number,
     format,
-    ...BODY_CELL_STYLE,
+    ...bodyCellStyle,
     align: 'right',
-    textColor: COLORS.darkText,
+    textColor: colors.darkText,
     ...options
   };
 }
@@ -116,11 +116,11 @@ function createValueCell(label, value) {
   const isEmphasized = label === 'Total' || label === 'Annual Total';
 
   if (label === 'Year' && typeof value === 'number') {
-    return numericCell(value, YEAR_FORMAT);
+    return numericCell(value, yearFormatPattern);
   }
 
   if (typeof value === 'number') {
-    return numericCell(value, AMOUNT_FORMAT, {
+    return numericCell(value, amountFormatPattern, {
       backgroundColor: isEmphasized ? '#DBEAFE' : undefined,
       fontWeight: isEmphasized ? 'bold' : undefined
     });
@@ -134,10 +134,10 @@ function createValueCell(label, value) {
 
 function createSummarySheet(model) {
   return {
-    sheet: SHEET_NAMES.summary,
+    sheet: sheetNames.summary,
     data: [
       [titleCell('COST MANAGER', { fontSize: 18 }), null],
-      [titleCell(model.title, { fontSize: 14, textColor: COLORS.primary }), null],
+      [titleCell(model.title, { fontSize: 14, textColor: colors.primary }), null],
       [null, null],
       [headerCell('Field'), headerCell('Value')],
       ...model.summary.map(([label, value]) => {
@@ -159,7 +159,7 @@ function createDataCell(column, value) {
   }
 
   if (column === 'Share') {
-    return numericCell(value, PERCENTAGE_FORMAT);
+    return numericCell(value, percentageFormatPattern);
   }
 
   return textCell(value, {
@@ -181,7 +181,7 @@ function createRowsSheet(sheetName, columns, rows) {
       )
     ],
     columns: columns.map((column) => ({
-      width: COLUMN_WIDTHS[column] ?? Math.max(14, column.length + 4)
+      width: columnWidths[column] ?? Math.max(14, column.length + 4)
     })),
     stickyRowsCount: 1
   };
@@ -204,21 +204,21 @@ async function createWorkbookBlob({ model, rowsSheetName }) {
 export function createReportWorkbookBlob(model) {
   return createWorkbookBlob({
     model,
-    rowsSheetName: SHEET_NAMES.reportCosts
+    rowsSheetName: sheetNames.reportCosts
   });
 }
 
 export function createPieChartWorkbookBlob(model) {
   return createWorkbookBlob({
     model,
-    rowsSheetName: SHEET_NAMES.categoryTotals
+    rowsSheetName: sheetNames.categoryTotals
   });
 }
 
 export function createBarChartWorkbookBlob(model) {
   return createWorkbookBlob({
     model,
-    rowsSheetName: SHEET_NAMES.monthlyTotals
+    rowsSheetName: sheetNames.monthlyTotals
   });
 }
 

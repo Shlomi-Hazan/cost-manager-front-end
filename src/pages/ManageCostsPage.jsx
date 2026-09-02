@@ -27,8 +27,8 @@ import {
 // Shared UI components, then local constants/services/utils below.
 import PageHeader from '../components/common/PageHeader.jsx';
 import SectionCard from '../components/common/SectionCard.jsx';
-import { COMMON_CATEGORIES } from '../constants/categories.js';
-import { SUPPORTED_CURRENCIES } from '../constants/currencies.js';
+import { commonCategories } from '../constants/categories.js';
+import { supportedCurrencies } from '../constants/currencies.js';
 import { costsDatabase } from '../lib/costsDatabase.js';
 import { normalizeCategoryInput } from '../utils/category.js';
 import {
@@ -78,7 +78,7 @@ function validateEditValues(values) {
   }
 
   // Currency/category/description: presence and support checks only.
-  if (!SUPPORTED_CURRENCIES.includes(values.currency)) {
+  if (!supportedCurrencies.includes(values.currency)) {
     errors.currency = 'Select a supported currency.';
   }
 
@@ -409,7 +409,7 @@ function ManageCostsPage() {
                     select
                     value={editValues.currency}
                   >
-                    {SUPPORTED_CURRENCIES.map((currency) => (
+                    {supportedCurrencies.map((currency) => (
                       <MenuItem key={currency} value={currency}>
                         {currency}
                       </MenuItem>
@@ -424,7 +424,7 @@ function ManageCostsPage() {
                   onChange={handleCategoryChange}
                   onInputChange={handleCategoryInputChange}
                   openOnFocus
-                  options={COMMON_CATEGORIES}
+                  options={commonCategories}
                   renderInput={(params) => (
                     <TextField
                       {...params}

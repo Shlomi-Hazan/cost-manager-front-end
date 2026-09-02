@@ -4,14 +4,14 @@
  * conversion formula, so both the React application and any report/chart
  * code reuse identical, independently-tested logic instead of re-deriving it.
  */
-import { SUPPORTED_CURRENCIES } from '../constants/currencies.js';
+import { supportedCurrencies } from '../constants/currencies.js';
 
 /**
  * @param {string} currency - Currency identifier to check.
  * @returns {boolean} True if currency is one of USD, ILS, GBP, EURO.
  */
 export function isSupportedCurrency(currency) {
-  return SUPPORTED_CURRENCIES.includes(currency);
+  return supportedCurrencies.includes(currency);
 }
 
 /**
@@ -31,7 +31,7 @@ export function validateExchangeRates(rates) {
     throw new TypeError('Exchange rates must be an object.');
   }
 
-  SUPPORTED_CURRENCIES.forEach((currency) => {
+  supportedCurrencies.forEach((currency) => {
     if (!Object.hasOwn(rates, currency)) {
       throw new TypeError(`Exchange rates must include ${currency}.`);
     }
@@ -52,7 +52,7 @@ export function validateExchangeRates(rates) {
     throw new TypeError('Exchange rate for USD must be exactly 1.');
   }
 
-  return SUPPORTED_CURRENCIES.reduce((validatedRates, currency) => {
+  return supportedCurrencies.reduce((validatedRates, currency) => {
     return {
       ...validatedRates,
       [currency]: rates[currency]

@@ -33,7 +33,7 @@ import {
 // Shared UI components, then local constants/db/services/utils below.
 import LoadingButtonLabel from '../common/LoadingButtonLabel.jsx';
 import SectionCard from '../common/SectionCard.jsx';
-import { SUPPORTED_CURRENCIES } from '../../constants/currencies.js';
+import { supportedCurrencies } from '../../constants/currencies.js';
 import { costsDatabase } from '../../lib/costsDatabase.js';
 import { refreshExchangeRates } from '../../services/exchangeRatesService.js';
 // TEAM EXTENSION: Excel/PDF export helpers for the yearly bar chart data.
@@ -73,7 +73,7 @@ function validateFilters(filters) {
   }
 
   // Currency: must be one of the four required identifiers.
-  if (!SUPPORTED_CURRENCIES.includes(filters.currency)) {
+  if (!supportedCurrencies.includes(filters.currency)) {
     errors.currency = 'Select a supported currency.';
   }
 
@@ -283,7 +283,7 @@ function YearlyBarChartSection() {
               select
               value={filters.currency}
             >
-              {SUPPORTED_CURRENCIES.map((currency) => (
+              {supportedCurrencies.map((currency) => (
                 <MenuItem key={currency} value={currency}>
                   {currency}
                 </MenuItem>

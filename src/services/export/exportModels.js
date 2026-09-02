@@ -12,7 +12,7 @@ import {
 } from '../../utils/amountFormat.js';
 import { addCategoryShare } from '../../utils/chartPresentation.js';
 
-const MONTH_NAMES = [
+const monthNames = [
   'January',
   'February',
   'March',
@@ -28,7 +28,7 @@ const MONTH_NAMES = [
 ];
 
 export function getMonthName(month) {
-  return MONTH_NAMES[month - 1] ?? String(month);
+  return monthNames[month - 1] ?? String(month);
 }
 
 function copyRows(rows) {

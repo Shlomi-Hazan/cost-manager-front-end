@@ -7,7 +7,7 @@
  * currency conversion or filtering itself.
  */
 
-export const YEARLY_MONTHS = [
+export const yearlyMonths = [
   { month: 1, label: 'January', shortLabel: 'Jan' },
   { month: 2, label: 'February', shortLabel: 'Feb' },
   { month: 3, label: 'March', shortLabel: 'Mar' },
@@ -43,7 +43,7 @@ export function buildYearlyMonthlyTotals(getMonthlyReport, currency, year) {
 
   // One getReport() call per month; a zero-cost month still returns a
   // valid report object with total.sum === 0.
-  return YEARLY_MONTHS.map((monthOption) => {
+  return yearlyMonths.map((monthOption) => {
     const report = getMonthlyReport(currency, year, monthOption.month);
 
     return {
